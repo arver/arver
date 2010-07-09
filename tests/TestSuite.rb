@@ -1,0 +1,5 @@
+require 'test/unit'
+require 'lib/arver.rb'
+require 'tests/TestPartitionHierarchy.rb'
+require 'tests/TestKeystore.rb'
+require 'tests/TestKeySaver.rb'
