@@ -1,4 +1,5 @@
 require 'singleton'
+require 'yaml' 
 
 $:.unshift File.dirname(__FILE__)
 require 'arver/PartitionHierarchyNode'

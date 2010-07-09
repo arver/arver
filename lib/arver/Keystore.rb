@@ -17,20 +17,11 @@ class Keystore
   end
   
   def serializeKeys hash
-    serialized = ""
-    hash.each_pair do | name, key |
-      serialized += name + ";" + key.to_s + "\n"
-    end
-    return serialized
+    return hash.to_yaml
   end
   
   def deserializeKeys string
-    hash = {}
-    string.split( "\n" ).each do | line |
-      fields = line.split( ";" )
-      hash[fields[0]] = LuksKey.new( fields[1] )
-    end
-    return hash
+    return YAML.load( string )
   end
   
   def flushKeys
