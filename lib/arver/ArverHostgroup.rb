@@ -2,10 +2,8 @@ class ArverHostgroup
   
   include PartitionHierarchyNode
     
-  def initialize( aName )
-    self.name= aName
-    self.parent= AllPartitions.instance
-    addToParent
+  def initialize aName
+    super aName, Config.instance.arverTree
   end
   
   def addHost( aAverHost )

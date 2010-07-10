@@ -1,6 +1,5 @@
-class AllPartitions
+class ArverTree
   
-  include Singleton
   include PartitionHierarchyRoot
   
   def initialize

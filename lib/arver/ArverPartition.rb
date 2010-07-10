@@ -12,4 +12,17 @@ class ArverPartition
     yield self
   end
   
+  def to_s
+    name
+  end
+  
+  def == otherPartition
+    if ! otherPartition.is_a? ArverPartition
+      puts "jj"
+      return false
+    end
+    puts name+" == "+otherPartition.name
+    return name == otherPartition.name
+  end
+  
 end

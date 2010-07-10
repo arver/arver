@@ -4,6 +4,12 @@ module PartitionHierarchyNode
   attr_accessor :parent
   attr_accessor :children
   
+  def initialize aName, aParentNode
+    @name = aName
+    @parent = aParentNode
+    addToParent
+  end
+  
   def name
     return parent().name() +"/"+ @name
   end
@@ -33,5 +39,12 @@ module PartitionHierarchyNode
     end
   end
   
-  
+  def partitionList
+    list = []
+    eachPartition do | partition |
+      list += [ partition ]
+    end
+    return list
+  end
+    
 end

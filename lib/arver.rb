@@ -1,12 +1,14 @@
 require 'singleton'
-require 'yaml' 
+require 'yaml'
+require 'fileutils'
 
 $:.unshift File.dirname(__FILE__)
+require 'arver/Config'
 require 'arver/PartitionHierarchyNode'
 require 'arver/PartitionHierarchyRoot'
 require 'arver/ArverHost'
 require 'arver/ArverHostgroup'
-require 'arver/AllPartitions'
+require 'arver/ArverTree'
 require 'arver/ArverPartition'
 require 'arver/TestPartition'
 require 'arver/KeySaver'
