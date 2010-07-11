@@ -1,0 +1,7 @@
+require 'test/unit'
+require 'lib/arver.rb'
+require 'tests/lib/test_hierarchy_loader.rb'
+require 'tests/test_partition_hierarchy.rb'
+require 'tests/test_keystore.rb'
+require 'tests/test_key_saver.rb'
+require 'tests/test_config.rb'
