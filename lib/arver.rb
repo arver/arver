@@ -1,17 +1,9 @@
-require 'singleton'
-require 'yaml'
-require 'fileutils'
-require 'active_support'
+%w{ singleton yaml fileutils active_support }.each {|f| require f }
+$:.unshift(File.dirname(__FILE__)) unless
+  $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
+ 
+%w{ config partition_hierarchy_node partition_hierarchy_root host hostgroup tree partition test_partition key_saver keystore luks_key }.each {|f| require "arver/#{f}" }
 
-$:.unshift File.dirname(__FILE__)
-require 'arver/config'
-require 'arver/partition_hierarchy_node'
-require 'arver/partition_hierarchy_root'
-require 'arver/host'
-require 'arver/hostgroup'
-require 'arver/tree'
-require 'arver/partition'
-require 'arver/test_partition'
-require 'arver/key_saver'
-require 'arver/keystore'
-require 'arver/luks_key'
+module Arver
+  VERSION = '0.0.1'
+end
