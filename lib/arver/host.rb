@@ -13,7 +13,7 @@ module Arver
     end
     
     def partition(name)
-      get_child(name)
+      child(name)
     end
     
   end

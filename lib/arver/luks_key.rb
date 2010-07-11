@@ -11,7 +11,7 @@ module Arver
     end
     
     def ==(other_key)
-      self.key == other_key.try(:key)
+      self.key == other_key.try(:key) if other_key.is_a?(Arver::LuksKey)
     end
     
   end

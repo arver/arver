@@ -17,7 +17,7 @@ module Arver
     end
     
     def == other_partition
-      return name == other_partition.name if other_partition.is_a? Arver::Partition
+      return name == other_partition.name if other_partition.is_a?(Arver::Partition)
       false
     end
     

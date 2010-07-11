@@ -11,8 +11,8 @@ module Arver
       add_child(host)
     end
     
-    def get_host(host_name)
-      get_child(host_name)
+    def host(host_name)
+      child(host_name)
     end
     
   end

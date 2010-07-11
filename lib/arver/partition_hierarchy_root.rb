@@ -4,7 +4,7 @@ module Arver
     include PartitionHierarchyNode
     
     def name
-        return ""
+        ""
     end
       
   end
