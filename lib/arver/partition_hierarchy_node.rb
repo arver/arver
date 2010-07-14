@@ -10,6 +10,10 @@ module Arver
     end
     
     def name
+      @name
+    end
+    
+    def path
       parent.name<<"/"<<@name
     end
     
@@ -35,15 +39,13 @@ module Arver
         child.each_partition(&blk)
       end
     end
-    
-    # TODO: what's that for?
-    def partition_list
-      list = []
-      each_partition do | partition |
-        list += [ partition ]
+        
+    def == other_node
+      equals = true
+      children.each do | name, child |
+        equals &= child == other_node.child( name )
       end
-      list
+      equals
     end
-      
   end
 end

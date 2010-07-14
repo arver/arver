@@ -3,7 +3,7 @@ module Arver
     
     include PartitionHierarchyNode
     
-    def name
+    def path
         ""
     end
       
