@@ -14,7 +14,7 @@ module Arver
     end
     
     def path
-      parent.name<<"/"<<@name
+      parent.path<<"/"<<@name
     end
     
     def parent=(parent_node)
@@ -46,6 +46,15 @@ module Arver
         equals &= child == other_node.child( name )
       end
       equals
+    end
+    
+    def to_yaml
+      yaml = ""
+      children.each do | name, child |
+        yaml += "'"+name+"':\n"
+        yaml += ( child.to_yaml.indent( " ", 2 ) ) +"\n"
+      end
+      yaml.chop
     end
   end
 end

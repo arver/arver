@@ -1,28 +1,38 @@
 module Arver
   class Config
     
+    attr_accessor :tree, :users
+    
     include Singleton
     
     def initialize
-      @config = {}
+      @tree = Arver::Tree.new
+      @users = {}
     end
     
     def load
-      @config = YAML.load(File.read(".arver/config")) if File.exists?( ".arver/config" )
+      users= load_file( ".arver/users" )
+      tree.clear
+      tree.from_hash( load_file( ".arver/disks" ) )
+    end
+    
+    def load_file( filename )
+      YAML.load( File.read(filename) ) if File.exists?( filename )
     end
     
     def save
       FileUtils.mkdir_p ".arver" unless File.exists?( ".arver" )
-      File.open( ".arver/config", 'w' ) { |f| f.write( @config.to_yaml ) }
+      File.open( ".arver/users", 'w' ) { |f| f.write( users.to_yaml ) }
+      File.open( ".arver/disks", 'w' ) { |f| f.write( tree.to_yaml ) }
     end
   
-    def tree
-      @config[:luks_partitions_tree] ||= Arver::Tree.new
+    def gpg_key user
+      users[:user]['gpg']
     end
-      
-    def tree= partitions
-      @config[:luks_partitions_tree] = partitions
+    
+    def == other
+      return tree == other.tree && users == other.users if other.is_a?(Arver::Config)
+      false
     end
-      
   end
 end

@@ -1,12 +1,16 @@
 module Arver
   class KeySaver
-    def self.save(key)
+    def self.save( user, key )
+      conf = Arver::Config.instance
+      gpg_key = conf.gpg_key( user )
+      key_encrypted = GPGME::encypt( gpg_key, key )
       File.open( "/tmp/key", 'w' ) do |f|
-        f.write key
+        f.write key_encrypted
       end
     end
     def self.read
-      File.read( "/tmp/key")
+      key_encrypted = File.read( "/tmp/key")
+      GPGME::decrypt( key_encrypted )
     end
   end
 end

@@ -15,5 +15,11 @@ module Arver
       child(host_name)
     end
     
+    def from_hash hash
+      hash.each do | name, data |
+        h = Arver::Host.new( name, self )
+        h.from_hash( data )
+      end
+    end
   end
 end

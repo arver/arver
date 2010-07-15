@@ -1,10 +1,13 @@
 module Arver
   class Partition
+
+    attr_accessor :device
   
     include PartitionHierarchyNode
-     
+
     def initialize(name, host)
       self.name = name
+      self.device = ''
       self.parent = host
     end
   
@@ -21,5 +24,12 @@ module Arver
       false
     end
     
+    def to_yaml
+      "'"+self.device+"'"
+    end
+    
+    def from_hash string
+      self.device= string 
+    end
   end
 end
