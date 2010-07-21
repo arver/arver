@@ -5,6 +5,7 @@ describe "KeySaver" do
     @luks_key = Arver::LuksKey.new "test"
     @keystore = Arver::Keystore.instance
     @keystore.username= "test"
+    Arver::KeySaver.enable_test_mode
     @partition = Arver::TestPartition.new("some/test")
   end
   

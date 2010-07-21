@@ -1,11 +1,13 @@
 'dd':
   'immer4.glei.ch':
     'port': '2222'
-    'raidsotrage/xen12_srv_e': 'xen12_srv'
+    'xen12_srv': 'raidsotrage/xen12_srv_e'
 'nts':
-  'immer2.glei.ch':
-    'raidstorage/xen20_rootfs_e': 'xen20_rootfs'
-  'immer1.glei.ch':
+  'immer1':
+    'address': 'immer1.glei.ch'
     'postscript': '/usr/local/sbin/startcryptedxens'
-    'storage/xen11_rootfs_e': 'xen11_rootfs'
-    'storage/xen12_srv_e': 'xen12_srv'
+    'xen11_rootfs': 'storage/xen11_rootfs_e'
+    'xen12_srv': 'storage/xen12_srv_e'
+  'immer2':
+    'address': 'immer2.glei.ch'
+    'xen20_rootfs': 'raidstorage/xen20_rootfs_e'

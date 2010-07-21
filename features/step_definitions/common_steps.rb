@@ -108,6 +108,12 @@ Then /^I should see "([^\"]*)"$/ do |text|
   actual_output.should contain(text)
 end
 
+Then /^I should see "([^\"]*)" lines of output$/ do |num|
+  num = 0+num
+  actual_output = File.read(@stdout)
+  actual_output.split("\n").size().should == num
+end
+
 Then /^I should see$/ do |text|
   actual_output = File.read(@stdout)
   actual_output.should contain(text)

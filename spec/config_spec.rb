@@ -11,7 +11,8 @@ describe "Config" do
   it "can load the test disks config" do
     self.load_test_config
     config = Arver::Config.instance
-    config.tree.child( "nts" ).child( "immer1.glei.ch" ).postscript.should == '/usr/local/sbin/startcryptedxens'
+    config.tree.child( "nts" ).child( "immer1" ).postscript.should == '/usr/local/sbin/startcryptedxens'
+    config.tree.child( "nts" ).child( "immer1" ).address.should == 'immer1.glei.ch'
     i = 0
     config.tree.each_partition { i+=1 }
     i.should == 4

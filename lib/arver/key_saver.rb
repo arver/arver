@@ -1,6 +1,10 @@
 module Arver
   class KeySaver
+    
+    @@testMode = false
+    
     def self.save( user, key )
+      gpg_key = key_of( user )
       conf = Arver::Config.instance
       gpg_key = conf.gpg_key( user )
       GPGME::list_keys()
@@ -13,6 +17,15 @@ module Arver
       end
     end
     
+    def self.key_of user
+      conf = Arver::Config.instance
+      conf.gpg_key( user )
+    end
+    
+    def self.enable_test_mode
+      @@testMode = true
+    end
+    
     def self.key_path( user )
       config_path+"/keys/"+user+"/key"
     end
@@ -21,10 +34,18 @@ module Arver
       Arver::LocalConfig.instance.config_dir
     end
     
+    def self.isTestUser user
+      key_of( user ) == "46425E3B"
+    end
+    
     def self.read( user )
       return if( ! File.exists?( key_path( user ) ) )
       key_encrypted = File.read( key_path( user ) )
-      GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :passfunc ) } )
+      if( isTestUser( user ) )
+        GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :testpassfunc ) } )
+      else
+        GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :passfunc ) } )
+      end
     end
   end
 end
@@ -35,6 +56,19 @@ def passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
   begin
     io = IO.for_fd(fd, 'w')
     io.puts( ask("") { |q| q.echo = false } )
+    io.flush
+  ensure
+    (0 ... $_.length).each do |i| $_[i] = ?0 end if $_
+  end
+  $stderr.puts
+end
+
+def testpassfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
+  $stderr.write("Passphrase for #{uid_hint}: (test Mode) ")
+  $stderr.flush
+  begin
+    io = IO.for_fd(fd, 'w')
+    io.puts( "test" )
     io.flush
   ensure
     (0 ... $_.length).each do |i| $_[i] = ?0 end if $_

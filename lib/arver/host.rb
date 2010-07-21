@@ -2,6 +2,7 @@ module Arver
   class Host
     
     attr_accessor :postscript, :port
+    attr_writer :address
     
     include PartitionHierarchyNode
       
@@ -18,10 +19,19 @@ module Arver
       child(name)
     end
     
+    def address
+      if @address.nil?
+        self.name
+      else
+        @address
+      end
+    end
+    
     def to_yaml
       yaml = ""
-      yaml += "'postscript': '"+postscript+"'\n" unless postscript.nil?
-      yaml += "'port': '"+port+"'\n" unless port.nil?
+      yaml += "'address': '"+address+"'\n" unless @address.nil?
+      yaml += "'port': '"+port+"'\n" unless @port.nil?
+      yaml += "'postscript': '"+postscript+"'\n" unless @postscript.nil?
       children.each do | name, child |
         yaml += "'"+name+"': "+child.to_yaml+"\n"
       end
@@ -36,6 +46,10 @@ module Arver
         end
         if( name == "port" )
           self.port = data
+          next
+        end
+        if( name == "address" )
+          self.address = data
           next
         end
         p = Arver::Partition.new( name, self )

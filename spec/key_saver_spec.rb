@@ -12,7 +12,6 @@ describe "KeySaver" do
     self.load_test_config
     s = "test\ntest"
     Arver::KeySaver.save( "test", s )
-    puts "\n-->  !!! SPEC: Pw of test is 'test' !!!"
     Arver::KeySaver.read( "test" ).should == s
   end
 end

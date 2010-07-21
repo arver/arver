@@ -52,7 +52,7 @@ module Arver
       yaml = ""
       children.each do | name, child |
         yaml += "'"+name+"':\n"
-        yaml += ( child.to_yaml.indent( " ", 2 ) ) +"\n"
+        yaml += ( child.to_yaml.indent_once ) +"\n"
       end
       yaml.chop
     end
