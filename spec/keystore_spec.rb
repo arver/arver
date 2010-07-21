@@ -15,6 +15,7 @@ describe "Keystore" do
   end
   
   it "can save keystore" do
+    puts "to run this test import spec/data/test_key into your gpg-keyring"
     @keystore.add_luks_key(@partition, @luks_key)
     @keystore.save
     @keystore.load

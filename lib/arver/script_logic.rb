@@ -7,7 +7,16 @@ module Arver
     def self.adduser args
       target = self.find_target( args[:target] )
       user = args[:user]
+      
+      #todo make luks stuff:
       puts "adduser was called with target "+target.path+" and user "+user
+      gen = Arver::KeyGenerator.new
+      puts "would call (if implemented :( )):"
+      target.each_partition do | partition |
+        key = gen.generate_key( user, partition )
+        puts "echo "+key+" | ssh "+partition.parent.address+' "luks --batch-mode addKey '+partition.device+'"';
+      end
+      #gen.dump
     end
     def self.deluser args
       target = self.find_target( args[:target] )
@@ -18,6 +27,7 @@ module Arver
     def self.find_target( name )
       
       tree = Arver::Config.instance.tree
+      return tree if name == "ALL"
       targets = tree.find( name )
       if( targets.size == 0 )
         puts "No such target"
