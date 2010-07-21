@@ -1,18 +1,36 @@
 module Arver
   class ScriptLogic
     def self.open args
-      target = args[:target]
-      puts "open was called with target "+target
+      target = self.find_target( args[:target] )
+      puts "opening: "+target.path
     end
     def self.adduser args
-      target = args[:target]
+      target = self.find_target( args[:target] )
       user = args[:user]
-      puts "adduser was called with target "+target+" and user "+user
+      puts "adduser was called with target "+target.path+" and user "+user
     end
     def self.deluser args
-      target = args[:target]
+      target = self.find_target( args[:target] )
       user = args[:user]
-      puts "deluser was called with target "+target+" and user "+user
+      puts "deluser was called with target "+target.path+" and user "+user
+    end
+
+    def self.find_target( name )
+      
+      tree = Arver::Config.instance.tree
+      targets = tree.find( name )
+      if( targets.size == 0 )
+        puts "No such target"
+        exit
+      end
+      if( targets.size > 1 )
+        puts "Target not unique. Found:"
+        targets.each do |t|
+          puts t.path
+        end
+        exit
+      end
+      targets[0]
     end
     
     def self.bootstrap options

@@ -34,10 +34,25 @@ module Arver
       children[name]
     end
     
+    def each_node(&blk)
+      yield self
+      children.each_value do | child |
+        child.each_node(&blk)
+      end
+    end
+    
     def each_partition(&blk)
       children.each_value do | child |
         child.each_partition(&blk)
       end
+    end
+    
+    def find( name )
+      found = []
+      self.each_node do | node |
+        found += [ node ] if ( node.name == name || node.path.ends_with?( name ) )
+      end
+      found
     end
         
     def == other_node

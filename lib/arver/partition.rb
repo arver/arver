@@ -10,13 +10,9 @@ module Arver
       self.device = ''
       self.parent = host
     end
-  
+    
     def each_partition(&blk)
       yield self
-    end
-    
-    def to_s
-      name
     end
     
     def == other_partition

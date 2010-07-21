@@ -1,10 +1,17 @@
 module Arver
   class Tree
 
-    include PartitionHierarchyRoot
+    include PartitionHierarchyNode
     
     def initialize
-      self.name= ""
+    end
+    
+    def name
+      ""
+    end
+    
+    def path
+      ""
     end
     
     def add_host_group(host_group)
