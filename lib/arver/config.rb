@@ -10,10 +10,14 @@ module Arver
       @users = {}
     end
     
+    def path
+      return Arver::LocalConfig.instance.config_dir
+    end
+    
     def load
-      users= load_file( ".arver/users" )
+      @users= ( load_file( path+"/users" ) )
       tree.clear
-      tree.from_hash( load_file( ".arver/disks" ) )
+      tree.from_hash( load_file( path+"/disks" ) )
     end
     
     def load_file( filename )
@@ -21,9 +25,9 @@ module Arver
     end
     
     def save
-      FileUtils.mkdir_p ".arver" unless File.exists?( ".arver" )
-      File.open( ".arver/users", 'w' ) { |f| f.write( users.to_yaml ) }
-      File.open( ".arver/disks", 'w' ) { |f| f.write( tree.to_yaml ) }
+      FileUtils.mkdir_p( path ) unless File.exists?( path )
+      File.open( path+"/users", 'w' ) { |f| f.write( users.to_yaml ) }
+      File.open( path+"/disks", 'w' ) { |f| f.write( tree.to_yaml ) }
     end
   
     def gpg_key user

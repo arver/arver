@@ -14,9 +14,8 @@ module TestConfigLoader
   end
   
   def load_test_config
+    Arver::LocalConfig.instance.config_dir= "spec/data"
     config = Arver::Config.instance
-    config.tree.clear
-    config.tree.from_hash( config.load_file( "spec/data/test_disks.yaml" ) )
-    config.users= config.load_file( "spec/data/test_users.yaml" )
+    config.load
   end
 end

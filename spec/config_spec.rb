@@ -8,16 +8,6 @@ describe "Config" do
     self.extend( TestConfigLoader )
   end
   
-  
-  it "can save the config to disk" do
-    self.load_test_config
-    old = Marshal.load( Marshal.dump( Arver::Config.instance ) )
-    config = Arver::Config.instance
-    config.save
-    config.load
-    config.should == ( old )
-  end
-  
   it "can load the test disks config" do
     self.load_test_config
     config = Arver::Config.instance
@@ -27,4 +17,14 @@ describe "Config" do
     i.should == 4
     config.gpg_key( "test" ).should == "46425E3B"
   end  
+
+  it "can save the config to disk" do
+    self.load_test_config
+    config = Arver::Config.instance
+    old = Marshal.load( Marshal.dump( config ) )
+    config.save
+    config.load
+    config.should == ( old )
+  end
+  
 end

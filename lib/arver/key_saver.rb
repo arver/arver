@@ -5,21 +5,25 @@ module Arver
       gpg_key = conf.gpg_key( user )
       GPGME::list_keys()
       key_encrypted = GPGME::encrypt( gpg_key, key )
-      FileUtils.mkdir_p ".arver/keys" unless File.exists?( ".arver/keys" )
-      FileUtils.mkdir_p ".arver/keys/"+user unless File.exists?( ".arver/keys/"+user )
+      FileUtils.mkdir_p config_path+"/keys" unless File.exists?( config_path+"/keys" )
+      FileUtils.mkdir_p config_path+"/keys/"+user unless File.exists?( config_path+"/keys/"+user )
 
-      File.open( keyPath( user ), 'w' ) do |f|
+      File.open( key_path( user ), 'w' ) do |f|
         f.write key_encrypted
       end
     end
     
-    def self.keyPath( user )
-      ".arver/keys/"+user+"/key"
+    def self.key_path( user )
+      config_path+"/keys/"+user+"/key"
+    end
+    
+    def self.config_path
+      Arver::LocalConfig.instance.config_dir
     end
     
     def self.read( user )
-      return if( ! File.exists?( keyPath( user ) ) )
-      key_encrypted = File.read( keyPath( user ) )
+      return if( ! File.exists?( key_path( user ) ) )
+      key_encrypted = File.read( key_path( user ) )
       GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :passfunc ) } )
     end
   end
