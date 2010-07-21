@@ -3,16 +3,19 @@ module Arver
       
     include Singleton
     
+    attr_accessor :username
+        
     def initialize
       @keys = {}
+      username = Arver::LocalConfig.instance.username
     end
     
     def read_from_disk
-      @keys = YAML.load(KeySaver.read)
+      @keys = YAML.load( KeySaver.read( username ) )
     end
     
     def save_to_disk
-      KeySaver.save(@keys.to_yaml)
+      KeySaver.save(username, @keys.to_yaml)
     end
     
     def flush_keys
