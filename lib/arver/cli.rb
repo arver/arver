@@ -63,6 +63,8 @@ module Arver
       end
       config = Arver::Config.instance
       config.load
+      keystore = Arver::Keystore.instance
+      keystore.load
     end
   end
 end
