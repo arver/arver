@@ -4,39 +4,49 @@ module Arver
   class CLI
     def self.execute(stdout, arguments=[])
 
-      # NOTE: the option -p/--path= is given as an example, and should be replaced in your application.
-
       options = {
-        :path     => '~'
+        :user     => '',
+        :config_dir   => '.arver',
+        :dry_run  => false,
+        :action => nil,
+        :argument => {},
       }
-      mandatory_options = %w(  )
 
       parser = OptionParser.new do |opts|
         opts.banner = <<-BANNER.gsub(/^          /,'')
-          This application is wonderful because...
+          arver.
 
-          Usage: #{File.basename($0)} [options]
+          Usage: #{File.basename($0)} [options] ACTION
 
-          Options are:
+          Options:
         BANNER
-        opts.separator ""
-        opts.on("-p", "--path PATH", String,
-                "This is a sample message.",
-                "For multiple lines, add more strings.",
-                "Default: ~") { |arg| options[:path] = arg }
+        opts.on("-c", "--config-dir PATH", String,
+                "Path to config dir.",
+                "Default: .arver") { |arg| options[:config_dir] = arg }
+        opts.on("-u", "--user NAME", String,
+                "Username." ) { |arg| options[:user] = arg }
         opts.on("-h", "--help",
                 "Show this help message.") { stdout.puts opts; exit }
+        opts.on("--dry-run",
+                "Test your command.") { options[:dry_run] = true }
+        opts.on_tail( "-t", "--target TARGET", String,
+                "Select Target. Allowed Targets are:",
+                "'Hostgroup', 'Host', 'Host/Device' or 'ALL'.") { |arg| options[:argument][:target] = arg; }
+        opts.separator "Actions:"
+        opts.on_tail( "-o", "--open",
+                "Open target." ) { options[:action] = :open; }
+        opts.on_tail( "-a", "--add-user USER", String,
+                "Add a user to target.") { |user| options[:action] = :adduser; options[:argument][:user] = user;  }
+        opts.on_tail( "-d", "--del-user USER", String,
+                "Remove a user from target.") { |user| options[:action] = :deluser; options[:argument][:user] = user;  }
         opts.parse!(arguments)
-
-        if mandatory_options && mandatory_options.find { |option| options[option.to_sym].nil? }
+                
+        if ( options[:action].nil? || ! options[:argument][:target] ) ||
+           ( ( options[:action] == :adduser || options[:action] == :deluser ) && ! options[:argument][:target] )
           stdout.puts opts; exit
         end
       end
-
-      path = options[:path]
-
-      # do stuff
-      stdout.puts "To update this executable, look in lib/arver/cli.rb"
+      Arver::ScriptLogic.send( options[:action], options[:argument] )
     end
   end
 end
