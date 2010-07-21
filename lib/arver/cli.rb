@@ -6,7 +6,7 @@ module Arver
 
       options = {
         :user     => '',
-        :config_dir   => '.arver',
+        :config_dir   => '',
         :dry_run  => false,
         :action => nil,
         :argument => {},
@@ -26,7 +26,7 @@ module Arver
         opts.on("-u", "--user NAME", String,
                 "Username." ) { |arg| options[:user] = arg }
         opts.on("-h", "--help",
-                "Show this help message.") { stdout.puts opts; exit }
+                "Show this help message.") { stdout.puts opts; return }
         opts.on("--dry-run",
                 "Test your command.") { options[:dry_run] = true }
         opts.on_tail( "-t", "--target TARGET", String,
@@ -41,12 +41,28 @@ module Arver
                 "Remove a user from target.") { |user| options[:action] = :deluser; options[:argument][:user] = user;  }
         opts.parse!(arguments)
                 
-        if ( options[:action].nil? || ! options[:argument][:target] ) ||
+        if options[:action].nil? || ! options[:argument][:target] ||
            ( ( options[:action] == :adduser || options[:action] == :deluser ) && ! options[:argument][:target] )
-          stdout.puts opts; exit
+          stdout.puts opts; return
         end
       end
+      
+      bootstrap( options )
+      
       Arver::ScriptLogic.send( options[:action], options[:argument] )
+      
+    end
+    
+    def self.bootstrap options
+      local = Arver::LocalConfig.instance
+      unless( options[:config_dir].empty? )
+        local.config_dir= ( options[:config_dir] )
+      end
+      unless( options[:user].empty? )
+        local.username= ( options[:user] )
+      end
+      config = Arver::Config.instance
+      config.load
     end
   end
 end

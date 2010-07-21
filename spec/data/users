@@ -1,10 +1,10 @@
 --- 
 o: 
-  gpg: xxxxxx
   slot: 3
-mh: 
   gpg: xxxxxx
+mh: 
   slot: 2
+  gpg: xxxxxx
 test: 
-  gpg: 46425E3B
   slot: 7
+  gpg: 46425E3B

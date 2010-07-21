@@ -10,6 +10,6 @@ describe Arver::CLI, "execute" do
   end
   
   it "should print default output" do
-    @stdout.should =~ /To update this executable/
+    @stdout.should =~ /Usage:/
   end
 end
