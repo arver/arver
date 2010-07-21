@@ -15,6 +15,10 @@ module Arver
     end
     
     def load
+      if( ! File.exists?( path ) )
+        puts "config-dir "+path+" does not exist"
+        exit
+      end
       @users= ( load_file( path+"/users" ) )
       tree.clear
       tree.from_hash( load_file( path+"/disks" ) )

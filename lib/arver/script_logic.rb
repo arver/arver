@@ -50,6 +50,11 @@ module Arver
     def self.list args
       puts Arver::Config.instance.tree.to_yaml
     end
+    def self.gc args
+      self.load_key
+      keystore = Arver::Keystore.instance
+      keystore.save
+    end
 
     def self.find_target( name )
       

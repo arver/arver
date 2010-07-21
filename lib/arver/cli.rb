@@ -31,6 +31,8 @@ module Arver
                 "Test your command.") { options[:dry_run] = true }
         opts.on_tail( "-l", "--list-targets",
                 "List targets." ) { options[:action] = :list; }
+        opts.on_tail( "-g", "--garbage-collect",
+                "Expunge old keys." ) { options[:action] = :gc; }
         opts.on_tail( "-t", "--target TARGET", String,
                 "Select Target. Allowed Targets are:",
                 "'Group', 'Host', 'Device', 'Host/Device', 'Group/Host/Device' or 'ALL'.") { |arg| options[:argument][:target] = arg; }
@@ -46,7 +48,7 @@ module Arver
         opts.parse!(arguments)
                 
         if options[:action].nil? || 
-           ( options[:action] != :list && ! options[:argument][:target] ) ||
+           ( options[:action] != :list && options[:action] != :gc && ! options[:argument][:target] ) ||
            ( ( options[:action] == :adduser || options[:action] == :deluser ) && ! options[:argument][:target] )
           stdout.puts opts; return
         end
