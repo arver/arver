@@ -48,7 +48,7 @@ module Arver
       puts "deluser was called with target "+target.path+" and user "+user
     end
     def self.list args
-      puts Arver::Config.instance.tree.to_yaml
+      puts Arver::Config.instance.tree.to_ascii
     end
     def self.gc args
       self.load_key

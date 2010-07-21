@@ -54,6 +54,15 @@ module Arver
       end
       found
     end
+    
+    def to_ascii
+      list = ""
+      children.each do | name, child |
+        list += "+- "+name+"\n"
+        list += ( child.to_ascii.indent_once ) +"\n" unless child.to_ascii.empty?
+      end
+      list.chop
+    end
         
     def == other_node
       equals = true
