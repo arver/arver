@@ -11,7 +11,8 @@ describe "KeySaver" do
   it "can save and encrypt the key" do
     self.load_test_config
     s = "test\ntest"
+    Arver::KeySaver.purge_keys( "test" )
     Arver::KeySaver.save( "test", s )
-    Arver::KeySaver.read( "test" ).should == s
+    Arver::KeySaver.read( "test" ).should == [ s ]
   end
 end

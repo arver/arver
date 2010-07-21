@@ -11,7 +11,15 @@ module Arver
     end
     
     def load
-      @keys = YAML.load( KeySaver.read( self.username ) )
+      @keys = {}
+      KeySaver.read( self.username ).each do | loaded |
+        @keys.merge!( YAML.load( loaded ) )
+      end
+    end
+    
+    def purge_and_save
+      KeySaver.purge_keys( username )
+      KeySaver.save(username, @keys.to_yaml)
     end
     
     def save
