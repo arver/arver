@@ -1,7 +1,7 @@
 --- 
-o: 
+o_test: 
   slot: 3
-  gpg: xxxxxx
+  gpg: 5A9195C8
 mh: 
   slot: 2
   gpg: xxxxxx

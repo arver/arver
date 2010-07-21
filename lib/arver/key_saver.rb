@@ -66,6 +66,7 @@ module Arver
     
     def self.read( user )
       check_key( user )
+      return [] unless File.exists?( key_path( user ) )
       decrypted = []
       Dir.entries( key_path( user ) ).sort.each do | file |
         unless( file == "." || file == ".." )

@@ -29,10 +29,14 @@ module Arver
                 "Show this help message.") { stdout.puts opts; return }
         opts.on("--dry-run",
                 "Test your command.") { options[:dry_run] = true }
+        opts.on_tail( "-l", "--list-targets",
+                "List targets." ) { options[:action] = :list; }
         opts.on_tail( "-t", "--target TARGET", String,
                 "Select Target. Allowed Targets are:",
                 "'Hostgroup', 'Host', 'Host/Device' or 'ALL'.") { |arg| options[:argument][:target] = arg; }
         opts.separator "Actions:"
+        opts.on_tail( "--create",
+                "Create new arver partition." ) { options[:action] = :create; }
         opts.on_tail( "-o", "--open",
                 "Open target." ) { options[:action] = :open; }
         opts.on_tail( "-a", "--add-user USER", String,
@@ -41,7 +45,8 @@ module Arver
                 "Remove a user from target.") { |user| options[:action] = :deluser; options[:argument][:user] = user;  }
         opts.parse!(arguments)
                 
-        if options[:action].nil? || ! options[:argument][:target] ||
+        if options[:action].nil? || 
+           ( options[:action] != :list && ! options[:argument][:target] ) ||
            ( ( options[:action] == :adduser || options[:action] == :deluser ) && ! options[:argument][:target] )
           stdout.puts opts; return
         end
