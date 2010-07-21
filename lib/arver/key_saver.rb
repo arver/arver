@@ -19,6 +19,10 @@ module Arver
     def self.check_key( user )
       FileUtils.mkdir_p config_path+"/keys/public" unless File.exists?( config_path+"/keys/public" )
       key_id = key_of( user )
+      if key_id.nil?
+        puts "no such user "+user
+        exit
+      end
       user_pubkey = config_path+"/keys/public/"+user
       found_in_keyring = ! GPGME::list_keys( key_id ).empty?
       found_on_disk = File.exists?( user_pubkey )

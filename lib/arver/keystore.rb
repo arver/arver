@@ -11,19 +11,19 @@ module Arver
     end
     
     def load
-      @keys = {}
+      flush_keys
       KeySaver.read( self.username ).each do | loaded |
         @keys.merge!( YAML.load( loaded ) )
       end
     end
     
-    def purge_and_save
-      KeySaver.purge_keys( username )
+    def save
+      purge_keys
       KeySaver.save(username, @keys.to_yaml)
     end
     
-    def save
-      KeySaver.save(username, @keys.to_yaml)
+    def purge_keys
+      KeySaver.purge_keys( username )
     end
     
     def flush_keys
@@ -31,11 +31,11 @@ module Arver
     end
   
     def luks_key(partition)
-      @keys[partition.name]
+      @keys[partition.path]
     end
     
     def add_luks_key(partition, luks_key)
-      @keys[partition.name] = luks_key
+      @keys[partition.path] = luks_key
     end
     
   end

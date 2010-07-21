@@ -31,7 +31,7 @@ module Arver
     end
   
     def gpg_key user
-      users[user]['gpg']
+      users[user]['gpg'] if users[user]
     end
     
     def == other
