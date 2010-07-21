@@ -4,6 +4,7 @@ module Arver
     include Singleton
     
     def initialize
+      @config = {}
       self.load
     end
     
@@ -33,7 +34,7 @@ module Arver
 
     def username= username
       @config[:username] = username
-    end  
+    end 
 
     def config_dir
       @config[:arver_config]

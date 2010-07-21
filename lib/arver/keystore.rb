@@ -7,14 +7,14 @@ module Arver
         
     def initialize
       @keys = {}
-      username = Arver::LocalConfig.instance.username
+      self.username= Arver::LocalConfig.instance.username
     end
     
-    def read_from_disk
-      @keys = YAML.load( KeySaver.read( username ) )
+    def load
+      @keys = YAML.load( KeySaver.read( self.username ) )
     end
     
-    def save_to_disk
+    def save
       KeySaver.save(username, @keys.to_yaml)
     end
     

@@ -1,8 +1,6 @@
 module Arver
   class KeySaver
     
-    @@testMode = false
-    
     def self.save( user, key )
       gpg_key = key_of( user )
       conf = Arver::Config.instance
@@ -20,10 +18,6 @@ module Arver
     def self.key_of user
       conf = Arver::Config.instance
       conf.gpg_key( user )
-    end
-    
-    def self.enable_test_mode
-      @@testMode = true
     end
     
     def self.key_path( user )

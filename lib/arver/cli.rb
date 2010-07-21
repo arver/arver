@@ -47,24 +47,10 @@ module Arver
         end
       end
       
-      bootstrap( options )
+      Arver::ScriptLogic.bootstrap( options )
       
       Arver::ScriptLogic.send( options[:action], options[:argument] )
       
-    end
-    
-    def self.bootstrap options
-      local = Arver::LocalConfig.instance
-      unless( options[:config_dir].empty? )
-        local.config_dir= ( options[:config_dir] )
-      end
-      unless( options[:user].empty? )
-        local.username= ( options[:user] )
-      end
-      config = Arver::Config.instance
-      config.load
-      keystore = Arver::Keystore.instance
-      keystore.load
     end
   end
 end

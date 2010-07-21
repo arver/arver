@@ -5,8 +5,7 @@ describe "KeySaver" do
     @luks_key = Arver::LuksKey.new "test"
     @keystore = Arver::Keystore.instance
     @keystore.username= "test"
-    Arver::KeySaver.enable_test_mode
-    @partition = Arver::TestPartition.new("some/test")
+    @partition = Arver::TestPartition.new("sometest")
   end
   
   it "can add a key" do
@@ -16,9 +15,9 @@ describe "KeySaver" do
   
   it "can save keystore" do
     @keystore.add_luks_key(@partition, @luks_key)
-    @keystore.save_to_disk
+    @keystore.save
     @keystore.flush_keys
-    @keystore.read_from_disk
+    @keystore.load
     @luks_key.should == @keystore.luks_key(@partition)
   end  
 end
