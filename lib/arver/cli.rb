@@ -33,10 +33,10 @@ module Arver
                 "List targets." ) { options[:action] = :list; }
         opts.on_tail( "-t", "--target TARGET", String,
                 "Select Target. Allowed Targets are:",
-                "'Hostgroup', 'Host', 'Host/Device' or 'ALL'.") { |arg| options[:argument][:target] = arg; }
+                "'Group', 'Host', 'Device', 'Host/Device', 'Group/Host/Device' or 'ALL'.") { |arg| options[:argument][:target] = arg; }
         opts.separator "Actions:"
         opts.on_tail( "--create",
-                "Create new arver partition." ) { options[:action] = :create; }
+                "Create new arver partition on Target." ) { options[:action] = :create; }
         opts.on_tail( "-o", "--open",
                 "Open target." ) { options[:action] = :open; }
         opts.on_tail( "-a", "--add-user USER", String,
