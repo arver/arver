@@ -10,4 +10,4 @@
     'xen12_srv': 'storage/xen12_srv_e'
   'immer2':
     'address': 'immer2.glei.ch'
-    'xen20_rootfs': 'raidstorage/xen20_rootfs_e'
+    'xen20_rootfs': 'nonraidstorage/xen20_rootfs_e'
