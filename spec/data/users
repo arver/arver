@@ -5,6 +5,9 @@ o_test:
 mh: 
   slot: 2
   gpg: xxxxxx
+am:
+  slot: 1
+  gpg: 3621064B
 test: 
   slot: 7
   gpg: 46425E3B
