@@ -11,3 +11,4 @@
   'immer2':
     'address': 'immer2.glei.ch'
     'xen20_rootfs': 'nonraidstorage/xen20_rootfs_e'
+    'xen40_rootfs': 'nonraidstorage/xen40_rootfs_e'
