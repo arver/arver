@@ -18,10 +18,11 @@ module Arver
         gen = Arver::KeyGenerator.new
         key = gen.generate_key( Arver::LocalConfig.instance.username, target )
         gen.dump
-        cmd = "echo '"+key+"' | ssh "+target.parent.address+' "cryptsetup --batch-mode --key-slot '+slot_of_user.to_s+' --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat '+target.device+'"';
+        cmd = "echo \"#{key}\" | ssh #{target.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat #{target.device}\"";
         p exec(cmd)
       else
-        p "echo '"+'*'*256+"' | ssh "+target.parent.address+' "cryptsetup --batch-mode --key-slot '+slot_of_user.to_s+' --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat '+target.device+'"';
+        key = '*'*256
+        p "echo \"#{key}\" | ssh #{target.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat #{target.device}\"";
       end
     end
     def self.open args
@@ -36,10 +37,11 @@ module Arver
           next
         end
         if not Arver::LocalConfig.instance.dry_run then
-          cmd = "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode create '+partition.name+' '+partition.device+'"';
+          cmd = "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode create #{partition.name} #{partition.device}\"";
           p exec(cmd)
         else
-          p "echo '"+'*'*256+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode create '+partition.name+' '+partition.device+'"';
+          key = '*'*256
+          p "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode create #{partition.name} #{partition.device}\"";
         end
       end
     end
@@ -51,14 +53,16 @@ module Arver
 
       self.load_key
       gen = Arver::KeyGenerator.new
+      slot_of_user = Arver::Config.instance.slot( user )
       puts "would call (if implemented :( )):"
       target.each_partition do | partition |
         if not Arver::LocalConfig.instance.dry_run then
           key = gen.generate_key( user, partition )
-          cmd = "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
+          cmd = "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} addKey #{partition.device}\"";
           p exec(cmd)
         else
-          p "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
+          key = '*'*256
+          p "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} addKey #{partition.device}\"";
         end
       end
       gen.dump
