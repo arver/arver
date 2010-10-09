@@ -23,7 +23,7 @@ module Arver
           puts "No permission on "+partition.path
           next
         end
-        puts "echo "+key+" | ssh "+partition.parent.address+' "cryptsetup --batch-mode create '+partition.name+' '+partition.device+'"';
+        puts "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode create '+partition.name+' '+partition.device+'"';
       end
     end
     def self.adduser args
@@ -37,7 +37,7 @@ module Arver
       puts "would call (if implemented :( )):"
       target.each_partition do | partition |
         key = gen.generate_key( user, partition )
-        puts "echo "+key+" | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
+        puts "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
       end
       gen.dump
     end
