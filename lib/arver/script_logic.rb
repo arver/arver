@@ -6,11 +6,16 @@ module Arver
       target = self.find_target( args[:target] )
       puts "creating: "+target.path
       self.load_key
-      gen = Arver::KeyGenerator.new
-      key = gen.generate_key( Arver::LocalConfig.instance.username, target )
       slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
-      gen.dump
-      puts "echo '"+key+"' | ssh "+target.parent.address+' "cryptsetup --batch-mode --key-slot '+slot_of_user.to_s+' --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat /dev/'+target.device+'"';
+      if not Arver::LocalConfig.instance.dry_run then
+        gen = Arver::KeyGenerator.new
+        key = gen.generate_key( Arver::LocalConfig.instance.username, target )
+        gen.dump
+        cmd = "echo '"+key+"' | ssh "+target.parent.address+' "cryptsetup --batch-mode --key-slot '+slot_of_user.to_s+' --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat '+target.device+'"';
+        p exec(cmd)
+      else
+        p "echo '"+'*'*256+"' | ssh "+target.parent.address+' "cryptsetup --batch-mode --key-slot '+slot_of_user.to_s+' --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat '+target.device+'"';
+      end
     end
     def self.open args
       target = self.find_target( args[:target] )
@@ -23,7 +28,12 @@ module Arver
           puts "No permission on "+partition.path
           next
         end
-        puts "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode create '+partition.name+' '+partition.device+'"';
+        if not Arver::LocalConfig.instance.dry_run then
+          cmd = "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode create '+partition.name+' '+partition.device+'"';
+          p exec(cmd)
+        else
+          p "echo '"+'*'*256+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode create '+partition.name+' '+partition.device+'"';
+        end
       end
     end
     def self.adduser args
@@ -36,8 +46,13 @@ module Arver
       gen = Arver::KeyGenerator.new
       puts "would call (if implemented :( )):"
       target.each_partition do | partition |
-        key = gen.generate_key( user, partition )
-        puts "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
+        if not Arver::LocalConfig.instance.dry_run then
+          key = gen.generate_key( user, partition )
+          cmd = "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
+          p exec(cmd)
+        else
+          cmd = "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
+        end
       end
       gen.dump
     end
@@ -84,6 +99,7 @@ module Arver
       unless( options[:user].empty? )
         local.username= ( options[:user] )
       end
+      local.dry_run = options[:dry_run]
       
       if( local.username.empty? )
         puts "No user defined"
