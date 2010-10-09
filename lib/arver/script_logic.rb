@@ -15,6 +15,7 @@ module Arver
       end
       slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
       if not Arver::LocalConfig.instance.dry_run then
+        p "generating a new key for partition #{target.device}"
         gen = Arver::KeyGenerator.new
         key = gen.generate_key( Arver::LocalConfig.instance.username, target )
         gen.dump
