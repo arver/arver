@@ -6,6 +6,13 @@ module Arver
       target = self.find_target( args[:target] )
       puts "creating: "+target.path
       self.load_key
+      keystore = Arver::Keystore.instance
+      target.each_partition do | partition |
+        key = keystore.luks_key( partition )
+        next if( key.nil? )
+        p "DANGEROUS: you do have already a key for partition #{partition.path} - exiting" # if not --force"
+        exit
+      end
       slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
       if not Arver::LocalConfig.instance.dry_run then
         gen = Arver::KeyGenerator.new
