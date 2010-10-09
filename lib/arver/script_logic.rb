@@ -8,8 +8,9 @@ module Arver
       self.load_key
       gen = Arver::KeyGenerator.new
       key = gen.generate_key( Arver::LocalConfig.instance.username, target )
+      slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
       gen.dump
-      puts "echo "+key+" | ssh "+target.parent.address+' "cryptsetup --batch-mode luksFormat '+target.device+'"';
+      puts "echo "+key+" | ssh "+target.parent.address+' "cryptsetup --batch-mode --key-slot '+slot_of_user.to_s+' --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat /dev/'+target.device+'"';
     end
     def self.open args
       target = self.find_target( args[:target] )
