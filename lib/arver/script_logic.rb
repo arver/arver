@@ -51,7 +51,7 @@ module Arver
           cmd = "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
           p exec(cmd)
         else
-          cmd = "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
+          p "echo '"+key+"' | ssh "+partition.parent.address+' "cryptsetup --batch-mode addKey '+partition.device+'"';
         end
       end
       gen.dump
