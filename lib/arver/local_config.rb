@@ -43,5 +43,13 @@ module Arver
     def config_dir= directory
       @config[:arver_config]= directory
     end  
+
+    def dry_run
+      @config[:dry_run]
+    end  
+
+    def dry_run= dry_run
+      @config[:dry_run] = dry_run
+    end 
   end
 end
