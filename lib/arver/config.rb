@@ -37,6 +37,10 @@ module Arver
     def gpg_key user
       users[user]['gpg'] if users[user]
     end
+
+    def slot user
+      users[user]['slot'] if users[user]
+    end
     
     def == other
       return tree == other.tree && users == other.users if other.is_a?(Arver::Config)
