@@ -1,14 +1,14 @@
-'dd':
-  'immer4.glei.ch':
+'location1':
+  'machine1_1.example.tld':
     'port': '2222'
-    'xen12_srv': 'raidsotrage/xen12_srv_e'
-'nts':
-  'immer1':
-    'address': 'immer1.glei.ch'
+    'virtmachine1': '/dev/storage/virtmachine1_rootfs'
+'location2':
+  'machine1':
+    'address': 'one.example.tld'
     'postscript': '/usr/local/sbin/startcryptedxens'
-    'xen11_rootfs': 'storage/xen11_rootfs_e'
-    'xen12_srv': 'storage/xen12_srv_e'
-  'immer2':
-    'address': 'immer2.glei.ch'
-    'xen20_rootfs': 'nonraidstorage/xen20_rootfs_e'
-    'xen40_rootfs': 'nonraidstorage/xen40_rootfs_e'
+    'virt1_rootfs': '/dev/storage/virt1_rootfs_e'
+    'virt2_srv': '/dev/storage/virt2_srv_e'
+  'machine2':
+    'address': 'two.example.tld'
+    'virt1_rootfs': '/dev/nonraidstorage/virt1_rootfs'
+    'virt2_rootfs': 'nonraidstorage/virt2_rootfs'
