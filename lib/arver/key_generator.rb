@@ -5,7 +5,7 @@ module Arver
     end
     
     def generate_key( user, partition )
-      key = ActiveSupport::SecureRandom.base64(40)
+      key = ActiveSupport::SecureRandom.base64(255)
       add( user, partition, key )
       key
     end
