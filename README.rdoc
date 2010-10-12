@@ -50,6 +50,7 @@ Other helpful infos:
 
   arver -u user -c datastore -t server/harddisk --create
   arver -u user -c datastore -t server/harddisk --open
+  arver -u user -c datastore -t server/harddisk --close
 
 == REQUIREMENTS:
 
