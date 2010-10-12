@@ -14,6 +14,9 @@ FIX (describe your package)
 
 * GPGME and gpg-agent
 If arver asks several times for the password, something is wrong with your gpg-agent installation.
+
+To test if gpg-agent is working, use gpg or better gpg2 to decrypt a file, it will tell you about the gpg-erorrs.
+
 You might look at the following program:
 ** http://dougbarton.us/PGP/gpg-agent.html
 If you install it like dougbarton recomends, you need to make sure GPG_AGENT_INFO is accessible within the arver script. You can do this with the following entry in .bashrc (part of the .xsession entry)
