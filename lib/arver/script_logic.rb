@@ -16,6 +16,17 @@ module Arver
       slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
       if not Arver::LocalConfig.instance.dry_run then
         p "generating a new key for partition #{target.device}"
+
+        # checking if disk is not already LUKS formatted
+        p "checking if disk is not already LUKS formatted..."
+        result = `ssh #{target.parent.address} \"cryptsetup luksDump #{target.device}\"`
+        if result.include?('LUKS header information') then
+          p "DANGEROUS: the partition #{target.device} is already formatted with LUKS - exiting" # if not --force"
+          p "for more information see /tmp/luks_create_error.txt"
+          exec("echo \"#{result}\" > /tmp/luks_create_error.txt")
+          exit
+        end
+
         gen = Arver::KeyGenerator.new
         key = gen.generate_key( Arver::LocalConfig.instance.username, target )
         gen.dump
