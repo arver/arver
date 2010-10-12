@@ -37,7 +37,7 @@ Other helpful infos:
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* needs cryptsetup-luks >= 1.0.5 (to work properly with slots)
 
 == INSTALL:
 
