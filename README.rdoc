@@ -52,6 +52,13 @@ Other helpful infos:
   arver -u user -c datastore -t server/harddisk --open
   arver -u user -c datastore -t server/harddisk --close
 
+  arver -u user -c datastore -t server/harddisk --add-user test
+
+  arver -u user -c datastore -t server/harddisk --del-user test
+  #  deluser was called with target /location/server/harddisk and user test (slot-no 7)
+  #  would call (if implemented :( )):
+  #  "echo \"***\" | ssh server \"cryptsetup --batch-mode luksKillSlot /dev/storage/harddisk 7\""
+
 == REQUIREMENTS:
 
 * needs cryptsetup-luks >= 1.0.5 (to work properly with slots)
