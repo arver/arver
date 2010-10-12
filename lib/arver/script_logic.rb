@@ -38,11 +38,11 @@ module Arver
           next
         end
         if not Arver::LocalConfig.instance.dry_run then
-          cmd = "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode create #{partition.name} #{partition.device}\"";
+          cmd = "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksOpen #{partition.device} #{partition.name}\"";
           p exec(cmd)
         else
           key = '*'*256
-          p "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode create #{partition.name} #{partition.device}\"";
+          p "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksOpen #{partition.device} #{partition.name}\"";
         end
       end
     end
