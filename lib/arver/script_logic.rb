@@ -85,7 +85,24 @@ module Arver
       user = args[:user]
 
       self.load_key
-      puts "deluser was called with target "+target.path+" and user "+user
+      gen = Arver::KeyGenerator.new
+
+      slot_of_user = Arver::Config.instance.slot( user )
+
+      puts "deluser was called with target #{target.path} and user #{user} (slot-no #{slot_of_user})"
+
+      puts "would call (if implemented :( )):"
+      keystore = Arver::Keystore.instance
+      target.each_partition do | partition |
+        a_valid_key = keystore.luks_key( partition )
+        if not Arver::LocalConfig.instance.dry_run then
+          cmd = "echo \"#{a_valid_key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksKillSlot #{partition.device} #{slot_of_user}\"";
+          p exec(cmd)
+        else
+          key = '*'*256
+          p "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksKillSlot #{partition.device} #{slot_of_user}\"";
+        end
+      end
     end
     def self.list args
       puts Arver::Config.instance.tree.to_ascii
