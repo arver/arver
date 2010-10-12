@@ -4,11 +4,17 @@
 
 == DESCRIPTION:
 
-FIX (describe your package)
+arver is a tool to open crypted harddisks.
+
+Imagine you are a collective with several admin members. The servers have LUKS encrypted devices.
+Either
+* you would need 1 password for every device which everyone needs to know
+or 
+* you use arver! Arver has 1 password for each device and for each member. This password is stored encrypted with the personal gpg-key in the data directory. The admins only need to know the password to the their own gpg secret key.
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+arver supports up to 8 member passwords (LUKS has 8 slots (LUKS NUMKEYS))
 
 === Problems ===
 
