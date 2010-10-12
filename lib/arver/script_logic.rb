@@ -62,23 +62,35 @@ module Arver
       target = self.find_target( args[:target] )
       user = args[:user]
       
-      puts "adduser was called with target "+target.path+" and user "+user
 
       self.load_key
-      gen = Arver::KeyGenerator.new
       slot_of_user = Arver::Config.instance.slot( user )
+
+      puts "adduser was called with target #{target.path} and user #{user} (slot-no #{slot_of_user})"
+
       puts "would call (if implemented :( )):"
+      keystore = Arver::Keystore.instance
       target.each_partition do | partition |
+        p "Generating keys for partition #{partition.device}"
         if not Arver::LocalConfig.instance.dry_run then
-          key = gen.generate_key( user, partition )
-          cmd = "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} addKey #{partition.device}\"";
-          p exec(cmd)
+          # get a valid key for this partition
+          a_valid_key = keystore.luks_key( partition )
+          # generate a key for the new user
+          gen = Arver::KeyGenerator.new
+          p "generate_key (#{user},#{target.path})"
+          newkey = gen.generate_key( user, target )
+          gen.dump
+          p "done generation"
+
+          p "add the new key to the partition (length1 = #{a_valid_key.to_s.length}, length2 = #{newkey.to_s.length}"
+          cmd = "\(echo \"#{a_valid_key}\"; echo \"#{newkey}\"\) | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}\"";
+          #p exec(cmd)
         else
-          key = '*'*256
-          p "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} addKey #{partition.device}\"";
+          p "would execute the following command:"
+          cmd = "\(echo \"my_secret_key_for_this_partition\"; echo \"a new key for the user\"\) | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}\"";
+          p cmd
         end
       end
-      gen.dump
     end
     def self.deluser args
       target = self.find_target( args[:target] )
