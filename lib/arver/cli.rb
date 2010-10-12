@@ -41,6 +41,8 @@ module Arver
                 "Create new arver partition on Target." ) { options[:action] = :create; }
         opts.on_tail( "-o", "--open",
                 "Open target." ) { options[:action] = :open; }
+        opts.on_tail( "-c", "--close",
+                "Close target." ) { options[:action] = :close; }
         opts.on_tail( "-a", "--add-user USER", String,
                 "Add a user to target.") { |user| options[:action] = :adduser; options[:argument][:user] = user;  }
         opts.on_tail( "-d", "--del-user USER", String,

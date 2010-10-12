@@ -46,6 +46,18 @@ module Arver
         end
       end
     end
+    def self.close args
+      target = self.find_target( args[:target] )
+      puts "closing: "+target.path
+      target.each_partition do | partition |
+        if not Arver::LocalConfig.instance.dry_run then
+          cmd = "ssh #{partition.parent.address} \"cryptsetup luksClose #{partition.name}\"";
+          p exec(cmd)
+        else
+          p "ssh #{partition.parent.address} \"cryptsetup luksClose #{partition.name}\"";
+        end
+      end
+    end
     def self.adduser args
       target = self.find_target( args[:target] )
       user = args[:user]
