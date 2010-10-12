@@ -93,12 +93,12 @@ module Arver
           gen.dump
           p "done generation"
 
-          p "add the new key to the partition (length1 = #{a_valid_key.to_s.length}, length2 = #{newkey.to_s.length}"
+          p "add the new key to the partition (length1 = #{a_valid_key.to_s.length}, length2 = #{newkey.to_s.length})"
           cmd = "\(echo \"#{a_valid_key}\"; echo \"#{newkey}\"\) | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}\"";
-          #p exec(cmd)
+          p exec(cmd)
         else
           p "would execute the following command:"
-          cmd = "\(echo \"my_secret_key_for_this_partition\"; echo \"a new key for the user\"\) | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}\"";
+          cmd = "(echo 'my_secret_key_for_this_partition'; echo 'a new key for the user') | ssh #{partition.parent.address} 'cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}'";
           p cmd
         end
       end
