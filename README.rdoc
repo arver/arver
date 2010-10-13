@@ -21,6 +21,7 @@ or
 
 * Add-User
 ** arver creates a password and stores it in the (other) user-slot. The password is encrypted for the other user.
+** with the option --ask-password, a password (ie. the oldpassword stored in Slot 0) can be entered) -> MIGRATION
 
 == FEATURES/PROBLEMS:
 
