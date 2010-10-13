@@ -9,6 +9,8 @@ module Arver
         :config_dir   => '',
         :dry_run  => false,
         :ask_password  => false,
+        :force  => false,
+        :violence  => false,
         :action => nil,
         :argument => {},
       }
@@ -32,6 +34,10 @@ module Arver
                 "Test your command.") { options[:dry_run] = true }
         opts.on("--ask-password",
                 "Ask for Password when --add-user.") { options[:ask_password] = true }
+        opts.on("--force",
+                "Apply force (allow duplicate keys)") { options[:force] = true }
+        opts.on("--violence",
+                "Apply violence (allow destruction of disk)") { options[:violence] = true }
         opts.on_tail( "-l", "--list-targets",
                 "List targets." ) { options[:action] = :list; }
         opts.on_tail( "-g", "--garbage-collect",

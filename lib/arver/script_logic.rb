@@ -9,8 +9,8 @@ module Arver
       keystore = Arver::Keystore.instance
       target.each_partition do | partition |
         key = keystore.luks_key( partition )
-        next if( key.nil? )
-        p "DANGEROUS: you do have already a key for partition #{partition.path} - exiting" # if not --force"
+        next if( key.nil? ) or Arver::LocalConfig.instance.force
+        p "DANGEROUS: you do have already a key for partition #{partition.path} - exiting (apply --force to continue)"
         exit
       end
       slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
@@ -21,10 +21,14 @@ module Arver
         p "checking if disk is not already LUKS formatted..."
         result = `ssh #{target.parent.address} \"cryptsetup luksDump #{target.device}\"`
         if result.include?('LUKS header information') then
-          p "DANGEROUS: the partition #{target.device} is already formatted with LUKS - exiting" # if not --force"
-          p "for more information see /tmp/luks_create_error.txt"
-          exec("echo \"#{result}\" > /tmp/luks_create_error.txt")
-          exit
+          p "VERY DANGEROUS: the partition #{target.device} is already formatted with LUKS - exiting (continue with --violence)" 
+          if Arver::LocalConfig.instance.violence then
+            p "you applied --violence, so we will continue ..."
+          else
+            p "for more information see /tmp/luks_create_error.txt"
+            exec("echo \"#{result}\" > /tmp/luks_create_error.txt")
+            exit if not Arver::LocalConfig.instance.violence
+          end
         end
 
         gen = Arver::KeyGenerator.new
@@ -169,6 +173,8 @@ module Arver
       end
       local.dry_run = options[:dry_run]
       local.ask_password = options[:ask_password]
+      local.force = options[:force]
+      local.violence = options[:violence]
       
       if( local.username.empty? )
         puts "No user defined"

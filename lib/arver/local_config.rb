@@ -59,5 +59,21 @@ module Arver
     def ask_password= ask_password
       @config[:ask_password] = ask_password
     end 
+
+    def force
+      @config[:force]
+    end  
+
+    def force= force
+      @config[:force] = force
+    end 
+
+    def violence
+      @config[:violence]
+    end  
+
+    def violence= violence
+      @config[:violence] = violence
+    end 
   end
 end
