@@ -8,6 +8,7 @@ module Arver
         :user     => '',
         :config_dir   => '',
         :dry_run  => false,
+        :ask_password  => false,
         :action => nil,
         :argument => {},
       }
@@ -29,6 +30,8 @@ module Arver
                 "Show this help message.") { stdout.puts opts; return }
         opts.on("--dry-run",
                 "Test your command.") { options[:dry_run] = true }
+        opts.on("--ask-password",
+                "Ask for Password when --add-user.") { options[:ask_password] = true }
         opts.on_tail( "-l", "--list-targets",
                 "List targets." ) { options[:action] = :list; }
         opts.on_tail( "-g", "--garbage-collect",

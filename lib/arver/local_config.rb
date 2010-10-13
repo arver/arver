@@ -51,5 +51,13 @@ module Arver
     def dry_run= dry_run
       @config[:dry_run] = dry_run
     end 
+
+    def ask_password
+      @config[:ask_password]
+    end  
+
+    def ask_password= ask_password
+      @config[:ask_password] = ask_password
+    end 
   end
 end

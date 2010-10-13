@@ -78,14 +78,18 @@ module Arver
       slot_of_user = Arver::Config.instance.slot( user )
 
       puts "adduser was called with target #{target.path} and user #{user} (slot-no #{slot_of_user})"
-
       puts "would call (if implemented :( )):"
       keystore = Arver::Keystore.instance
       target.each_partition do | partition |
         p "Generating keys for partition #{partition.device}"
         if not Arver::LocalConfig.instance.dry_run then
-          # get a valid key for this partition
-          a_valid_key = keystore.luks_key( partition )
+          if not Arver::LocalConfig.instance.ask_password then
+            # get a valid key for this partition
+            a_valid_key = keystore.luks_key( partition )
+          else
+            a_valid_key = ask('Enter the password for this volume: ') {|q| q.echo = false}
+          end
+
           # generate a key for the new user
           gen = Arver::KeyGenerator.new
           p "generate_key (#{user},#{target.path})"
@@ -164,6 +168,7 @@ module Arver
         local.username= ( options[:user] )
       end
       local.dry_run = options[:dry_run]
+      local.ask_password = options[:ask_password]
       
       if( local.username.empty? )
         puts "No user defined"
