@@ -26,7 +26,7 @@ module Arver
             p "you applied --violence, so we will continue ..."
           else
             p "for more information see /tmp/luks_create_error.txt"
-            exec("echo \"#{result}\" > /tmp/luks_create_error.txt")
+            system("echo \"#{result}\" > /tmp/luks_create_error.txt")
             exit if not Arver::LocalConfig.instance.violence
           end
         end
@@ -35,7 +35,7 @@ module Arver
         key = gen.generate_key( Arver::LocalConfig.instance.username, target )
         gen.dump
         cmd = "echo \"#{key}\" | ssh #{target.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat #{target.device}\"";
-        p exec(cmd)
+        p system(cmd)
       else
         key = '*'*256
         p "echo \"#{key}\" | ssh #{target.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat #{target.device}\"";
@@ -48,13 +48,14 @@ module Arver
       keystore = Arver::Keystore.instance
       target.each_partition do | partition |
         key = keystore.luks_key( partition )
+        p "Trying to open #{partition.path}"
         if( key.nil? )
-          puts "No permission on "+partition.path
+          puts "No permission on #{partition.path}"
           next
         end
         if not Arver::LocalConfig.instance.dry_run then
           cmd = "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksOpen #{partition.device} #{partition.name}\"";
-          p exec(cmd)
+          p system(cmd)
         else
           key = '*'*256
           p "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksOpen #{partition.device} #{partition.name}\"";
@@ -67,7 +68,7 @@ module Arver
       target.each_partition do | partition |
         if not Arver::LocalConfig.instance.dry_run then
           cmd = "ssh #{partition.parent.address} \"cryptsetup luksClose #{partition.name}\"";
-          p exec(cmd)
+          p system(cmd)
         else
           p "ssh #{partition.parent.address} \"cryptsetup luksClose #{partition.name}\"";
         end
@@ -103,7 +104,7 @@ module Arver
 
           p "add the new key to the partition (length1 = #{a_valid_key.to_s.length}, length2 = #{newkey.to_s.length})"
           cmd = "\(echo \"#{a_valid_key}\"; echo \"#{newkey}\"\) | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}\"";
-          p exec(cmd)
+          p system(cmd)
         else
           p "would execute the following command:"
           cmd = "(echo 'my_secret_key_for_this_partition'; echo 'a new key for the user') | ssh #{partition.parent.address} 'cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}'";
@@ -128,7 +129,7 @@ module Arver
         a_valid_key = keystore.luks_key( partition )
         if not Arver::LocalConfig.instance.dry_run then
           cmd = "echo \"#{a_valid_key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksKillSlot #{partition.device} #{slot_of_user}\"";
-          p exec(cmd)
+          p system(cmd)
         else
           key = '*'*256
           p "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksKillSlot #{partition.device} #{slot_of_user}\"";
