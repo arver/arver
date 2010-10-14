@@ -49,9 +49,9 @@ module Arver
     end
     
     def self.next_key_path( user )
-      nextNumber = Dir.entries( key_path( user ) ).size - 2
-      nextNumber += 1 while( File.exists?( key_path( user )+"/key_"+nextNumber.to_s ) )
-      key_path(user)+"/key_"+nextNumber.to_s
+      nextNumber = Dir.entries( key_path( user ) ).map{|a| a.delete("key_").to_i if a.include?"key_"}.compact.max.to_i+1
+      nextNumber += 1 while( File.exists?( "#{key_path( user )}/key_#{'%06d' % nextNumber}" ) )
+      "#{key_path( user )}/key_#{'%06d' % nextNumber}"
     end
 
     def self.key_path( user )
