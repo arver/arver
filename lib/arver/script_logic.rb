@@ -99,12 +99,12 @@ module Arver
           gen = Arver::KeyGenerator.new
           p "generate_key (#{user},#{target.path})"
           newkey = gen.generate_key( user, target )
-          gen.dump
-          p "done generation"
 
-          p "add the new key to the partition (length1 = #{a_valid_key.to_s.length}, length2 = #{newkey.to_s.length})"
+          # p "add the new key to the partition (length1 = #{a_valid_key.to_s.length}, length2 = #{newkey.to_s.length})"
           cmd = "\(echo \"#{a_valid_key}\"; echo \"#{newkey}\"\) | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}\"";
-          p system(cmd)
+          result = system(cmd)
+          # if result == true, then the cryptsetup command was successful -> write the key to file
+          gen.dump if result
         else
           p "would execute the following command:"
           cmd = "(echo 'my_secret_key_for_this_partition'; echo 'a new key for the user') | ssh #{partition.parent.address} 'cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}'";
@@ -126,7 +126,14 @@ module Arver
       puts "would call (if implemented :( )):"
       keystore = Arver::Keystore.instance
       target.each_partition do | partition |
-        a_valid_key = keystore.luks_key( partition )
+        if not Arver::LocalConfig.instance.dry_run then
+          if not Arver::LocalConfig.instance.ask_password then
+            # get a valid key for this partition
+            a_valid_key = keystore.luks_key( partition )
+          else
+            a_valid_key = ask('Enter the password for this volume: ') {|q| q.echo = false}
+          end
+        end
         if not Arver::LocalConfig.instance.dry_run then
           cmd = "echo \"#{a_valid_key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksKillSlot #{partition.device} #{slot_of_user}\"";
           p system(cmd)
