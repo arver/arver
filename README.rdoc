@@ -73,6 +73,9 @@ Other helpful infos:
   # i18n needs gem version >= 1.3.6. For installation see http://stackoverflow.com/questions/2777831/how-can-i-get-rubygems-1-3-6-on-ubuntu-10-4
 * sudo gem install activesupport gpgme highline
 
+* sudo gem install hoe
+for the rake tests
+
 == LICENSE:
 
 (The MIT License)
