@@ -56,6 +56,8 @@ module Arver
                 "Add a user to target.") { |user| options[:action] = :adduser; options[:argument][:user] = user;  }
         opts.on_tail( "-d", "--del-user USER", String,
                 "Remove a user from target.") { |user| options[:action] = :deluser; options[:argument][:user] = user;  }
+        opts.on_tail( "-i", "--info", String,
+                "Info about a target.") { |user| options[:action] = :info; }
         opts.parse!(arguments)
                 
         if options[:action].nil? || 
