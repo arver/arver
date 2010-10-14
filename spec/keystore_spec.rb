@@ -21,16 +21,25 @@ describe "Keystore" do
     @keystore.load
     @luks_key.should == @keystore.luks_key(@partition)
   end
- 
+
   it "can save multiple keys to one keyfile" do
     @keystore.purge_keys
-    gen = Arver::KeyGenerator.new
-    gen.generate_key( "test", @partition )
-    gen.generate_key( "test", @partition2 )
-    gen.dump
+    @keystore.add_luks_key(@partition, @luks_key)
+    @keystore.add_luks_key(@partition2, @luks_key)
+    @keystore.save
     Arver::KeySaver.num_of_key_files("test").should == 1
   end
-
+  
+  it "can do garbage collection right" do
+    gen = Arver::KeyGenerator.new
+    gen.generate_key( "test", @partition )
+    gen.dump
+    @keystore.purge_keys
+    @keystore.add_luks_key(@partition, @luks_key)
+    @keystore.save
+    Arver::KeySaver.num_of_key_files("test").should == 1
+  end
+ 
    it "can load splitted and updated key" do
     @keystore.purge_keys
     gen = Arver::KeyGenerator.new

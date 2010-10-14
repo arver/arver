@@ -18,5 +18,15 @@ describe "KeyGenerator" do
     @keystore.luks_key(@partition).should == key
     @keystore.luks_key(@partition2).should == key2
   end
+
+  it "can save multiple keys to one keyfile" do
+    @keystore.purge_keys
+    gen = Arver::KeyGenerator.new
+    gen.generate_key( "test", @partition )
+    gen.generate_key( "test", @partition2 )
+    gen.dump
+    Arver::KeySaver.num_of_key_files("test").should == 1
+  end
+
   
 end
