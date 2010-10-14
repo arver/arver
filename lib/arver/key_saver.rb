@@ -4,6 +4,7 @@ module Arver
     def self.save( user, key )
       check_key( user )
       gpg_key = key_of( user )
+      key = add_padding( key )
       begin
         # key_encrypted = GPGME::encrypt( gpg_key, key )
         key_encrypted = GPGME::encrypt( gpg_key, key , {:armor => true, :always_trust => true})
@@ -82,13 +83,37 @@ module Arver
         unless( file == "." || file == ".." )
           key_encrypted = File.read( key_path( user )+"/"+file )
           if( isTestUser( user ) )
-            decrypted += [ GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :testpassfunc ) } ) ]
+            decrypted_key = GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :testpassfunc ) } )
           else
-            decrypted += [ GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :passfunc ) } ) ]
+            decrypted_key = GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :passfunc ) } )
           end
+          decrypted_key = substract_padding( decrypted_key )
+          decrypted += [ decrypted_key ];
         end
       end
       decrypted
+    end
+
+    def self.add_padding( key )
+      marker = "--"+ActiveSupport::SecureRandom.base64( 52 )
+      size = rand( 122880 )
+      padding = ActiveSupport::SecureRandom.base64( size )
+      marker +"\n"+ key + "\n" + marker + "\n" + padding
+    end
+    
+    def self.substract_padding( key )
+      marker = ""
+      striped_key = ""
+      key.each do |line|
+        if( marker.empty? )
+           marker = line
+        elsif( line == marker )
+          break
+        else
+          striped_key += line
+        end
+      end
+      striped_key.chomp
     end
   end
 end
