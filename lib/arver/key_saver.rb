@@ -69,6 +69,10 @@ module Arver
     def self.purge_keys( user )
       FileUtils.rm_rf( key_path( user ) )
     end
+
+    def self.num_of_key_files( user )
+      Dir.entries( key_path( user ) ).size
+    end
     
     def self.read( user )
       check_key( user )
