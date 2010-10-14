@@ -99,12 +99,12 @@ module Arver
           gen = Arver::KeyGenerator.new
           p "generate_key (#{user},#{target.path})"
           newkey = gen.generate_key( user, target )
-          gen.dump
-          p "done generation"
 
-          p "add the new key to the partition (length1 = #{a_valid_key.to_s.length}, length2 = #{newkey.to_s.length})"
+          # p "add the new key to the partition (length1 = #{a_valid_key.to_s.length}, length2 = #{newkey.to_s.length})"
           cmd = "\(echo \"#{a_valid_key}\"; echo \"#{newkey}\"\) | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}\"";
-          p system(cmd)
+          result = system(cmd)
+          # if result == true, then the cryptsetup command was successful -> write the key to file
+          gen.dump if result
         else
           p "would execute the following command:"
           cmd = "(echo 'my_secret_key_for_this_partition'; echo 'a new key for the user') | ssh #{partition.parent.address} 'cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}'";
