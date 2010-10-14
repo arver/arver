@@ -126,7 +126,14 @@ module Arver
       puts "would call (if implemented :( )):"
       keystore = Arver::Keystore.instance
       target.each_partition do | partition |
-        a_valid_key = keystore.luks_key( partition )
+        if not Arver::LocalConfig.instance.dry_run then
+          if not Arver::LocalConfig.instance.ask_password then
+            # get a valid key for this partition
+            a_valid_key = keystore.luks_key( partition )
+          else
+            a_valid_key = ask('Enter the password for this volume: ') {|q| q.echo = false}
+          end
+        end
         if not Arver::LocalConfig.instance.dry_run then
           cmd = "echo \"#{a_valid_key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksKillSlot #{partition.device} #{slot_of_user}\"";
           p system(cmd)
