@@ -71,7 +71,7 @@ module Arver
     end
 
     def self.num_of_key_files( user )
-      Dir.entries( key_path( user ) ).size
+      Dir.entries( key_path( user ) ).size - 2
     end
     
     def self.read( user )
