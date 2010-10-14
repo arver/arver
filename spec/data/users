@@ -1,13 +1,13 @@
 --- 
 am: 
-  gpg: 3621064B
   slot: 1
+  gpg: 3621064B
 o_test: 
-  gpg: 5A9195C8
   slot: 3
+  gpg: 5A9195C8
 mh: 
-  gpg: xxxxxx
   slot: 2
+  gpg: xxxxxx
 test: 
-  gpg: 46425E3B
   slot: 7
+  gpg: 46425E3B

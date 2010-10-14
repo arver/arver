@@ -86,6 +86,7 @@ describe "Keystore" do
     gen.dump
     key = gen.generate_key( "test", @partition )
     gen.dump
+    Arver::KeySaver.num_of_key_files("test").should >= 10
     @keystore.flush_keys
     @keystore.load
     key.should == @keystore.luks_key(@partition)
