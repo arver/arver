@@ -21,15 +21,52 @@ describe "Keystore" do
     @keystore.load
     @luks_key.should == @keystore.luks_key(@partition)
   end
-  
+ 
+  it "can save multiple keys to one keyfile" do
+    @keystore.purge_keys
+    gen = Arver::KeyGenerator.new
+    gen.generate_key( "test", @partition )
+    gen.generate_key( "test", @partition2 )
+    gen.dump
+    Arver::KeySaver.num_of_key_files("test").should == 1
+  end
+
+ 
   it "can load splitted and updated key" do
     @keystore.purge_keys
     gen = Arver::KeyGenerator.new
     gen.generate_key( "test", @partition )
     gen.dump
-    key = gen.generate_key( "test", @partition )
+    gen.generate_key( "test", @partition )
     key2 = gen.generate_key( "test", @partition2 )
     gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    gen.generate_key( "test", @partition )
+    gen.dump
+    key = gen.generate_key( "test", @partition )
+    gen.dump
+    @keystore.flush_keys
     @keystore.load
     key.should == @keystore.luks_key(@partition)
     key2.should == @keystore.luks_key(@partition2)

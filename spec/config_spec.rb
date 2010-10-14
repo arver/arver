@@ -11,11 +11,11 @@ describe "Config" do
   it "can load the test disks config" do
     self.load_test_config
     config = Arver::Config.instance
-    config.tree.child( "nts" ).child( "immer1" ).postscript.should == '/usr/local/sbin/startcryptedxens'
-    config.tree.child( "nts" ).child( "immer1" ).address.should == 'immer1.glei.ch'
+    config.tree.child( "location2" ).child( "machine1" ).postscript.should == '/usr/local/sbin/startcryptedxens'
+    config.tree.child( "location2" ).child( "machine2" ).address.should == 'two.example.tld'
     i = 0
     config.tree.each_partition { i+=1 }
-    i.should == 4
+    i.should == 5
     config.gpg_key( "test" ).should == "46425E3B"
   end  
 

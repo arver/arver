@@ -3,12 +3,12 @@
     'port': '2222'
     'virtmachine1': '/dev/storage/virtmachine1_rootfs'
 'location2':
-  'machine1':
-    'address': 'one.example.tld'
-    'postscript': '/usr/local/sbin/startcryptedxens'
-    'virt1_rootfs': '/dev/storage/virt1_rootfs_e'
-    'virt2_srv': '/dev/storage/virt2_srv_e'
   'machine2':
     'address': 'two.example.tld'
     'virt1_rootfs': '/dev/nonraidstorage/virt1_rootfs'
     'virt2_rootfs': 'nonraidstorage/virt2_rootfs'
+  'machine1':
+    'address': 'one.example.tld'
+    'postscript': '/usr/local/sbin/startcryptedxens'
+    'virt2_srv': '/dev/storage/virt2_srv_e'
+    'virt1_rootfs': '/dev/storage/virt1_rootfs_e'
