@@ -11,7 +11,7 @@ module Arver
     end
     
     def path
-      return Arver::LocalConfig.instance.config_dir
+      File.expand_path( Arver::LocalConfig.instance.config_dir )
     end
     
     def load

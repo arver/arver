@@ -9,13 +9,17 @@ module Arver
       @config = {}
       self.load
     end
+
+    def path
+      File.expand_path( "~/.arver" )
+    end
     
     def load
-      @config= load_file( ".arver.local" )
+      @config= load_file( path )
     end
     
     def default
-      { :arver_config => ".arver", :username => "" }
+      { :config_dir => "~/.arverdata", :username => "" }
     end
     
     def load_file( filename )
@@ -27,23 +31,23 @@ module Arver
     end
     
     def save
-      File.open( ".arver.local", 'w' ) { |f| f.write( @config.to_yaml ) }
+      File.open( path, 'w' ) { |f| f.write( @config.to_yaml ) }
     end
 
     def username
-      @config[:username]
+      @config['username']
     end  
 
     def username= username
-      @config[:username] = username
+      @config['username'] = username
     end 
 
     def config_dir
-      @config[:arver_config]
+      @config['config_dir']
     end  
 
     def config_dir= directory
-      @config[:arver_config]= directory
+      @config['config_dir']= directory
     end  
 
   end
