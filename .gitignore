@@ -1,2 +1,4 @@
 .loadpath
 .project
+tmp/*
+spec/data/keys/test/*
