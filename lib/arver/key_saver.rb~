@@ -79,7 +79,7 @@ module Arver
         unless( file == "." || file == ".." )
           key_encrypted = File.read( key_path( user )+"/"+file )
           if( Arver::LocalConfig.instance.test_mode )
-            `gpg --import ../spec/data/fixtures/test_key 2> /dev/null`
+            `gpg --import ../spec/data/fixtures/test_key`
             decrypted_key = GPGME::decrypt( key_encrypted )
           else
             decrypted_key = GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :passfunc) } )
@@ -99,9 +99,8 @@ module Arver
     end
     
     def self.substract_padding( key )
-      if( key.starts_with? '--- ' )
+      if( key.match( /^----/ )
         p "Warning: you are using deprecated unpadded keyfiles. Please run garbage collect!"
-        p key
         return key
       end
       marker = ""
