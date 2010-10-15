@@ -79,7 +79,7 @@ module Arver
         unless( file == "." || file == ".." )
           key_encrypted = File.read( key_path( user )+"/"+file )
           if( Arver::LocalConfig.instance.test_mode )
-            `gpg --import ../spec/data/test_key`
+            `gpg --import ../spec/data/fixtures/test_key`
             decrypted_key = GPGME::decrypt( key_encrypted )
           else
             decrypted_key = GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :passfunc) } )

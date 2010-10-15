@@ -1,5 +1,5 @@
 Given /^there is a key for all test Partitions/ do
-  `cp spec/data/test_key_000001 spec/data/keys/test/key_000001`
+  `cp spec/data/fixtures/test_key_000001 spec/data/keys/test/key_000001`
 end
 
 Given /^there are no permissions set/ do
