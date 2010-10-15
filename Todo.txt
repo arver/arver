@@ -1,8 +1,9 @@
 Important todos:
 
 1. no writes to stdout directly (important for testing but also other purposes e.g. setting verbosity levels). Use a wrapper object.
-2. clean termination with proper return codes (no exits!!)
-3. increase test-coverage (especially all uncovered actions in cli.rb and the error conditions)
-4. implement actions as Action_objects that can be passed as visitors along the host-tree
-5. add pre/post_action script hooks
+2. clean termination with proper return codes (no exits!!). Use exceptions to signal errors to the cli.rb, which can then return a errorcode.
+3. wrap ssh calls
+4. increase test-coverage (especially all uncovered actions in cli.rb and the error conditions)
+5. implement actions as Action_objects that can be passed as visitors along the host-tree
+6. add pre/post_action script hooks
 
