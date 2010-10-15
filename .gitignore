@@ -1,4 +1,6 @@
 .loadpath
 .project
-tmp/*
-spec/data/keys/test/*
+tmp/
+spec/data/keys/test/
+coverage/
+coverage.data
