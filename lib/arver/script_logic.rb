@@ -2,7 +2,7 @@ module Arver
   class ScriptLogic
     
     def self.system_call cmd
-      unless Arver::LocalConfig.instance.test_mode
+      unless Arver::RuntimeConfig.instance.test_mode
         system( cmd )
       else
         p "system call skiped (test mode)"
@@ -11,7 +11,7 @@ module Arver
     end
     
     def self.quoted_call cmd
-      unless Arver::LocalConfig.instance.test_mode
+      unless Arver::RuntimeConfig.instance.test_mode
         `cmd`
       else
         p "quoted call skiped (test mode)"
@@ -27,7 +27,7 @@ module Arver
       target.each_partition do | partition |
         puts "creating: "+partition.path
         key = keystore.luks_key( partition )
-        if( ! key.nil? and ! Arver::LocalConfig.instance.force )
+        if( ! key.nil? and ! Arver::RuntimeConfig.instance.force )
           p "DANGEROUS: you do have already a key for partition #{partition.path} - exiting (apply --force to continue)"
           exit
         end
@@ -37,7 +37,7 @@ module Arver
       
       target.each_partition do | partition |
         slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
-        if not Arver::LocalConfig.instance.dry_run then
+        if not Arver::RuntimeConfig.instance.dry_run then
           p "generating a new key for partition #{partition.device} on #{partition.path}"
 
           # checking if disk is not already LUKS formatted
@@ -46,12 +46,12 @@ module Arver
           result = quoted_call( "ssh #{partition.parent.address} \"cryptsetup luksDump #{partition.device}\"" )
           if result.include?('LUKS header information') then
             p "VERY DANGEROUS: the partition #{partition.device} is already formatted with LUKS - exiting (continue with --violence)" 
-            if Arver::LocalConfig.instance.violence then
+            if Arver::RuntimeConfig.instance.violence then
               p "you applied --violence, so we will continue ..."
             else
               p "for more information see /tmp/luks_create_error.txt"
               system("echo \"#{result}\" > /tmp/luks_create_error.txt")
-              exit if not Arver::LocalConfig.instance.violence
+              exit if not Arver::RuntimeConfig.instance.violence
             end
           end
           key = gen.generate_key( Arver::LocalConfig.instance.username, partition )
@@ -80,7 +80,7 @@ module Arver
           puts "No permission on #{partition.path}"
           next
         end
-        if not Arver::LocalConfig.instance.dry_run then
+        if not Arver::RuntimeConfig.instance.dry_run then
           cmd = "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksOpen #{partition.device} #{partition.name}\"";
           p system_call(cmd)
         else
@@ -94,7 +94,7 @@ module Arver
       target = self.find_target( args[:target] )
       target.each_partition do | partition |
         puts "closing: "+partition.path
-        if not Arver::LocalConfig.instance.dry_run then
+        if not Arver::RuntimeConfig.instance.dry_run then
           cmd = "ssh #{partition.parent.address} \"cryptsetup luksClose #{partition.name}\"";
           p system_call(cmd)
         else
@@ -122,8 +122,8 @@ module Arver
       
       target.each_partition do | partition |
         p "Generating keys for partition #{partition.device}"
-        if not Arver::LocalConfig.instance.dry_run then
-          if not Arver::LocalConfig.instance.ask_password then
+        if not Arver::RuntimeConfig.instance.dry_run then
+          if not Arver::RuntimeConfig.instance.ask_password then
             # get a valid key for this partition
             a_valid_key = keystore.luks_key( partition )
           else
@@ -163,15 +163,15 @@ module Arver
       keystore = Arver::Keystore.instance
       
       target.each_partition do | partition |
-        if not Arver::LocalConfig.instance.dry_run then
-          if not Arver::LocalConfig.instance.ask_password then
+        if not Arver::RuntimeConfig.instance.dry_run then
+          if not Arver::RuntimeConfig.instance.ask_password then
             # get a valid key for this partition
             a_valid_key = keystore.luks_key( partition )
           else
             a_valid_key = ask('Enter the password for this volume: ') {|q| q.echo = false}
           end
         end
-        if not Arver::LocalConfig.instance.dry_run then
+        if not Arver::RuntimeConfig.instance.dry_run then
           cmd = "echo \"#{a_valid_key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksKillSlot #{partition.device} #{slot_of_user}\"";
           p system_call(cmd)
         else
@@ -184,7 +184,7 @@ module Arver
       target = self.find_target( args[:target] )
       # puts "Info about: "+target.path
       target.each_partition do | partition |
-        if not Arver::LocalConfig.instance.dry_run then
+        if not Arver::RuntimeConfig.instance.dry_run then
           result = `ssh #{partition.parent.address} \"cryptsetup luksDump #{partition.device}\"`;
           a= {}
           bla = result.each{|s| 
@@ -244,12 +244,6 @@ module Arver
       unless( options[:user].empty? )
         local.username= ( options[:user] )
       end
-      local.dry_run = options[:dry_run]
-      local.ask_password = options[:ask_password]
-      local.force = options[:force]
-      local.violence = options[:violence]
-      local.test_mode = options[:test_mode]
-      
       if( local.username.empty? )
         puts "No user defined"
         exit
@@ -257,6 +251,17 @@ module Arver
       
       config = Arver::Config.instance
       config.load
+
+      self.load_runtime_config( options )
+    end
+    
+    def self.load_runtime_config options
+      rtc = Arver::RuntimeConfig.instance
+      rtc.dry_run = options[:dry_run]
+      rtc.ask_password = options[:ask_password]
+      rtc.force = options[:force]
+      rtc.violence = options[:violence]
+      rtc.test_mode = options[:test_mode]      
     end
     
     def self.load_key

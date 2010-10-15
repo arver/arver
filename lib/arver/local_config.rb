@@ -1,5 +1,7 @@
 module Arver
   class LocalConfig
+
+    #this Config Object holds the local defaults for Arver. All options correspond to the ones set in .arver.local
     
     include Singleton
     
@@ -44,44 +46,5 @@ module Arver
       @config[:arver_config]= directory
     end  
 
-    def dry_run
-      @config[:dry_run]
-    end  
-
-    def test_mode
-      @config[:test_mode]
-    end  
-
-    def test_mode= test_mode
-      @config[:test_mode] = test_mode
-    end 
-
-    def dry_run= dry_run
-      @config[:dry_run] = dry_run
-    end 
-
-    def ask_password
-      @config[:ask_password]
-    end  
-
-    def ask_password= ask_password
-      @config[:ask_password] = ask_password
-    end 
-
-    def force
-      @config[:force]
-    end  
-
-    def force= force
-      @config[:force] = force
-    end 
-
-    def violence
-      @config[:violence]
-    end  
-
-    def violence= violence
-      @config[:violence] = violence
-    end 
   end
 end

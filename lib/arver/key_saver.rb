@@ -78,7 +78,7 @@ module Arver
       Dir.entries( key_path( user ) ).sort.each do | file |
         unless( file == "." || file == ".." )
           key_encrypted = File.read( key_path( user )+"/"+file )
-          if( Arver::LocalConfig.instance.test_mode )
+          if( Arver::RuntimeConfig.instance.test_mode )
             `gpg --import ../spec/data/fixtures/test_key 2> /dev/null`
             decrypted_key = GPGME::decrypt( key_encrypted )
           else
