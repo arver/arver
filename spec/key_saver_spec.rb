@@ -25,8 +25,6 @@ describe "KeySaver" do
     size = File.size?( path )
     Arver::KeySaver.purge_keys( "test" )
     Arver::KeySaver.save( "test", s )
-    p File.size?( path )
-    p size
     File.size?( path ).should_not == size
   end
 end

@@ -212,7 +212,7 @@ module Arver
     def self.find_target( names )
       
       tree = Arver::Config.instance.tree
-      return tree if name == "ALL"
+      return tree if names.eql? "ALL"
 
       targets = Arver::Hostgroup.new("")
 
