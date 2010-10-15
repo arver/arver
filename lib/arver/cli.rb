@@ -45,8 +45,8 @@ module Arver
                 "List targets." ) { options[:action] = :list; }
         opts.on_tail( "-g", "--garbage-collect",
                 "Expunge old keys." ) { options[:action] = :gc; }
-        opts.on_tail( "-t", "--target TARGET", String,
-                "Select Target. Allowed Targets are:",
+        opts.on_tail( "-t", "--target TARGETLIST", String,
+                "Select Target. Allowed Targets are commaseparated lists of:",
                 "'Group', 'Host', 'Device', 'Host/Device', 'Group/Host/Device' or 'ALL'.") { |arg| options[:argument][:target] = arg; }
         opts.separator "Actions:"
         opts.on_tail( "--create",

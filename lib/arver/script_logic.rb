@@ -23,6 +23,7 @@ module Arver
       target = self.find_target( args[:target] )
       self.load_key
       keystore = Arver::Keystore.instance
+      
       target.each_partition do | partition |
         puts "creating: "+partition.path
         key = keystore.luks_key( partition )
