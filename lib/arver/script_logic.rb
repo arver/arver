@@ -28,8 +28,8 @@ module Arver
         puts "creating: "+partition.path
         key = keystore.luks_key( partition )
         if( ! key.nil? and ! Arver::RuntimeConfig.instance.force )
-          p "DANGEROUS: you do have already a key for partition #{partition.path} - exiting (apply --force to continue)"
-          exit
+          p "DANGEROUS: you do have already a key for partition #{partition.path} - returning (apply --force to continue)"
+          return
         end
       end
 
@@ -45,13 +45,13 @@ module Arver
 
           result = quoted_call( "ssh #{partition.parent.address} \"cryptsetup luksDump #{partition.device}\"" )
           if result.include?('LUKS header information') then
-            p "VERY DANGEROUS: the partition #{partition.device} is already formatted with LUKS - exiting (continue with --violence)" 
+            p "VERY DANGEROUS: the partition #{partition.device} is already formatted with LUKS - returning (continue with --violence)" 
             if Arver::RuntimeConfig.instance.violence then
               p "you applied --violence, so we will continue ..."
             else
               p "for more information see /tmp/luks_create_error.txt"
               system("echo \"#{result}\" > /tmp/luks_create_error.txt")
-              exit if not Arver::RuntimeConfig.instance.violence
+              return if not Arver::RuntimeConfig.instance.violence
             end
           end
           key = gen.generate_key( Arver::LocalConfig.instance.username, partition )
@@ -110,7 +110,7 @@ module Arver
       slot_of_user = Arver::Config.instance.slot( user )
       if slot_of_user.nil?
         p "no such user"
-        exit
+        return
       end
       
       puts "adduser was called with target #{args[:target]} and user #{user} (slot-no #{slot_of_user})"
@@ -221,14 +221,14 @@ module Arver
         target = tree.find( target_name )
         if( target.size == 0 )
           puts "No such target"
-          exit
+          return
         end
         if( target.size > 1 )
           puts "Target not unique. Found:"
           target.each do |t|
             puts t.path
           end
-          exit
+          return
         end
         targets.add_child( target[0] )
       end
@@ -246,7 +246,7 @@ module Arver
       end
       if( local.username.empty? )
         puts "No user defined"
-        exit
+        return
       end
       
       config = Arver::Config.instance

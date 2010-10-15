@@ -71,8 +71,28 @@ module Arver
       end
       
       Arver::ScriptLogic.bootstrap( options )
-      
-      Arver::ScriptLogic.send( options[:action], options[:argument] )
+     
+      #TODO: here we should implement a choosing object pattern, which each action represented by an appropriate object
+      # this object can then be passed along the tree as visitor by script_logic
+       
+      case options[:action]
+        when :list
+          Arver::ScriptLogic.list( options[:argument] )
+        when :gc
+          Arver::ScriptLogic.gc( options[:argument] )
+        when :create
+          Arver::ScriptLogic.create( options[:argument] )
+        when :open
+          Arver::ScriptLogic.open( options[:argument] )
+        when :close
+          Arver::ScriptLogic.close( options[:argument] )
+        when :adduser
+          Arver::ScriptLogic.adduser( options[:argument] )
+        when :deluser
+          Arver::ScriptLogic.deluser( options[:argument] )
+        when :info
+          Arver::ScriptLogic.info( options[:argument] )
+      end
       
     end
   end

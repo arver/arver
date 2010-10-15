@@ -101,7 +101,6 @@ module Arver
     def self.substract_padding( key )
       if( key.starts_with? '--- ' )
         p "Warning: you are using deprecated unpadded keyfiles. Please run garbage collect!"
-        p key
         return key
       end
       marker = ""

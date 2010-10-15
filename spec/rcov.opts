@@ -1,2 +1,2 @@
---exclude spec/,gems/,features/ 
+--exclude spec/*,gems/*,features/* 
 --aggregate tmp/coverage.data

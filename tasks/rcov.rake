@@ -3,7 +3,7 @@ require 'spec/rake/spectask'
 namespace :rcov do
   Cucumber::Rake::Task.new(:cucumber) do |t|    
     t.rcov = true
-    t.rcov_opts = %w{--exclude gems\/,spec\/,features\/ --aggregate tmp/coverage.data}
+    t.rcov_opts = %w{--exclude gems\/,spec\/,features\/ --aggregate tmp/coverage.data -i bin/arver}
     t.rcov_opts << %[-o "coverage"]
   end
  
