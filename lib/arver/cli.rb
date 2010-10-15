@@ -8,6 +8,7 @@ module Arver
         :user     => '',
         :config_dir   => '',
         :dry_run  => false,
+        :test_mode => false,
         :ask_password  => false,
         :force  => false,
         :violence  => false,
@@ -38,6 +39,8 @@ module Arver
                 "Apply force (allow duplicate keys)") { options[:force] = true }
         opts.on("--violence",
                 "Apply violence (allow destruction of disk)") { options[:violence] = true }
+        opts.on("--test-mode",
+                "Test mode") { options[:test_mode] = true }
         opts.on_tail( "-l", "--list-targets",
                 "List targets." ) { options[:action] = :list; }
         opts.on_tail( "-g", "--garbage-collect",

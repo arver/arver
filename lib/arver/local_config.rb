@@ -48,6 +48,14 @@ module Arver
       @config[:dry_run]
     end  
 
+    def test_mode
+      @config[:test_mode]
+    end  
+
+    def test_mode= test_mode
+      @config[:test_mode] = test_mode
+    end 
+
     def dry_run= dry_run
       @config[:dry_run] = dry_run
     end 

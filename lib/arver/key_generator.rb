@@ -14,6 +14,10 @@ module Arver
       @keys[user] = {} unless @keys[user]
       @keys[user][partition.path] = luks_key
     end
+
+    def remove_key( user, partition )
+      @keys[user].delete( partition.path )
+    end
     
     def dump
       @keys.each do | user, user_keys |

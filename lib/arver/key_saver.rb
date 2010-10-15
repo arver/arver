@@ -63,10 +63,6 @@ module Arver
       Arver::LocalConfig.instance.config_dir
     end
     
-    def self.isTestUser user
-      key_of( user ) == "46425E3B"
-    end
-    
     def self.purge_keys( user )
       FileUtils.rm_rf( key_path( user ) )
     end
@@ -82,10 +78,10 @@ module Arver
       Dir.entries( key_path( user ) ).sort.each do | file |
         unless( file == "." || file == ".." )
           key_encrypted = File.read( key_path( user )+"/"+file )
-          if( isTestUser( user ) )
-            decrypted_key = GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :testpassfunc ) } )
+          if( Arver::LocalConfig.instance.test_mode )
+            decrypted_key = GPGME::decrypt( key_encrypted )
           else
-            decrypted_key = GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :passfunc ) } )
+            decrypted_key = GPGME::decrypt( key_encrypted, { :passphrase_callback => method( :passfunc) } )
           end
           decrypted_key = substract_padding( decrypted_key )
           decrypted += [ decrypted_key ];
@@ -118,6 +114,7 @@ module Arver
   end
 end
 
+
 def passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
   $stderr.write("Passphrase for #{uid_hint}: ")
   $stderr.flush
@@ -143,3 +140,4 @@ def testpassfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
   end
   $stderr.puts
 end
+
