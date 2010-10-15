@@ -179,6 +179,27 @@ module Arver
         end
       end
     end
+    def self.info args
+      target = self.find_target( args[:target] )
+      # puts "Info about: "+target.path
+      target.each_partition do | partition |
+        if not Arver::LocalConfig.instance.dry_run then
+          result = `ssh #{partition.parent.address} \"cryptsetup luksDump #{partition.device}\"`;
+          a= {}
+          bla = result.each{|s| 
+                    a1=s.split(':').compact; 
+                    v = '';
+                    v = a1[1].strip if not a1[1].nil?;
+                    v = v + ':' + a1[2].strip if not a1[2].nil?;
+                    a[a1[0].strip] = v if not a1[0].nil? }
+          filling = 40-partition.device.length
+          filling = 0 if filling < 0
+          p "#{partition.device}#{' '*filling}: Slots: #{[0,1,2,3,4,5,6,7].map{|i| a['Key Slot '+i.to_s] == 'ENABLED' ? 'X' : '_'}.join}; LUKSv#{a['Version']}; Cypher: #{a['Cipher name']}:#{a['Cipher mode']}:#{a['Hash spec']}; UUID=#{a['UUID']}"
+        else
+          p "ssh #{partition.parent.address} \"cryptsetup luksDump #{partition.device}\"";
+        end
+      end
+    end
     def self.list args
       puts Arver::Config.instance.tree.to_ascii
     end
