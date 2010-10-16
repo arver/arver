@@ -103,32 +103,6 @@ Then /help options "(.*)" and "(.*)" are displayed/ do |opt1, opt2|
   actual_output.should match(/#{opt2}/)
 end
 
-Then /^I should see "([^\"]*)"$/ do |text|
-  actual_output = File.read(@stdout)
-  actual_output.should contain(text)
-end
-
-Then /^I should see "([^\"]*)" lines of output$/ do |num|
-  num = 0+num
-  actual_output = File.read(@stdout)
-  actual_output.split("\n").size().should == num
-end
-
-Then /^I should see$/ do |text|
-  actual_output = File.read(@stdout)
-  actual_output.should contain(text)
-end
-
-Then /^I should not see$/ do |text|
-  actual_output = File.read(@stdout)
-  actual_output.should_not contain(text)
-end
-
-Then /^I should see exactly$/ do |text|
-  actual_output = File.read(@stdout)
-  actual_output.should == text
-end
-
 Then /^I should see all (\d+) tests pass/ do |expected_test_count|
   expected = %r{^#{expected_test_count} tests, \d+ assertions, 0 failures, 0 errors}
   actual_output = File.read(@stdout)

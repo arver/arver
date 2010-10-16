@@ -43,7 +43,7 @@ module Arver
     end 
 
     def config_dir
-      @config['config_dir']
+      File.expand_path( @config['config_dir'] )
     end  
 
     def config_dir= directory

@@ -17,20 +17,36 @@ end
 
 When /^I run arver in test mode with arguments "(.*)"/ do | arguments|
 
-  in_project_folder do
-    
+  in_project_folder do  
    require 'rubygems'
    require File.expand_path("../lib/arver")
    require File.expand_path("../lib/arver/cli")
    arguments = "-u test -c ../spec/data --test-mode "+arguments
+   
+   Arver::Log.logger= Arver::StringLogger.new( Arver::LogLevels::Debug)
 
-   @stdout = File.expand_path(File.join(@tmp_root, "executable.out"))
-
-   #hack!!! redirecting stdout
-   # we should not write directly to stdout!!!!
-   $stdout = File.new( @stdout, 'w' )
-
-   Arver::CLI.execute( $stdout, arguments.split(" "))
+   Arver::CLI.execute( arguments.split(" ") )
   end
 
 end
+
+Then /^I should see "([^\"]*)"$/ do |text|
+  Arver::Log.logger.log.should contain(text)
+end
+
+Then /^I should see "([^\"]*)" lines of output$/ do |num|
+  Arver::Log.logger.log.split("\n").size().should == num
+end
+
+Then /^I should see$/ do |text|
+  Arver::Log.logger.log.should contain(text)
+end
+
+Then /^I should not see$/ do |text|
+  Arver::Log.logger.log.should_not contain(text)
+end
+
+Then /^I should see exactly$/ do |text|
+  Arver::Log.logger.log.should == text
+end
+

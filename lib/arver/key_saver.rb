@@ -9,7 +9,7 @@ module Arver
         # key_encrypted = GPGME::encrypt( gpg_key, key )
         key_encrypted = GPGME::encrypt( gpg_key, key , {:armor => true, :always_trust => true})
       rescue GPGME::Error => gpgerr
-        p "GPGME Error #{gpg.err} Message: #{gpgerr.message}"
+        Arver::Log.error( "GPGME Error #{gpg.err} Message: #{gpgerr.message}" )
         exit
       end
       FileUtils.mkdir_p config_path+"/keys/"+user unless File.exists?( config_path+"/keys/"+user )
@@ -27,14 +27,14 @@ module Arver
       FileUtils.mkdir_p config_path+"/keys/public" unless File.exists?( config_path+"/keys/public" )
       key_id = key_of( user )
       if key_id.nil?
-        puts "no such user "+user
+        Arver::Log.error( "no such user "+user )
         exit
       end
       user_pubkey = config_path+"/keys/public/"+user
       found_in_keyring = ! GPGME::list_keys( key_id ).empty?
       found_on_disk = File.exists?( user_pubkey )
       if( ! found_in_keyring && ! found_on_disk )
-        puts "No publickey for "+user+" found"
+        Arver::Log.error( "No publickey for "+user+" found" )
         exit
       end
       if( ! found_in_keyring && found_on_disk )
@@ -77,6 +77,7 @@ module Arver
       decrypted = []
       Dir.entries( key_path( user ) ).sort.each do | file |
         unless( file == "." || file == ".." )
+          Arver::Log.trace( "Loading keyfile "+file )
           key_encrypted = File.read( key_path( user )+"/"+file )
           if( Arver::RuntimeConfig.instance.test_mode )
             `gpg --import ../spec/data/fixtures/test_key 2> /dev/null`
@@ -100,7 +101,7 @@ module Arver
     
     def self.substract_padding( key )
       if( key.starts_with? '--- ' )
-        p "Warning: you are using deprecated unpadded keyfiles. Please run garbage collect!"
+        Arver::Log.warn( "Warning: you are using deprecated unpadded keyfiles. Please run garbage collect!" )
         return key
       end
       marker = ""
@@ -121,8 +122,7 @@ end
 
 
 def passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
-  $stderr.write("Passphrase for #{uid_hint}: ")
-  $stderr.flush
+  Arver::Log.write("Passphrase for #{uid_hint}: ")
   begin
     io = IO.for_fd(fd, 'w')
     io.puts( ask("") { |q| q.echo = false } )
@@ -130,7 +130,7 @@ def passfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)
   ensure
     (0 ... $_.length).each do |i| $_[i] = ?0 end if $_
   end
-  $stderr.puts
+  Arver::Log.write("")
 end
 
 def testpassfunc(hook, uid_hint, passphrase_info, prev_was_bad, fd)

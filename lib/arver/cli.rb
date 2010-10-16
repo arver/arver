@@ -2,7 +2,7 @@ require 'optparse'
 
 module Arver
   class CLI
-    def self.execute(stdout, arguments=[])
+    def self.execute(arguments=[])
 
       options = {
         :user     => '',
@@ -30,7 +30,7 @@ module Arver
         opts.on("-u", "--user NAME", String,
                 "Username." ) { |arg| options[:user] = arg }
         opts.on("-h", "--help",
-                "Show this help message.") { stdout.puts opts; return }
+                "Show this help message.") { Arver::Log.write opts; return }
         opts.on("--dry-run",
                 "Test your command.") { options[:dry_run] = true }
         opts.on("--ask-password",
@@ -39,6 +39,10 @@ module Arver
                 "Apply force (allow duplicate keys)") { options[:force] = true }
         opts.on("--violence",
                 "Apply violence (allow destruction of disk)") { options[:violence] = true }
+        opts.on("-v",
+                "Verbose") { Arver::Log.level( Arver::LogLevels::Debug ) }
+        opts.on("--vv",
+                "Max Verbose") { Arver::Log.level( Arver::LogLevels::Trace ) }
         opts.on("--test-mode",
                 "Test mode") { options[:test_mode] = true }
         opts.on_tail( "-l", "--list-targets",
@@ -66,7 +70,7 @@ module Arver
         if options[:action].nil? || 
            ( options[:action] != :list && options[:action] != :gc && ! options[:argument][:target] ) ||
            ( ( options[:action] == :adduser || options[:action] == :deluser ) && ! options[:argument][:target] )
-          stdout.puts opts; return
+          Arver::Log.write opts; return
         end
       end
       
