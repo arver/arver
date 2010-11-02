@@ -1,23 +1,5 @@
 module Arver
   class ScriptLogic
-    
-    def self.system_call cmd
-      unless Arver::RuntimeConfig.instance.test_mode
-        system( cmd )
-      else
-        Arver::Log.info( "system call skiped (test mode)" )
-        true
-      end
-    end
-    
-    def self.quoted_call cmd
-      unless Arver::RuntimeConfig.instance.test_mode
-        `cmd`
-      else
-        Arver::Log.info( "quoted call skiped (test mode)" )
-        ""
-      end
-    end
 
     def self.create args
       target = self.find_target( args[:target] )
@@ -58,7 +40,6 @@ module Arver
         Arver::Log.trace( "starting key generation..." )
         key = gen.generate_key( Arver::LocalConfig.instance.username, partition )
         caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "--key-slot #{slot_of_user.to_s}", "--cipher aes-cbc-essiv:sha256", "--key-size 256", "luksFormat", partition.device ], partition.parent.address )
-        
         caller.execute( key )
         unless( caller.success? )
           gen.remove_key( Arver::LocalConfig.instance.username, partition )
@@ -79,13 +60,8 @@ module Arver
           Arver::Log.error( "No permission on #{partition.path}" )
           next
         end
-        if not Arver::RuntimeConfig.instance.dry_run then
-          cmd = "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksOpen #{partition.device} #{partition.name}\"";
-          Arver::Log.debug( system_call(cmd) )
-        else
-          key = '*'*256
-          Arver::Log.debug( "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksOpen #{partition.device} #{partition.name}\"" )
-        end
+        caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "luksOpen", "#{partition.device}", "#{partition.name}" ], partition.parent.address )
+        caller.execute( key )
       end
     end
 
@@ -93,12 +69,8 @@ module Arver
       target = self.find_target( args[:target] )
       target.each_partition do | partition |
         Arver::Log.info( "closing: "+partition.path )
-        if not Arver::RuntimeConfig.instance.dry_run then
-          cmd = "ssh #{partition.parent.address} \"cryptsetup luksClose #{partition.name}\"";
-          Arver::Log.debug( system_call(cmd) )
-        else
-          Arver::Log.debug( "ssh #{partition.parent.address} \"cryptsetup luksClose #{partition.name}\"" )
-        end
+        caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "luksClose", "#{partition.name}", partition.parent.address] )
+        caller.execute 
       end
     end
 
@@ -121,28 +93,28 @@ module Arver
       
       target.each_partition do | partition |
         Arver::Log.info( "Generating keys for partition #{partition.device}" )
-        if not Arver::RuntimeConfig.instance.dry_run then
-          if not Arver::RuntimeConfig.instance.ask_password then
-            # get a valid key for this partition
-            a_valid_key = keystore.luks_key( partition )
-          else
-            a_valid_key = ask('Enter the password for this volume: ') {|q| q.echo = false}
-          end
-
-          # generate a key for the new user
-          Arver::Log.debug( "generate_key (#{user},#{partition.path})" )
-          
-          newkey = gen.generate_key( user, partition )
-
-	  cmd = "\(echo \"#{a_valid_key}\"; echo \"#{newkey}\"\) | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}\"";
-          
-          unless( system_call(cmd) )
-            gen.remove_key( user, partition )
-          end
+        if not Arver::RuntimeConfig.instance.ask_password then
+          # get a valid key for this partition
+          a_valid_key = keystore.luks_key( partition )
         else
-          Arver::Log.debug( "would execute the following command:" )
-          cmd = "(echo 'my_secret_key_for_this_partition'; echo 'a new key for the user') | ssh #{partition.parent.address} 'cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} luksAddKey #{partition.device}'";
-          Arver::Log.debug( cmd )
+          a_valid_key = ask('Enter the password for this volume: ') {|q| q.echo = false}
+        end
+
+        if( a_valid_key.nil? )
+          Arver::Log.error( "No permission on #{partition.path}" )
+          next
+        end
+        
+        # generate a key for the new user
+        Arver::Log.debug( "generate_key (#{user},#{partition.path})" )
+        
+        newkey = gen.generate_key( user, partition )
+
+        caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "--key-slot #{slot_of_user.to_s}", "luksAddKey", "#{partition.device}" ], partition.parent.address )
+        caller.execute( a_valid_key + "\n" + newkey )
+        
+        unless( caller.success? )
+          gen.remove_key( user, partition )
         end
       end
       gen.dump
@@ -157,47 +129,41 @@ module Arver
 
       slot_of_user = Arver::Config.instance.slot( user )
 
-      Arver::Log.info( "deluser was called with target #{target.path} and user #{user} (slot-no #{slot_of_user})" )
-
       keystore = Arver::Keystore.instance
       
       target.each_partition do | partition |
-        if not Arver::RuntimeConfig.instance.dry_run then
-          if not Arver::RuntimeConfig.instance.ask_password then
-            # get a valid key for this partition
-            a_valid_key = keystore.luks_key( partition )
-          else
-            a_valid_key = ask('Enter the password for this volume: ') {|q| q.echo = false}
-          end
-        end
-        if not Arver::RuntimeConfig.instance.dry_run then
-          cmd = "echo \"#{a_valid_key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksKillSlot #{partition.device} #{slot_of_user}\"";
-          Arver::Log.debug( system_call(cmd) )
+        Arver::Log.info( "remove user #{user} (slot-no #{slot_of_user}) from #{partition.path}" )
+        if not Arver::RuntimeConfig.instance.ask_password then
+          # get a valid key for this partition
+          a_valid_key = keystore.luks_key( partition )
         else
-          key = '*'*256
-          Arver::Log.debug( "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode luksKillSlot #{partition.device} #{slot_of_user}\"" )
+          a_valid_key = ask('Enter the password for this volume: ') {|q| q.echo = false}
+        end
+        caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "luksKillSlot", "#{partition.device}", "#{slot_of_user}" ], partition.parent.address )
+        caller.execute( a_valid_key )
+        unless( caller.success? )
+          log.error( "Could not remove user:\n" + caller.output )
         end
       end
     end
+    
     def self.info args
       target = self.find_target( args[:target] )
       # puts "Info about: "+target.path
       target.each_partition do | partition |
-        if not Arver::RuntimeConfig.instance.dry_run then
-          result = `ssh #{partition.parent.address} \"cryptsetup luksDump #{partition.device}\"`;
-          a= {}
-          bla = result.each{|s| 
-                    a1=s.split(':').compact; 
-                    v = '';
-                    v = a1[1].strip if not a1[1].nil?;
-                    v = v + ':' + a1[2].strip if not a1[2].nil?;
-                    a[a1[0].strip] = v if not a1[0].nil? }
-          filling = 40-partition.device.length
-          filling = 0 if filling < 0
-          Arver::Log.info( "#{partition.device}#{' '*filling}: Slots: #{[0,1,2,3,4,5,6,7].map{|i| a['Key Slot '+i.to_s] == 'ENABLED' ? 'X' : '_'}.join}; LUKSv#{a['Version']}; Cypher: #{a['Cipher name']}:#{a['Cipher mode']}:#{a['Hash spec']}; UUID=#{a['UUID']}" )
-        else
-          Arver::Log.info( "ssh #{partition.parent.address} \"cryptsetup luksDump #{partition.device}\"" )
-        end
+        caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "luksDump", "#{partition.device}" ], partition.parent.address )
+        caller.execute
+        result = caller.output
+        a= {}
+        bla = result.each{|s| 
+                  a1=s.split(':').compact; 
+                  v = '';
+                  v = a1[1].strip if not a1[1].nil?;
+                  v = v + ':' + a1[2].strip if not a1[2].nil?;
+                  a[a1[0].strip] = v if not a1[0].nil? }
+        filling = 40-partition.device.length
+        filling = 0 if filling < 0
+        Arver::Log.info( "#{partition.device}#{' '*filling}: Slots: #{[0,1,2,3,4,5,6,7].map{|i| a['Key Slot '+i.to_s] == 'ENABLED' ? 'X' : '_'}.join}; LUKSv#{a['Version']}; Cypher: #{a['Cipher name']}:#{a['Cipher mode']}:#{a['Hash spec']}; UUID=#{a['UUID']}" )
       end
     end
     def self.list args

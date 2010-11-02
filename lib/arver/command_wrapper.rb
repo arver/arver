@@ -30,6 +30,7 @@ module Arver
     end
     
     def run( command )
+      Arver::Log.trace( "** Execute: "+command )
       if( Arver::RuntimeConfig.instance.test_mode || Arver::RuntimeConfig.instance.dry_run )
         self.output= ""
         self.return_value= 0
