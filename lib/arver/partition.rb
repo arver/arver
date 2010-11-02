@@ -27,5 +27,15 @@ module Arver
     def from_hash string
       self.device= string 
     end
+    
+    def pre_execute( action )
+      action.pre_run_execute_partition( self )
+    end
+    
+    def execute( action )
+      action.pre_partition( self )
+      action.execute_partition( self )
+      action.post_partition( self )
+    end
   end
 end

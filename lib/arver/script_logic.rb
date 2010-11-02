@@ -2,50 +2,11 @@ module Arver
   class ScriptLogic
 
     def self.create args
-      target = self.find_target( args[:target] )
-      self.load_key
-      keystore = Arver::Keystore.instance
-      
-      target.each_partition do | partition |
-        Arver::Log.info( "creating: "+partition.path )
-        key = keystore.luks_key( partition )
-        if( ! key.nil? and ! Arver::RuntimeConfig.instance.force )
-          Arver::Log.warn( "DANGEROUS: you do have already a key for partition #{partition.path} - returning (apply --force to continue)" )
-          return
-        end
-      end
-
-      gen = Arver::KeyGenerator.new
-      
-      target.each_partition do | partition |
-        slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
-        Arver::Log.info( "generating a new key for partition #{partition.device} on #{partition.path}" )
-
-        # checking if disk is not already LUKS formatted
-        Arver::Log.debug( "checking if disk is not already LUKS formatted..." )
-
-        caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "luksDump", partition.device ], partition.parent.address )
-        caller.execute
-        if caller.output.include?('LUKS header information') then
-          Arver::Log.warn( "VERY DANGEROUS: the partition #{partition.device} is already formatted with LUKS - returning (continue with --violence)" ) 
-          if Arver::RuntimeConfig.instance.violence then
-            Arver::Log.info( "you applied --violence, so we will continue ..." )
-          else
-            Arver::Log.info( "for more information see /tmp/luks_create_error.txt" )
-            system("echo \"#{result}\" > /tmp/luks_create_error.txt")
-            return if not Arver::RuntimeConfig.instance.violence
-          end
-        end
-        
-        Arver::Log.trace( "starting key generation..." )
-        key = gen.generate_key( Arver::LocalConfig.instance.username, partition )
-        caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "--key-slot #{slot_of_user.to_s}", "--cipher aes-cbc-essiv:sha256", "--key-size 256", "luksFormat", partition.device ], partition.parent.address )
-        caller.execute( key )
-        unless( caller.success? )
-          gen.remove_key( Arver::LocalConfig.instance.username, partition )
-        end
-      end
-      gen.dump
+      target_list = TargetList.get_list( args[:target] )
+      action = CreateAction.new( target_list )
+      action.pre_run( Arver::Config.instance.tree )
+      action.run( Arver::Config.instance.tree )
+      action.post_run
     end
 
     def self.open args

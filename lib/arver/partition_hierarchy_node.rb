@@ -49,6 +49,29 @@ module Arver
       end
     end
     
+    def is_target( list )
+      list.each do | target |
+        return true if ( self.has_child?( target ) || self.has_parent?( target ) )
+      end
+      false
+    end
+    
+    def has_child?( child )
+      if self.equal?( child )
+        return true
+      end
+      children.each_value do | my_child |
+        return true if my_child.has_child?( child )
+      end
+      false
+    end
+    
+    def has_parent?( node )
+      return true if self.equal?( node )
+      return false if parent.nil?
+      return self.parent.has_parent?( node )
+    end
+  
     def find( name )
       found = []
       self.each_node do | node |
@@ -81,6 +104,18 @@ module Arver
         yaml += ( child.to_yaml.indent_once ) +"\n"
       end
       yaml.chop
+    end
+    
+    def pre_execute( action )
+      self.children.each_value do | child |
+        action.pre_run( child )
+      end
+    end
+    
+    def execute( action )
+      self.children.each_value do | child |
+        action.run( child )
+      end
     end
   end
 end

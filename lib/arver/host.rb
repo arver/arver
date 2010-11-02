@@ -56,5 +56,12 @@ module Arver
         p.from_hash( data )
       end
     end
+    
+    def execute( action )
+      p "execute "+self.name
+      action.pre_host( self )
+      super
+      action.post_host( self )
+    end
   end
 end
