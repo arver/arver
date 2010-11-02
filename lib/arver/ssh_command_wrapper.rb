@@ -10,8 +10,9 @@ module Arver
       super( cmd, args )
     end
     
-    def ecaped_command
-      Escape.shell_command( "ssh", "-p #{port}", "#{user}@#{host}", super.escape_command ) 
+    def escaped_command
+      Escape.shell_command( [ "ssh", "-p #{port}", "#{user}@#{host}", super ] ) 
     end
+    
   end
 end

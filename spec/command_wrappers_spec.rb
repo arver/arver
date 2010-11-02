@@ -16,5 +16,16 @@ describe "CommandWrapper" do
     "hello\n".should == caller.output
   end
   
+  it "can get the right return value" do
+    caller = Arver::CommandWrapper.new( "false" )
+    caller.execute.should == false
+    caller.success?.should == false
+  end
+
+  it "can execute ssh commands" do
+    caller = Arver::SSHCommandWrapper.new( "echo", ["-n","hi"], "localhost" )
+    caller.execute.should == true
+    'hi'.should == caller.output
+  end
 
 end

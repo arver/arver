@@ -21,7 +21,7 @@ module Arver
     end
 
     def execute( input = "")
-      self.run( escaped_total_command( input ) )
+      self.run( self.escaped_total_command( input ) )
     end
     
     
