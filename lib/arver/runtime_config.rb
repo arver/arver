@@ -7,5 +7,11 @@ module Arver
 
     attr_accessor :test_mode, :dry_run, :force, :violence, :ask_password
     
+    instance.test_mode= false
+    instance.dry_run= false
+    instance.force= false
+    instance.violence= false
+    instance.ask_password= false
+    
   end
 end

@@ -6,6 +6,8 @@ describe "KeyGenerator" do
     @keystore.username= "test"
     @partition = Arver::TestPartition.new("sometest")
     @partition2 = Arver::TestPartition.new("sometest2")
+    self.extend( TestConfigLoader )
+    load_test_config
   end
   
   it "can generate correct keys" do

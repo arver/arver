@@ -12,10 +12,13 @@ module Arver
         Arver::Log.error( "GPGME Error #{gpg.err} Message: #{gpgerr.message}" )
         exit
       end
-      FileUtils.mkdir_p config_path+"/keys/"+user unless File.exists?( config_path+"/keys/"+user )
-      File.open( next_key_path( user ), 'w' ) do |f|
-        f.write key_encrypted
+      unless( Arver::RuntimeConfig.instance.dry_run )
+        FileUtils.mkdir_p config_path+"/keys/"+user unless File.exists?( config_path+"/keys/"+user )
+        File.open( next_key_path( user ), 'w' ) do |f|
+          f.write key_encrypted
+        end
       end
+      
     end
     
     def self.key_of user

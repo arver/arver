@@ -37,34 +37,33 @@ module Arver
       
       target.each_partition do | partition |
         slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
-        if not Arver::RuntimeConfig.instance.dry_run then
-          Arver::Log.info( "generating a new key for partition #{partition.device} on #{partition.path}" )
+        Arver::Log.info( "generating a new key for partition #{partition.device} on #{partition.path}" )
 
-          # checking if disk is not already LUKS formatted
-          Arver::Log.debug( "checking if disk is not already LUKS formatted..." )
+        # checking if disk is not already LUKS formatted
+        Arver::Log.debug( "checking if disk is not already LUKS formatted..." )
 
-          result = quoted_call( "ssh #{partition.parent.address} \"cryptsetup luksDump #{partition.device}\"" )
-          if result.include?('LUKS header information') then
-            Arver::Log.warn( "VERY DANGEROUS: the partition #{partition.device} is already formatted with LUKS - returning (continue with --violence)" ) 
-            if Arver::RuntimeConfig.instance.violence then
-              Arver::Log.info( "you applied --violence, so we will continue ..." )
-            else
-              Arver::Log.info( "for more information see /tmp/luks_create_error.txt" )
-              system("echo \"#{result}\" > /tmp/luks_create_error.txt")
-              return if not Arver::RuntimeConfig.instance.violence
-            end
+        caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "luksDump", partition.device ], partition.parent.address )
+        caller.execute
+        if caller.output.include?('LUKS header information') then
+          Arver::Log.warn( "VERY DANGEROUS: the partition #{partition.device} is already formatted with LUKS - returning (continue with --violence)" ) 
+          if Arver::RuntimeConfig.instance.violence then
+            Arver::Log.info( "you applied --violence, so we will continue ..." )
+          else
+            Arver::Log.info( "for more information see /tmp/luks_create_error.txt" )
+            system("echo \"#{result}\" > /tmp/luks_create_error.txt")
+            return if not Arver::RuntimeConfig.instance.violence
           end
-          key = gen.generate_key( Arver::LocalConfig.instance.username, partition )
-          cmd = "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat #{partition.device}\"";
-          unless system_call(cmd)
-            gen.remove_key( partition )
-          end
-        else
-          key = '*'*256
-          Arver::Log.debug( "echo \"#{key}\" | ssh #{partition.parent.address} \"cryptsetup --batch-mode --key-slot #{slot_of_user.to_s} --cipher aes-cbc-essiv:sha256 --key-size 256 luksFormat #{partition.device}\"" )
+        end
+        
+        Arver::Log.trace( "starting key generation..." )
+        key = gen.generate_key( Arver::LocalConfig.instance.username, partition )
+        caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "--key-slot #{slot_of_user.to_s}", "--cipher aes-cbc-essiv:sha256", "--key-size 256", "luksFormat", partition.device ], partition.parent.address )
+        
+        caller.execute( key )
+        unless( caller.success? )
+          gen.remove_key( Arver::LocalConfig.instance.username, partition )
         end
       end
-
       gen.dump
     end
 
