@@ -2,9 +2,9 @@ module Arver
   class TargetList
     def self.get_list( names )
       
-      return "ALL" if names.eql? "ALL"
-      
       tree = Arver::Config.instance.tree
+      
+      return [ tree ] if names.eql? "ALL"
 
       targets = []
 
