@@ -1,0 +1,12 @@
+module Arver
+  class GCAction < Action
+    def initialize( target_list )
+      super( target_list )
+      self.open_keystore
+    end
+    
+    def post_execution
+      keystore.save
+    end
+  end
+end

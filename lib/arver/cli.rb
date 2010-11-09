@@ -15,7 +15,7 @@ module Arver
         :action => nil,
         :argument => {},
       }
-
+      
       parser = OptionParser.new do |opts|
         opts.banner = <<-BANNER.gsub(/^          /,'')
           arver.
@@ -74,30 +74,35 @@ module Arver
         end
       end
       
-      Arver::ScriptLogic.bootstrap( options )
+      Arver::Bootstrap.run( options )
      
-      #TODO: here we should implement a choosing object pattern, which each action represented by an appropriate object
-      # this object can then be passed along the tree as visitor by script_logic
-       
-      case options[:action]
-        when :list
-          Arver::ScriptLogic.list( options[:argument] )
-        when :gc
-          Arver::ScriptLogic.gc( options[:argument] )
-        when :create
-          Arver::ScriptLogic.create( options[:argument] )
-        when :open
-          Arver::ScriptLogic.open( options[:argument] )
-        when :close
-          Arver::ScriptLogic.close( options[:argument] )
-        when :adduser
-          Arver::ScriptLogic.adduser( options[:argument] )
-        when :deluser
-          Arver::ScriptLogic.deluser( options[:argument] )
-        when :info
-          Arver::ScriptLogic.info( options[:argument] )
-      end
+      target_list = TargetList.get_list( options[:argument][:target] )
       
+      run_action( options[:action], target_list, options[:argument][:user] )
+    end
+    
+    def self.run_action( action, target_list, target_user )
+      actions = {
+        :list => Arver::ListAction,
+        :gc => Arver::GCAction,
+        :create => Arver::CreateAction,
+        :open => Arver::OpenAction,
+        :close => Arver::CloseAction,
+        :adduser => Arver::AdduserAction,
+        :deluser => Arver::DeluserAction,
+        :info => Arver::InfoAction,
+      }
+
+      action = (actions[ action ]).new( target_list )
+            
+      unless( action.on_user( target_user ) )
+        return
+      end
+
+      action.pre_execution
+      action.pre_run( Arver::Config.instance.tree )
+      action.run( Arver::Config.instance.tree )
+      action.post_execution
     end
   end
 end

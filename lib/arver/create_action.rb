@@ -1,11 +1,10 @@
 module Arver
   class CreateAction < Action
     
-    attr_accessor :generator
-    
     def initialize( target_list )
       super( target_list )
-      self.generator= Arver::KeyGenerator.new
+      self.open_keystore
+      self.new_key_generator
     end
 
     def pre_run_execute_partition( partition )
@@ -54,7 +53,7 @@ module Arver
       #  then execute the script....
     end
     
-    def post_run
+    def post_execution
       self.generator.dump
     end
   end

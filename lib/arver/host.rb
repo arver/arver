@@ -58,7 +58,6 @@ module Arver
     end
     
     def execute( action )
-      p "execute "+self.name
       action.pre_host( self )
       super
       action.post_host( self )
