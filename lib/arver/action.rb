@@ -1,19 +1,20 @@
 module Arver
   class Action
     
-    attr_accessor :keystore, :target_list, :slot_of_user, :generator
+    attr_accessor :keystore, :target_list, :target_user, :slot_of_target_user, :generator
     
     def initialize( target_list )
       self.target_list= target_list
     end
     
     def on_user( username )
-      return true unless needs_target_user? 
-      self.slot_of_user= Arver::Config.instance.slot( username )
-      if slot_of_user.nil?
+      return true unless needs_target_user?
+      self.slot_of_target_user= Arver::Config.instance.slot( username )
+      if slot_of_target_user.nil?
         Arver::Log.error( "no such user" )
-        false
+        return false
       end
+      self.target_user= username
       true
     end
     

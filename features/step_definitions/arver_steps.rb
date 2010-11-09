@@ -11,8 +11,8 @@ Given /^there is an unpadded keyfile/ do
   `cp spec/data/fixtures/test_key_000001_unpadded spec/data/keys/test/key_000001`
 end
 
-Given /^there are no permissions set/ do
-  `rm -rf spec/data/keys/test/key_*`
+Given /^there are no permissions set for "(.*)"/ do  | user |
+  `rm -rf spec/data/keys/#{user}/key_*`
 end
 
 When /^I run arver in test mode with arguments "(.*)"/ do | arguments|
@@ -34,19 +34,15 @@ Then /^I should see "([^\"]*)"$/ do |text|
   Arver::Log.logger.log.should contain(text)
 end
 
-Then /^I should see "([^\"]*)" lines of output$/ do |num|
-  Arver::Log.logger.log.split("\n").size().should == num
-end
-
-Then /^I should see$/ do |text|
-  Arver::Log.logger.log.should contain(text)
-end
-
-Then /^I should not see$/ do |text|
+Then /^I should not see "([^\"]*)"$/ do |text|
   Arver::Log.logger.log.should_not contain(text)
 end
 
-Then /^I should see exactly$/ do |text|
+Then /^I should see (\d+) lines of output$/ do |num|
+  Arver::Log.logger.log.split("\n").size().should == Integer(num)
+end
+
+Then /^I should see exactly "([^\"]*)"$/ do |text|
   Arver::Log.logger.log.should == text
 end
 

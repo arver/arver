@@ -2,15 +2,17 @@ module Arver
   class KeySaver
     
     def self.save( user, key )
-      check_key( user )
+      unless check_key( user )
+        return false
+      end
       gpg_key = key_of( user )
       key = add_padding( key )
       begin
         # key_encrypted = GPGME::encrypt( gpg_key, key )
         key_encrypted = GPGME::encrypt( gpg_key, key , {:armor => true, :always_trust => true})
       rescue GPGME::Error => gpgerr
-        Arver::Log.error( "GPGME Error #{gpg.err} Message: #{gpgerr.message}" )
-        exit
+        Arver::Log.error( "GPGME Error #{gpgerr} Message: #{gpgerr.message}" )
+        return
       end
       unless( Arver::RuntimeConfig.instance.dry_run )
         FileUtils.mkdir_p config_path+"/keys/"+user unless File.exists?( config_path+"/keys/"+user )
@@ -30,15 +32,15 @@ module Arver
       FileUtils.mkdir_p config_path+"/keys/public" unless File.exists?( config_path+"/keys/public" )
       key_id = key_of( user )
       if key_id.nil?
-        Arver::Log.error( "no such user "+user )
-        exit
+        Arver::Log.error( "No such user "+user )
+        return false
       end
       user_pubkey = config_path+"/keys/public/"+user
       found_in_keyring = ! GPGME::list_keys( key_id ).empty?
       found_on_disk = File.exists?( user_pubkey )
       if( ! found_in_keyring && ! found_on_disk )
-        Arver::Log.error( "No publickey for "+user+" found" )
-        exit
+        Arver::Log.error( "No publickey for "+user+" found. Keys not saved" )
+        return false
       end
       if( ! found_in_keyring && found_on_disk )
         key = File.read( user_pubkey )
@@ -50,6 +52,7 @@ module Arver
           f.write( key )
         end
       end
+      true
     end
     
     def self.next_key_path( user )

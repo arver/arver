@@ -11,13 +11,19 @@ module Arver
       end
       if( local.username.empty? )
         Arver::Log.error( "No user defined" )
-        return
+        return false
       end
       
       config = Arver::Config.instance
       config.load
+      
+      if( ! KeySaver.check_key( local.username ) )
+        return false
+      end
 
       self.load_runtime_config( options )
+      
+      true
     end
     
     def self.load_runtime_config options

@@ -2,7 +2,7 @@
 am: 
   gpg: 3621064B
   slot: 1
-o_test: 
+test2: 
   gpg: 5A9195C8
   slot: 3
 mh: 

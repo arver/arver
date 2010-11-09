@@ -74,8 +74,10 @@ module Arver
         end
       end
       
-      Arver::Bootstrap.run( options )
-     
+      unless( Arver::Bootstrap.run( options ) )
+        return
+      end
+      
       target_list = TargetList.get_list( options[:argument][:target] )
       
       run_action( options[:action], target_list, options[:argument][:user] )
