@@ -5,3 +5,4 @@ spec/data/keys/test/
 coverage/
 coverage.data
 *.swp
+pkg/

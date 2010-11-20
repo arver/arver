@@ -3,8 +3,8 @@
 #  Created by arver on 2010-7-11.
 #  Copyright (c) 2010. All rights reserved.
 
-require 'rubygems'
-require File.expand_path(File.dirname(__FILE__) + "/../lib/arver")
+$:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+require 'arver'
 require "arver/cli"
 
 Arver::CLI.execute(ARGV)
