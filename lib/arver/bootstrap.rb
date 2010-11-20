@@ -1,38 +1,30 @@
-module Arver
-  class Bootstrap
-
-    def self.run options
+class Arver::Bootstrap
+  class << self
+    def run(options)
       local = Arver::LocalConfig.instance
-      unless( options[:config_dir].empty? )
-        local.config_dir= ( options[:config_dir] )
-      end
-      unless( options[:user].empty? )
-        local.username= ( options[:user] )
-      end
-      if( local.username.empty? )
+      local.config_dir = options[:config_dir] unless options[:config_dir].empty?
+      local.username = options[:user] unless options[:user].empty?
+
+      unless local.username.present?
         Arver::Log.error( "No user defined" )
         return false
       end
-      
+
       config = Arver::Config.instance
       config.load
-      
-      if( ! KeySaver.check_key( local.username ) )
-        return false
-      end
 
-      self.load_runtime_config( options )
-      
+      return false unless Arver::KeySaver.check_key(local.username)
+      self.load_runtime_config(options)
       true
     end
-    
-    def self.load_runtime_config options
+
+    def load_runtime_config(options)
       rtc = Arver::RuntimeConfig.instance
       rtc.dry_run = options[:dry_run]
       rtc.ask_password = options[:ask_password]
       rtc.force = options[:force]
       rtc.violence = options[:violence]
-      rtc.test_mode = options[:test_mode]      
+      rtc.test_mode = options[:test_mode]
     end  
   end
 end

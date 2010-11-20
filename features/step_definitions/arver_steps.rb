@@ -1,3 +1,8 @@
+After do  
+  # remove all stubbed methods after each scenario
+  Mocha::Mockery.instance.stubba.unstub_all
+end
+
 Given /^there is a key for all test Partitions/ do
   `cp spec/data/fixtures/test_key_000001 spec/data/keys/test/key_000001`
 end
@@ -45,4 +50,3 @@ end
 Then /^I should see exactly "([^\"]*)"$/ do |text|
   Arver::Log.logger.log.should == text
 end
-
