@@ -4,79 +4,102 @@ h1. arver
 
 h2. DESCRIPTION:
 
-arver is a tool to open crypted harddisks.
+arver is a tool to manage encrypted harddisks.
 
-Imagine you are a collective with several admin members. The servers have LUKS encrypted devices.
-Either
-* you would need 1 password for every device which everyone needs to know
-or 
-* you use arver! Arver has 1 password for each device and for each member. This password is stored encrypted with the personal gpg-key in the data directory. The admins only need to know the password to the their own gpg secret key.
+Imagine you are a collective with several admin members. Your servers have 
+diffrent LUKS encrypted devices.
 
-h3. Details
-* Create:
-** arver creates a password and stores it in a slot on the server. the slot is defined in data/users. the password is then encrypted with the personal key (key defined in data/users) and stored in data/keys/USERNAME/key_X (X incremented with the use of "arver --create")
+Either you would need 1 password for every device which everyone needs to know
+or you use arver! Arver has 1 password for each device and for each member. This
+password is stored encrypted with the personal gpg-key in the data directory.
+The admins only need to know the password to the their own gpg secret key.
 
-* Open
-** arver gets the password with decrypting the data/keys/USERNAME/key_X files and applies it to the server
+This has the following advantages:
 
-* Add-User
-** arver creates a password and stores it in the (other) user-slot. The password is encrypted for the other user.
-** with the option --ask-password, a password (ie. the oldpassword stored in Slot 0) can be entered) -> MIGRATION
+* No need to share passwords or password patterns
+** Often people share passwords amongst each another. This has the drawback that
+   in case of an emergency every password needs to be changed. Which means that
+   everyone else needs to learn a bunch of new passwords and changing these
+   passwords is also quite cumbersome and time consuming.
+** As the amount of passwords might grow with your disks and hosts you will start
+   using a password pattern to derive passwords for each disk from that pattern.
+   This has the drawback that you can hardly share only partial access to disks
+   with a certain admin, as if she knows the pattern she will also likely have
+   access to every other disk. Furthermore, if once one password is leaked and
+   the patter is easily visible, all the other passwords are also compromised.
+* Managing your encrypted harddisks is scriptable, which means that you can
+  recover much faster from outages
+* Revoking access for an admin is scriptable and therefore done in one call and
+  also much safer than revoking manually for each disk.
+* Finer grained access. As for each user and each disk there will be a seperate
+  password by design. You can also grant access to certain disks also only
+  selectively. So for example new admins in your group can only open the disks
+  for your most important services or for which they are respnsible, while access
+  to the other disks is restriced to other admins.
 
-h2. FEATURES/PROBLEMS:
+h1. Usage
 
-arver supports up to 8 member passwords (LUKS has 8 slots (LUKS NUMKEYS))
+arver ships with a detailed man page, describing the usage in detail. 
 
-h3. Problems
+h1. Limitations
 
-* GPGME and gpg-agent
-If arver asks several times for the password, something is wrong with your gpg-agent installation.
+* arver supports only up to 8 users as LUKS has only 8 key slots (LUKS NUMKEYS).
 
-To test if gpg-agent is working, use gpg or better gpg2 to decrypt a file, it will tell you about the gpg-erorrs.
+h1. Problems
 
-You might look at the following program:
-** http://dougbarton.us/PGP/gpg-agent.html
-If you install it like dougbarton recomends, you need to make sure GPG_AGENT_INFO is accessible within the arver script. You can do this with the following entry in .bashrc (part of the .xsession entry)
- if [ -r "${HOME}/.gpg-agent-info" ]; then
-  . ${HOME}/.gpg-agent-info
-  export GPG_AGENT_INFO SSH_AUTH_SOCK SSH_AGENT_PID
- fi
+h2. GPGME and gpg-agent
 
-Other helpful infos:
-** http://live.gnome.org/GnomeKeyring/Ssh
-** see http://thefunkcorner.blogspot.com/2008/06/using-gnupg-agent-on-console.html
-** http://fedoraproject.org/wiki/DocsProject/UsingGpg/CreatingKeys#head-afa09100f0b78b006dfdc62b5d9e0f315ddabfaf
+If arver asks you multiple times for the password, you might consider to use
+gpg-agent, so you can decrypt your keypair once and the use it for all your
+stored keys.
 
-h2. SYNOPSIS:
+You can test gpg-agent by trying to decrypt an encrypted file for your user in
+data/keys/USERNAME/key_X . It will tell you about possible gpg-erorrs.
 
-  arver -u user -c datastore -t server/harddisk --create
-  arver -u user -c datastore -t server/harddisk --open
-  arver -u user -c datastore -t server/harddisk --close
+Configuring gpg-agent is quite simple and you find information on the following
+website: http://dougbarton.us/PGP/gpg-agent.html
 
-  arver -u user -c datastore -t server/harddisk --add-user test
+If you install gpg-agent like dougbarton recomends, you need to further verify
+that the environment variable GPG_AGENT_INFO is accessible within the arver
+script. An option is to add the following entry to your .bashrc
 
-  arver -u user -c datastore -t server/harddisk --del-user test
-  #  deluser was called with target /location/server/harddisk and user test (slot-no 7)
-  #  would call (if implemented :( )):
-  #  "echo \"***\" | ssh server \"cryptsetup --batch-mode luksKillSlot /dev/storage/harddisk 7\""
+    if [ -r "${HOME}/.gpg-agent-info" ]; then
+      . ${HOME}/.gpg-agent-info
+      export GPG_AGENT_INFO
+    fi
 
-h2. REQUIREMENTS:
+Other helpful information can be found on the following websites:
 
-* needs cryptsetup-luks >= 1.0.5 (to work properly with slots)
-
-h2. INSTALL:
-
-* sudo apt-get install ruby1.8-dev (for mkmf)
-* sudo apt-get install libgpgme11-dev (for gpgme-config)
-
-* sudo gem install i18n activesupport gpgme highline
-
-For testing:
-
-* sudo gem install hoe mocha cucumber
+* http://live.gnome.org/GnomeKeyring/Ssh
+* http://thefunkcorner.blogspot.com/2008/06/using-gnupg-agent-on-console.html
+* http://fedoraproject.org/wiki/DocsProject/UsingGpg/CreatingKeys#head-afa09100f0b78b006dfdc62b5d9e0f315ddabfaf
 
 
-h2. LICENSE:
+h1. Requirements
+
+arver only works with cryptsetup-luks >= 1.0.5 as previous versions do not
+support key slots properly for our usage.
+
+h1. Installation
+
+The easiest way to install arver is by gem
+
+  sudo gem install arver
+
+This will install all required dependecies automatically. If your distributions
+contains an arver package we recommend installation by your package manager.
+
+For development you will need the following gems installed:
+
+* gpgme
+* i18n
+* activesupport
+* highline
+* hoe
+* cucumber
+* mocha
+
+h1. License
 
 (The MIT License)
 

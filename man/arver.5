@@ -1,0 +1,294 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "ARVER" "5" "November 2010" "" ""
+.
+.SH "NAME"
+\fBarver\fR \- Managing encrypted harddisks
+.
+.nf
+
+arver [\-u user] [\-c /path/to/datastore] \-t group/server/harddisk \-\-create
+arver [\-u user] [\-c /path/to/datastore] \-t ALL \-\-open
+arver [\-u user] [\-c /path/to/datastore] \-t group/server/harddisk \-\-open
+
+arver [\-u user] [\-c /path/to/datastore] \-t group/server/harddisk \-\-close
+
+arver [\-u user] [\-c /path/to/datastore] \-t group/server/harddisk \-\-add\-user test
+
+arver [\-u user] [\-c /path/to/datastore] \-t group/server/harddisk \-\-del\-user test
+
+arver [\-u user] [\-c /path/to/datastore] \-\-list\-targets
+
+arver [\-u user] [\-c /path/to/datastore] \-t ALL \-\-info
+
+arver [\-u user] [\-c /path/to/datastore] \-\-garbage\-collect
+.
+.fi
+arver is a tool that helps you to manage large amount of encrypted harddisks over mutliple servers and locations\. Furthermore, it helps you to mange access policies to encrypted harddisks of a bunch of people\.By default \fBarver\fR requires only a target and a specific action to work\. However you can tweak some behavior with the following command line options:
+.
+.IP "\(bu" 4
+\fB\-u USER\fR, \fB\-\-user USER\fR: By default \fBarver\fR will read \fB~/\.arver\fR to get the username with which it should work\. Using \fB\-u USER\fR you can override or specify your username\.
+.
+.IP "\(bu" 4
+\fB\-c PATH\fR, \fB\-\-config\-dir PATH\fR By default \fBarver\fR will assume your data storage in \fB~/\.arverdata\fR\. However, if you have multiple data storage or you want to put it to a different location you can use the \fB\-c PATH\fR option\.
+.
+.IP "" 0
+Working with arver is quite simple and straight forward\. Within the next paragraphs we are giving more a detailed overview on the concept of arver, as well as how to set it up and what the different actions are doing\.The basic idea of arver is that we define in a bunch of configuration files our users and our disks and let arver operate with that information\.
+.
+.P
+Arver\'s configuration files are contained in a single directory which contains all the necessary non\-private information to manage your disks\. In further documentation this directory is referred to as \fBdatastore\fR\. We recommend you to share that directory amongs your group of admins with a distributed version control system such as git\.
+.
+.P
+By design it is not possible know who has access to which disks by looking at the \fBdatastore\fR, as this information is only accessible via the LUKS devices on the servers itself\. So to know who has access to which disks you will need to have access to the \fBdatastore\fR, as well as the specific server and being able to read its LUKS devices\. However if there is no direct mapping possible between the users in arver\'s configuration and your real world admin group, it is not possible to tell for outsiders which person has access to which device\.
+.
+.P
+Access to disks are managed via the specific LUKS slot, as each admin will get assigned one global LUKS slot\. Arver will use this slot information to decide whether a user has access to a certain disk\. Furthermore, this is the slot in which the specific disk key will be stored for a certain user\.
+.
+.P
+The \fBdatastore\fR directory contains the following files and directories:
+.
+.IP "" 4
+.
+.nf
+
+keys/            <\- contains further directories with all the keys per user
+keys/public/     <\- contains the public keys of all participating admins
+keys/public/foo1 <\- export public key of user foo
+users            <\- yaml file containing all users and their matching key\-ids
+disks            <\- yaml file containing all hostgroups, hosts and disks
+.
+.fi
+.
+.IP "" 0
+.
+.P
+This is also the basic structure you need to setup to start with arver\.
+.
+.SH "Users"
+The \fBuser\fR file contains all your users in the following structure:
+.
+.IP "" 4
+.
+.nf
+
+foo1:
+  slot: 0
+  gpg: BEAFAFFE
+foo2:
+  slot 1
+  gpg: AFFEBEAF
+.
+.fi
+.
+.IP "" 0
+.
+.P
+\fBfoo1\fR is the identifier of one of your admins\. \fBslot\fR referes the LUKS slot which is used for this admin\. \fBgpg\fR is the gpg\-id of the public key for \fBfoo1\fR\.
+.
+.SH "Disks / Targets"
+The \fBdisks\fR file contains the following hash tree in yaml notation:
+.
+.IP "" 4
+.
+.nf
+
+ \'hostgroup1\':
+   \'host1\':
+     \'address\': \'host1\.example\.com\'
+     \'disk1\'  : \'storage/disk1\'
+     \'disk2\'  : \'sdb1\'
+   \'host2\':
+     \'address\': \'host2\.example\.com\'
+     \'port\'   : \'2222\'
+     \'foo\'    : \'md1\'
+     \'mails\'  : \'nonraid/mails\'
+ \'hostgroup2\':
+   \'host3\':
+     \'address\': \'host3\.example\.com\'
+     \'secure\' : \'storage/secure\'
+.
+.fi
+.
+.IP "" 0
+.
+.P
+As you can see this allows you to organize your disks and servers in different ways, which will enable you to manage your disks more efficiently within the later commands\.
+.
+.P
+\fBhostgroup1\fR and \fBhostgroup2\fR is just a logical container which can contain any amount of hosts\. You can name them as you like\. Later you will be able to use that identifier to for example open disks on the whole hostgroup\. This is interesting if you have for example multiple hosts in one location and you need to quickly recover from a power outage from this location\. All these containers are also generaly referred to as \fBtargets\fR which is also the other mandatory option besides the action for most action invocations\.
+.
+.P
+Invoking
+.
+.IP "" 4
+.
+.nf
+
+arver \-\-list\-targets
+.
+.fi
+.
+.IP "" 0
+.
+.P
+will present you your configured tree of the various targets in your \fBdisks\fR configuration file\.
+.
+.P
+\fBhost1\fR, \fBhost2\fR and \fBhost3\fR are identifiers for different hosts\. These host\- objects can contain multiple disks and can have further information such as the \fBaddress\fR of the host or the ssh\-\fBport\fR number if the ssh daemon is not running on the standart port\.
+.
+.P
+Any other entry than \fBaddress\fR or \fBport\fR within the hosts\-object are actual disks entries, which you want to manage on the host\. These disks are represented by an identifier and the actual disk path\. So for example the disks on \fBhost1\fR can be read the following way: Open \fB/dev/storage/disk1\fR as LUKS device identified by \fBdisk1\fR\. The prefix \fB/dev/\fR is not required for the disk path\. The second entry will open the LUKS container on \fB/dev/sdb1\fR as \fBdisk2\fR\.
+.
+.P
+TODO: Any of these objects (\fBhostgroups\fR,\fBhosts\fR and \fBdisks\fR) can contain certain actions which will be executed before or after working with the disk\.How do you start and bootstrap a new \fBdatastore\fR, so you can use arver for your storage?
+.
+.P
+First you need to create the basic structure for your \fBdatastore\fR:
+.
+.IP "" 4
+.
+.nf
+
+$ mkdir ~/\.arverdata # the location is configurable\. We use the default one\.
+$ cd ~/\.arverdata
+$ mkdir keys/public \-p
+$ gpg \-\-export \-a myself@example\.com > keys/public/myself
+$ vi disks
+$ # add your hostgroups, hosts and disks
+$ vi users
+$ # add your user and the key\-id of your public gpg\-key
+$ # if your starting your infrastructure from scratch you can use slot: 0
+$ # for your first user\. If your migrating an existing infrastructure you
+$ # should be aware that slot 0 as well as other slots are likely to be
+$ # already in use and you should use a slot for your user which is free on
+$ # _all_ systems\.
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Then we can create the encrypted harddisk:To initially create an arver managed LUKS device you need to add the device to the disks list\. See above for various examples\. After adding the device to the disks list, you can create the LUKS device by invoking the following command:
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-t hostgroup1/host1/disk1 \-\-create
+.
+.fi
+.
+.IP "" 0
+.
+.P
+If there is already a LUKS container defined on that disk you will be notified about this issue and asked to either enforce violence on that disk or you can add an inital arver user or an additional user by add\-user\. Read more about that in one of the next section\.
+.
+.P
+What\'s happening behind the scene?
+.
+.P
+arver creates a random password and stores it in your users\' slot on the server\. The password is then encrypted with the users\' public key (key defined in \fBusers\fR) and stored in \fBdatastore/keys/USERNAME/key_X\fR X will be incremented with each usage of \fBarver \-\-create\fRTo open a LUKS device managed by arver you can invoke the \fB\-\-open\fR action on any target:
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-t hostgroup1/host1/disk1 \-\-open
+.
+.fi
+.
+.IP "" 0
+.
+.P
+arver retrieves the password by decrypting the data/keys/USERNAME/key_X files and uses the password matching this device to open the LUKS device on the server\.
+.
+.P
+If you pass a host (in this example this would be \fBhostgroup1/host1\fR) or even a hostgroup (\fBhostgroup1\fR) as a target arver will open \fIall\fR devices that are contained in the specific group\. This is how you can easily open various disks by invoking \fIone\fR arver command\.Closing luks devices is simply done by invoking
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-t hostgroup1/host1/disk1
+.
+.fi
+.
+.IP "" 0
+.
+.P
+So far you need to deal yourself with unmounting the opened device or stopping virtual guests accessing the encrypted device\. In the near future this can be done by specifying appropriate actions on a device level\.
+.
+.P
+TODO: document the actionsTo add another user to one of the disks you need to get the public key of that user\. Store it in \fBdatastore/keys/public/USERNAME\fR and add the user as \fBUSERNAME\fR to the users list\. Furthermore, you need to provide a not yet used luks SLOT as the users slot\.
+.
+.P
+Granting the user access to that disk is done by invoking the following command:
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-t hostgroup1/host1/disk1 \-\-add\-user USERNAME
+.
+.fi
+.
+.IP "" 0
+.
+.P
+arver will then create a random password for the specific user and add it to the user\-slot on the server\. Furthermore, the password is encrypted with the public key of the specific user and stored in the data storage under \fBdatastore/keys/USERNAME/key_X\fR, where X is an incremented number\.
+.
+.P
+If you are migrating from an existing LUKS infrastructure and want to add an initial user to the LUKS device, you will need to use as well \fB\-\-add\-user\fR\. However to be able to manage the LUKS device you need provide the current existing password\. By providing the option \fB\-\-ask\-password\fR, you will be asked for that password\.
+.
+.P
+To remove access of a certain user you can simply run
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-t hostgroup1/host1/disk1 \-\-del\-user USERNAME
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Which will remove the password stored in the LUKS slot of that device\. Remember that you can also invoke this command on a whole hostgroup or even on all your managed devices (using \fB\-t ALL\fR)\. This will help you to quickly and savely removing any access to encrypted devices of one user immediately amongst the whole infrastructure\.To gather various information about the different targets you can invoke
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-t ALL \-i
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Which will display you the current configuration of all devices, as well as different parameters of the LUKS device\.As you might add and remove users to disk or reset access to diskfiles the amount of generated key files with random passwords by user might grow and not all might be needed anymore\. Furthermore it is likely that it due to various actions it might be obvious or at least reconstructable to which devices a certain user might have access\.
+.
+.P
+To address this problem arver provides a garbage collection process, which will rearrange all your own keyfiles\. Only your own as you are not able to read the others key files\.
+.
+.P
+You can do that by invoking the following command:
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-gc
+.
+.fi
+.
+.IP "" 0
+\fBcryptsetup\fR(8)\. \fBgnupg\fR(7)\.
+.
+.P
+Arver project site: \fIhttps://git\.codecoop\.org/projects/arver/\fR
+.
+.P
+YAML website: \fIhttp://www\.yaml\.org/\fR
