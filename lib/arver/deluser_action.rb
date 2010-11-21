@@ -23,7 +23,7 @@ module Arver
         return
       end
       
-      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "luksKillSlot", "#{partition.device}", "#{slot_of_target_user}" ], partition.parent.address )
+      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "luksKillSlot", partition.device_path, "#{slot_of_target_user}" ], partition.parent.address )
       caller.execute( a_valid_key )
       unless( caller.success? )
         log.error( "Could not remove user:\n" + caller.output )

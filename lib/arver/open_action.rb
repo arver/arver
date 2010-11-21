@@ -13,7 +13,7 @@ module Arver
         Arver::Log.error( "No permission on #{partition.path}" )
         return
       end
-      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "luksOpen", "#{partition.device}", "#{partition.name}" ], partition.parent.address )
+      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "luksOpen", partition.device_path, partition.name ], partition.parent.address )
       caller.execute( key )
     end
   end

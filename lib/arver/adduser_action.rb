@@ -36,7 +36,7 @@ module Arver
       
       newkey = generator.generate_key( target_user, partition )
 
-      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "--key-slot #{slot_of_target_user.to_s}", "luksAddKey", "#{partition.device}" ], partition.parent.address )
+      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "--key-slot=#{slot_of_target_user.to_s}", "luksAddKey", partition.device_path ], partition.parent.address )
       caller.execute( a_valid_key + "\n" + newkey )
       
       unless( caller.success? )

@@ -6,7 +6,7 @@ module Arver
     end
 
     def execute_partition( partition )
-      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "luksDump", "#{partition.device}" ], partition.parent.address )
+      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "luksDump", partition.device_path], partition.parent.address )
       caller.execute
       result = caller.output
       a= {}
