@@ -1,8 +1,7 @@
 arver(5) -- Managing encrypted harddisks
 ========================================
 
-SYNOPSIS
-========
+## SYNOPSIS
 
     arver [-u user] [-c /path/to/datastore] -t group/server/harddisk --create
     arver [-u user] [-c /path/to/datastore] -t ALL --open
@@ -21,15 +20,13 @@ SYNOPSIS
     arver [-u user] [-c /path/to/datastore] --garbage-collect
 
 
-DESCRIPTION
-===========
+## DESCRIPTION
 
 arver is a tool that helps you to manage large amount of encrypted harddisks
 over mutliple servers and locations. Furthermore, it helps you to mange
 access policies to encrypted harddisks of a bunch of people.
 
-OPTIONS
-=======
+## OPTIONS
 
 By default `arver` requires only a target and a specific action to work. However
 you can tweak some behavior with the following command line options:
@@ -43,15 +40,13 @@ you can tweak some behavior with the following command line options:
     location you can use the `-c PATH` option.
 
 
-Working with arver
-==================
+## Working with arver
 
 Working with arver is quite simple and straight forward. Within the next
 paragraphs we are giving more a detailed overview on the concept of arver,
 as well as how to set it up and what the different actions are doing. 
 
-Concept
-=======
+## Concept
 
 The basic idea of arver is that we define in a bunch of configuration files our
 users and our disks and let arver operate with that information.
@@ -86,8 +81,7 @@ The `datastore` directory contains the following files and directories:
 
 This is also the basic structure you need to setup to start with arver.
 
-Users
------
+### Users
 
 The `user` file contains all your users in the following structure:
 
@@ -101,8 +95,7 @@ The `user` file contains all your users in the following structure:
 `foo1` is the identifier of one of your admins. `slot` referes the LUKS slot which
 is used for this admin. `gpg` is the gpg-id of the public key for `foo1`.
 
-Disks / Targets
-----------------
+### Disks / Targets
 
 The `disks` file contains the following hash tree in yaml notation:
 
@@ -155,8 +148,7 @@ will open the LUKS container on `/dev/sdb1` as `disk2`.
 TODO: Any of these objects (`hostgroups`,`hosts` and `disks`) can contain certain
 actions which will be executed before or after working with the disk.
 
-Bootstrapping a new datastore
-=============================
+## Bootstrapping a new datastore
 
 How do you start and bootstrap a new `datastore`, so you can use arver for your
 storage?
@@ -179,8 +171,7 @@ First you need to create the basic structure for your `datastore`:
 
 Then we can create the encrypted harddisk:
 
-Action Create
-=============
+## Action Create
 
 To initially create an arver managed LUKS device you need to add the device
 to the disks list. See above for various examples.
@@ -201,8 +192,7 @@ The password is then encrypted with the users' public key (key defined in
 `users`) and stored in `datastore/keys/USERNAME/key_X`
 X will be incremented with each usage of `arver --create`
 
-Action Open
-===========
+## Action Open
 
 To open a LUKS device managed by arver you can invoke the `--open` action on any
 target:
@@ -217,8 +207,7 @@ hostgroup (`hostgroup1`) as a target arver will open *all* devices that are
 contained in the specific group.
 This is how you can easily open various disks by invoking *one* arver command.
 
-Action Close
-============
+## Action Close
 
 Closing luks devices is simply done by invoking
 
@@ -230,8 +219,7 @@ done by specifying appropriate actions on a device level.
 
 TODO: document the actions
 
-Managing users
-==============
+## Managing users
 
 To add another user to one of the disks you need to get the public key of that
 user. Store it in `datastore/keys/public/USERNAME` and add the user as `USERNAME`
@@ -263,8 +251,7 @@ managed devices (using `-t ALL`). This will help you to quickly and savely
 removing any access to encrypted devices of one user immediately amongst the
 whole infrastructure.
 
-Information about targets
-=========================
+## Information about targets
 
 To gather various information about the different targets you can invoke
 
@@ -273,8 +260,7 @@ To gather various information about the different targets you can invoke
 Which will display you the current configuration of all devices, as well as
 different parameters of the LUKS device.
 
-Garbage collection
-==================
+## Garbage collection
 
 As you might add and remove users to disk or reset access to diskfiles the
 amount of generated key files with random passwords by user might grow and
@@ -291,8 +277,7 @@ You can do that by invoking the following command:
     $ arver -gc
 
 
-SEE ALSO
-========
+## SEE ALSO
  
 `cryptsetup`(8).
 `gnupg`(7).

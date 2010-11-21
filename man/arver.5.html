@@ -54,8 +54,19 @@
 
   <div class='man-navigation' style='display:none'>
     <a href="#NAME">NAME</a>
-    <a href="#Users">Users</a>
-    <a href="#Disks-Targets">Disks / Targets</a>
+    <a href="#SYNOPSIS">SYNOPSIS</a>
+    <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#OPTIONS">OPTIONS</a>
+    <a href="#Working-with-arver">Working with arver</a>
+    <a href="#Concept">Concept</a>
+    <a href="#Bootstrapping-a-new-datastore">Bootstrapping a new datastore</a>
+    <a href="#Action-Create">Action Create</a>
+    <a href="#Action-Open">Action Open</a>
+    <a href="#Action-Close">Action Close</a>
+    <a href="#Managing-users">Managing users</a>
+    <a href="#Information-about-targets">Information about targets</a>
+    <a href="#Garbage-collection">Garbage collection</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
     </div>
 
   <ol class='man-decor man-head man head'>
@@ -69,7 +80,7 @@
   <code>arver</code> - <span class="man-whatis">Managing encrypted harddisks</span>
 </p>
 
-<h1>SYNOPSIS</h1>
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
 
 <pre><code>arver [-u user] [-c /path/to/datastore] -t group/server/harddisk --create
 arver [-u user] [-c /path/to/datastore] -t ALL --open
@@ -88,13 +99,13 @@ arver [-u user] [-c /path/to/datastore] -t ALL --info
 arver [-u user] [-c /path/to/datastore] --garbage-collect
 </code></pre>
 
-<h1>DESCRIPTION</h1>
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
 
 <p>arver is a tool that helps you to manage large amount of encrypted harddisks
 over mutliple servers and locations. Furthermore, it helps you to mange
 access policies to encrypted harddisks of a bunch of people.</p>
 
-<h1>OPTIONS</h1>
+<h2 id="OPTIONS">OPTIONS</h2>
 
 <p>By default <code>arver</code> requires only a target and a specific action to work. However
 you can tweak some behavior with the following command line options:</p>
@@ -110,13 +121,13 @@ location you can use the <code>-c PATH</code> option.</li>
 </ul>
 
 
-<h1>Working with arver</h1>
+<h2 id="Working-with-arver">Working with arver</h2>
 
 <p>Working with arver is quite simple and straight forward. Within the next
 paragraphs we are giving more a detailed overview on the concept of arver,
 as well as how to set it up and what the different actions are doing.</p>
 
-<h1>Concept</h1>
+<h2 id="Concept">Concept</h2>
 
 <p>The basic idea of arver is that we define in a bunch of configuration files our
 users and our disks and let arver operate with that information.</p>
@@ -152,7 +163,7 @@ disks            &lt;- yaml file containing all hostgroups, hosts and disks
 
 <p>This is also the basic structure you need to setup to start with arver.</p>
 
-<h2 id="Users">Users</h2>
+<h3 id="Users">Users</h3>
 
 <p>The <code>user</code> file contains all your users in the following structure:</p>
 
@@ -167,7 +178,7 @@ foo2:
 <p><code>foo1</code> is the identifier of one of your admins. <code>slot</code> referes the LUKS slot which
 is used for this admin. <code>gpg</code> is the gpg-id of the public key for <code>foo1</code>.</p>
 
-<h2 id="Disks-Targets">Disks / Targets</h2>
+<h3 id="Disks-Targets">Disks / Targets</h3>
 
 <p>The <code>disks</code> file contains the following hash tree in yaml notation:</p>
 
@@ -222,7 +233,7 @@ will open the LUKS container on <code>/dev/sdb1</code> as <code>disk2</code>.</p
 <p>TODO: Any of these objects (<code>hostgroups</code>,<code>hosts</code> and <code>disks</code>) can contain certain
 actions which will be executed before or after working with the disk.</p>
 
-<h1>Bootstrapping a new datastore</h1>
+<h2 id="Bootstrapping-a-new-datastore">Bootstrapping a new datastore</h2>
 
 <p>How do you start and bootstrap a new <code>datastore</code>, so you can use arver for your
 storage?</p>
@@ -246,7 +257,7 @@ $ # _all_ systems.
 
 <p>Then we can create the encrypted harddisk:</p>
 
-<h1>Action Create</h1>
+<h2 id="Action-Create">Action Create</h2>
 
 <p>To initially create an arver managed LUKS device you need to add the device
 to the disks list. See above for various examples.
@@ -268,7 +279,7 @@ The password is then encrypted with the users' public key (key defined in
 <code>users</code>) and stored in <code>datastore/keys/USERNAME/key_X</code>
 X will be incremented with each usage of <code>arver --create</code></p>
 
-<h1>Action Open</h1>
+<h2 id="Action-Open">Action Open</h2>
 
 <p>To open a LUKS device managed by arver you can invoke the <code>--open</code> action on any
 target:</p>
@@ -284,7 +295,7 @@ hostgroup (<code>hostgroup1</code>) as a target arver will open <em>all</em> dev
 contained in the specific group.
 This is how you can easily open various disks by invoking <em>one</em> arver command.</p>
 
-<h1>Action Close</h1>
+<h2 id="Action-Close">Action Close</h2>
 
 <p>Closing luks devices is simply done by invoking</p>
 
@@ -297,7 +308,7 @@ done by specifying appropriate actions on a device level.</p>
 
 <p>TODO: document the actions</p>
 
-<h1>Managing users</h1>
+<h2 id="Managing-users">Managing users</h2>
 
 <p>To add another user to one of the disks you need to get the public key of that
 user. Store it in <code>datastore/keys/public/USERNAME</code> and add the user as <code>USERNAME</code>
@@ -331,7 +342,7 @@ managed devices (using <code>-t ALL</code>). This will help you to quickly and s
 removing any access to encrypted devices of one user immediately amongst the
 whole infrastructure.</p>
 
-<h1>Information about targets</h1>
+<h2 id="Information-about-targets">Information about targets</h2>
 
 <p>To gather various information about the different targets you can invoke</p>
 
@@ -341,7 +352,7 @@ whole infrastructure.</p>
 <p>Which will display you the current configuration of all devices, as well as
 different parameters of the LUKS device.</p>
 
-<h1>Garbage collection</h1>
+<h2 id="Garbage-collection">Garbage collection</h2>
 
 <p>As you might add and remove users to disk or reset access to diskfiles the
 amount of generated key files with random passwords by user might grow and
@@ -358,7 +369,7 @@ others key files.</p>
 <pre><code>$ arver -gc
 </code></pre>
 
-<h1>SEE ALSO</h1>
+<h2 id="SEE-ALSO">SEE ALSO</h2>
 
 <p><code>cryptsetup</code>(8).
 <code>gnupg</code>(7).</p>

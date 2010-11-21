@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
   s.description  = "Arver helps you to manage a large amount of crypted devices easily and safe amongst a certain amount of members"
 
 
-  s.files        = `git ls-files lib`.split("\n") + %w(README.textile CHANGELOG.textile)
-  s.executables = [ 'arver' ]
+  s.files        = `git ls-files lib`.split("\n") + %w(README.textile CHANGELOG.textile man/arver.5)
+  s.executables =  [ 'arver' ]
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
   s.rubyforge_project = '[none]'
