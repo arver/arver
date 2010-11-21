@@ -20,7 +20,7 @@ class Arver::Partition
   end
 
   def to_yaml
-      "'"+self.device+"'"
+    "'#{self.device}'"
   end
 
   def from_hash(string)
