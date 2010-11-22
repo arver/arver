@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/spec_helper.rb'
+require 'etc'
 
 describe "CommandWrapper" do
   it "can execute commands" do
@@ -23,7 +24,7 @@ describe "CommandWrapper" do
   end
 
   it "can execute ssh commands" do
-    caller = Arver::SSHCommandWrapper.new( "echo", ["-n","hi"], "localhost" )
+    caller = Arver::SSHCommandWrapper.new( "echo", ["-n","hi"], "localhost", Etc.getlogin )
     caller.execute.should == true
     'hi'.should == caller.output
   end
