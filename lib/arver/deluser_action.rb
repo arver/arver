@@ -26,7 +26,7 @@ module Arver
       caller = Arver::LuksWrapper.killSlot( slot_of_target_user.to_s, partition )
       caller.execute( a_valid_key )
       unless( caller.success? )
-        log.error( "Could not remove user:\n" + caller.output )
+        Arver::Log.error( "Could not remove user:\n" + caller.output )
       end
     end
   end

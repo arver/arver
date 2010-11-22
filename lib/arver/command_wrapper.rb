@@ -1,6 +1,16 @@
 module Arver
   class CommandWrapper
+
+    @@test_failure = false
+    def self.test_failure
+      @@test_failure = true
+    end
     
+    @@test_spoof_output= nil
+    def self.test_spoof_output( output )
+      @@test_spoof_output= output
+    end 
+
     attr_accessor :command, :arguments_array, :return_value, :output
   
     def initialize( cmd, args = [] )
@@ -37,6 +47,12 @@ module Arver
       else
         self.output= `#{command}`
         self.return_value= $?
+      end
+      if( @@test_failure )
+        self.return_value= 1
+      end
+      if( ! @@test_spoof_output.nil? )
+        self.output= @@test_spoof_output
       end
       self.success?
     end

@@ -11,8 +11,9 @@ module Arver
         key = self.keystore.luks_key( partition )
         if( ! key.nil? and ! Arver::RuntimeConfig.instance.force )
           Arver::Log.warn( "DANGEROUS: you do have already a key for partition #{partition.path} - returning (apply --force to continue)" )
-          return
+          return false
         end
+        true
     end
     
     def execute_partition( partition )
@@ -42,6 +43,7 @@ module Arver
       caller = Arver::LuksWrapper.create( slot_of_user.to_s, partition )
       caller.execute( key )
       unless( caller.success? )
+        Arver::Log.error( "Could not create Partition!" )
         self.generator.remove_key( Arver::LocalConfig.instance.username, partition )
       end
     end

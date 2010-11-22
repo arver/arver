@@ -32,9 +32,11 @@ module Arver
     end
     
     def pre_run( node )
+      success = true
       if( node.is_target( self.target_list ) )
-        node.pre_execute( self )
+        success &= node.pre_execute( self )
       end
+      return success
     end
     
     def run( node )
@@ -44,12 +46,14 @@ module Arver
     end
     
     def pre_execution
+      true
     end
     
     def post_execution
     end
     
     def pre_run_execute_partition( partition )
+      true
     end
     
     def pre_host( host )

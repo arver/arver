@@ -16,6 +16,14 @@ Given /^there is an unpadded keyfile/ do
   `cp spec/data/fixtures/test_key_000001_unpadded spec/data/keys/test/key_000001`
 end
 
+Given /^there will be a failure/ do
+  Arver::CommandWrapper.test_failure
+end
+
+Given /^external commands will return "(.*)"/ do  | txt |
+  Arver::CommandWrapper.test_spoof_output( txt )
+end
+
 Given /^there are no permissions set for "(.*)"/ do  | user |
   `rm -rf spec/data/keys/#{user}/key_*`
 end
@@ -26,7 +34,22 @@ When /^I run arver in test mode with arguments "(.*)"/ do | arguments|
    require 'rubygems'
    require File.expand_path("../lib/arver")
    require File.expand_path("../lib/arver/cli")
-   arguments = "-u test -c ../spec/data --test-mode "+arguments
+   arguments = "--vv -u test -c ../spec/data --test-mode "+arguments
+   
+   Arver::Log.logger= Arver::StringLogger.new( Arver::LogLevels::Debug)
+
+   Arver::CLI.execute( arguments.split(" ") )
+  end
+
+end
+
+When /^I run arver in test mode with user "(.*)" and arguments "(.*)"/ do | user, arguments|
+
+  in_project_folder do  
+   require 'rubygems'
+   require File.expand_path("../lib/arver")
+   require File.expand_path("../lib/arver/cli")
+   arguments = "--vv -u #{user} -c ../spec/data --test-mode "+arguments
    
    Arver::Log.logger= Arver::StringLogger.new( Arver::LogLevels::Debug)
 

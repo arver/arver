@@ -28,7 +28,7 @@ class Arver::Partition
   end
 
   def pre_execute(action)
-    action.pre_run_execute_partition(self)
+    return action.pre_run_execute_partition(self)
   end
 
   def execute(action)

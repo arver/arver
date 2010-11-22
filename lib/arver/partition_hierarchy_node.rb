@@ -107,9 +107,11 @@ module Arver
     end
     
     def pre_execute( action )
+      success = true
       self.children.each_value do | child |
-        action.pre_run( child )
+        success &= action.pre_run( child )
       end
+      return success
     end
     
     def execute( action )

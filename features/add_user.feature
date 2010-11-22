@@ -12,3 +12,9 @@ Feature: Adding a User
     When I run arver in test mode with arguments "-t /location2 --add-user asf"
     Then I should see "no such user"
     And I should not see "adduser was called with target"
+  
+  Scenario: adduser fails
+    Given there will be a failure
+    When I run arver in test mode with arguments "-t /location2 --add-user test2"
+    Then I should see "adduser was called with target(s)"
+    And I should see "Could not add user to /location2"

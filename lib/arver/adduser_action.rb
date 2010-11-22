@@ -11,6 +11,7 @@ module Arver
       tl = ""
       target_list.each { |t| tl += ( tl.empty? ? "": ", " )+t.name }
       Arver::Log.info( "adduser was called with target(s) #{tl} and user #{target_user} (slot-no #{slot_of_target_user})" )
+      true
     end
     
     def needs_target_user?
@@ -40,6 +41,7 @@ module Arver
       caller.execute( a_valid_key + "\n" + newkey )
       
       unless( caller.success? )
+        Arver::Log.error( "Could not add user to #{partition.path} \n" + caller.output )
         generator.remove_key( target_user, partition )
       end
     end
