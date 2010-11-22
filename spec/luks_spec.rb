@@ -12,23 +12,23 @@ describe "LuksWrapper" do
     self.partition= Arver::Partition.new( "test", host )
     tmpContainer= File.expand_path("./tmp/luks.bin")
     `dd if=/dev/zero of=#{tmpContainer} bs=1024k count=5 2> /dev/null `
-    c = Arver::SSHCommandWrapper.new( "losetup", [ "-a" ], host )
+    c = Arver::SSHCommandWrapper.new( "losetup", [ "-a" ], host, true )
     c.execute
     if( c.output.include?( "arver/tmp/luks.bin" ) )
-      c = Arver::SSHCommandWrapper.new( "losetup", [ "-d", "/dev/loop2" ], host )
+      c = Arver::SSHCommandWrapper.new( "losetup", [ "-d", "/dev/loop2" ], host, true )
       c.execute
     elsif( c.output.include?( "loop2" )  || ! c.success? )
       print "cannot create loop device, since loop2 already exists"
       #this exit is important! we don't want to remove loopdevices in after(:each), we didn't create!
       exit
     end
-    c = Arver::SSHCommandWrapper.new( "losetup", [ "/dev/loop2", tmpContainer ], host )
+    c = Arver::SSHCommandWrapper.new( "losetup", [ "/dev/loop2", tmpContainer ], host, true )
     c.execute
     partition.device= "loop2"
   end
 
   after(:each) do
-    c = Arver::SSHCommandWrapper.new( "losetup", [ "-d", "/dev/loop2" ], host )
+    c = Arver::SSHCommandWrapper.new( "losetup", [ "-d", "/dev/loop2" ], host, true )
     c.execute
   end
   
