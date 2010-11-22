@@ -24,7 +24,7 @@ module Arver
       # checking if disk is not already LUKS formatted
       Arver::Log.debug( "checking if disk is not already LUKS formatted..." )
 
-      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "luksDump", partition.device_path ], partition.parent.address )
+      caller = Arver::LuksWrapper.dump( partition )
       caller.execute
       if caller.output.include?('LUKS header information') then
         Arver::Log.warn( "VERY DANGEROUS: the partition #{partition.device} is already formatted with LUKS - returning (continue with --violence)" ) 
@@ -39,7 +39,7 @@ module Arver
       
       Arver::Log.trace( "starting key generation..." )
       key = self.generator.generate_key( Arver::LocalConfig.instance.username, partition )
-      caller = Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "--key-slot=#{slot_of_user.to_s}", "--cipher=aes-cbc-essiv:sha256", "--key-size=256", "luksFormat", partition.device_path ], partition.parent.address )
+      caller = Arver::LuksWrapper.create( slot_of_user.to_s, partition )
       caller.execute( key )
       unless( caller.success? )
         self.generator.remove_key( Arver::LocalConfig.instance.username, partition )

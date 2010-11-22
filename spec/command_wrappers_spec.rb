@@ -2,6 +2,12 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 require 'etc'
 
 describe "CommandWrapper" do
+
+  before(:each) do
+    self.extend( TestConfigLoader )
+    self.load_sample_tree
+  end  
+
   it "can execute commands" do
     caller = Arver::CommandWrapper.new( "echo", ["-n","hi"] )
     caller.escaped_command().include?("echo").should == true
@@ -24,7 +30,9 @@ describe "CommandWrapper" do
   end
 
   it "can execute ssh commands" do
-    caller = Arver::SSHCommandWrapper.new( "echo", ["-n","hi"], "localhost", Etc.getlogin )
+    host = Arver::Host.new( "localhost", Arver::Config.instance.tree )
+    host.username= Etc.getlogin
+    caller = Arver::SSHCommandWrapper.new( "echo", ["-n","hi"],  host )
     caller.execute.should == true
     'hi'.should == caller.output
   end
