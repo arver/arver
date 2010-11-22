@@ -5,6 +5,10 @@ module Arver
       self.open_keystore
     end
 
+    def pre_host( host )
+      Arver::Log.info( "-- "+host.name+":" );
+    end
+
     def execute_partition( partition )
       caller = Arver::LuksWrapper.dump( partition )
       caller.execute
