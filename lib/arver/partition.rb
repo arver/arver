@@ -38,7 +38,6 @@ class Arver::Partition
   end
 
   def device_path
-    return self.device if self.device =~ /^\/dev\//
-    "/dev/#{self.device}"
+    return self.device 
   end
 end
