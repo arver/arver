@@ -50,16 +50,13 @@ module Arver
     end
     
     def is_target( list )
-      list.each do | target |
-        return true if ( self.has_child?( target ) || self.has_parent?( target ) )
+      list.any? do |target|
+        self.has_child?( target ) || self.has_parent?( target )
       end
-      false
     end
     
     def has_child?( child )
-      if self.equal?( child )
-        return true
-      end
+      return true if self.equal?( child )
       children.each_value do | my_child |
         return true if my_child.has_child?( child )
       end
@@ -115,9 +112,12 @@ module Arver
     end
     
     def execute( action )
+      success = true
       self.children.each_value do | child |
-        action.run( child )
+        success &= action.run( child )
+        return false unless success
       end
+      success
     end
   end
 end

@@ -11,6 +11,11 @@ module Arver
       @@test_spoof_output= output
     end 
 
+    def self.reset_test
+      @@test_spoof_output= nil
+      @@test_failure = false
+    end
+
     attr_accessor :command, :arguments_array, :return_value, :output
   
     def initialize( cmd, args = [] )
@@ -49,6 +54,7 @@ module Arver
         self.return_value= $?
       end
       if( @@test_failure )
+        Arver::Log.trace( "** test: command failed" )
         self.return_value= 1
       end
       if( ! @@test_spoof_output.nil? )

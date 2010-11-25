@@ -39,9 +39,9 @@ class Arver::Partition
   end
 
   def execute(action)
-    action.pre_partition(self)
-    action.execute_partition(self)
-    action.post_partition(self)
+    return false unless action.pre_partition(self)
+    return false unless action.execute_partition(self)
+    return action.post_partition(self)
   end
 
   def device_path

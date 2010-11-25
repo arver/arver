@@ -20,7 +20,7 @@ module Arver
       
       if( a_valid_key.nil? )
         Arver::Log.error( "No permission on this target" )
-        return
+        return false
       end
       
       caller = Arver::LuksWrapper.killSlot( slot_of_target_user.to_s, partition )
@@ -28,6 +28,7 @@ module Arver
       unless( caller.success? )
         Arver::Log.error( "Could not remove user:\n" + caller.output )
       end
+      true
     end
   end
 end

@@ -1,6 +1,7 @@
 After do  
   # remove all stubbed methods after each scenario
   Mocha::Mockery.instance.stubba.unstub_all
+  Arver::CommandWrapper.reset_test
 end
 
 Given /^there is a key for all test Partitions/ do

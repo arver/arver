@@ -29,7 +29,7 @@ module Arver
 
       if( a_valid_key.nil? )
         Arver::Log.error( "No permission on #{partition.path}" )
-        return
+        return false
       end
       
       # generate a key for the new user
@@ -44,6 +44,7 @@ module Arver
         Arver::Log.error( "Could not add user to #{partition.path} \n" + caller.output )
         generator.remove_key( target_user, partition )
       end
+      true
     end
     
     def post_execution

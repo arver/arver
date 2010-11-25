@@ -34,7 +34,7 @@ module Arver
         else
           Arver::Log.info( "for more information see /tmp/luks_create_error.txt" )
           system("echo \"#{caller.output}\" > /tmp/luks_create_error.txt")
-          return if not Arver::RuntimeConfig.instance.violence
+          return false if not Arver::RuntimeConfig.instance.violence
         end
       end
       
@@ -46,13 +46,7 @@ module Arver
         Arver::Log.error( "Could not create Partition!" )
         self.generator.remove_key( Arver::LocalConfig.instance.username, partition )
       end
-    end
-    
-    def pre_partition( partition )
-      #TODO:
-      #  add all the fancy new attributes (pre_open, pre_create, post_open...) to the partition_hirarchy_node objects
-      #  script = partition.pre_create_script
-      #  then execute the script....
+      true
     end
     
     def post_execution

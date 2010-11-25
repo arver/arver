@@ -1,6 +1,5 @@
 Important todos:
 
-1. add pre/post_action script hooks
-2. clean termination with proper return codes (no exits!!). Use exceptions to signal errors to the cli.rb, which can then return a errorcode.
-3. kill singletons
+2. clean termination with proper return codes (no exits!!). Which errors should lead to aborts and which can be skipped? How to detect if (on open) a disk is already open? 
+3. kill singletons?
 

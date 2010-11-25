@@ -1,7 +1,7 @@
 module Arver
   class Host
     
-    attr_accessor :postscript, :port, :username
+    attr_accessor :port, :username
     attr_writer :address
     
     include Arver::PartitionHierarchyNode
@@ -66,9 +66,9 @@ module Arver
     end
     
     def execute( action )
-      action.pre_host( self )
+      return false unless action.pre_host( self )
       super
-      action.post_host( self )
+      return action.post_host( self )
     end
   end
 end

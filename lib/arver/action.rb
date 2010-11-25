@@ -36,13 +36,19 @@ module Arver
       if( node.is_target( self.target_list ) )
         success &= node.pre_execute( self )
       end
-      return success
+      success
     end
     
     def run( node )
+      success = true
       if( node.is_target( self.target_list ) )
-        node.execute( self )
+        success &= node.execute( self )
+        unless( success )
+          Arver::Log.debug( "Execution on "+node.name+" failed. aborting" )
+          return false
+        end
       end
+      success
     end
     
     def pre_execution
@@ -57,18 +63,23 @@ module Arver
     end
     
     def pre_host( host )
+      true
     end
     
     def pre_partition( partition )
+      true
     end
     
     def execute_partition( partition )
+      true
     end
     
     def post_partition( partition )
+      true
     end
     
     def post_host( host )
+      true
     end
   end
 end

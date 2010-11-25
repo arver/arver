@@ -101,7 +101,7 @@ module Arver
 
       return unless action.pre_execution
       return unless action.pre_run( Arver::Config.instance.tree )
-      action.run( Arver::Config.instance.tree )
+      return unless action.run( Arver::Config.instance.tree )
       action.post_execution
     end
   end
