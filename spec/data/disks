@@ -1,14 +1,27 @@
 'location1':
   'machine1_1.example.tld':
     'port': '2222'
-    'virtmachine1': '/dev/storage/virtmachine1_rootfs'
+    'username': 'test'
+    'pre_open': 'pre_open_host_script.sh'
+    'pre_close': 'pre_close_host_script.sh'
+    'post_open': 'post_open_host_script.sh'
+    'post_close': 'post_close_host_script.sh'
+    'virtmachine1':
+      'device': '/dev/storage/virtmachine1_rootfs'
+      'pre_open': 'pre_open_disk_script.sh'
+      'pre_close': 'pre_close_disk_script.sh'
+      'post_open': 'post_open_disk_script.sh'
+      'post_close': 'post_close_disk_script.sh'
 'location2':
   'machine2':
     'address': 'two.example.tld'
-    'virt1_rootfs': '/dev/nonraidstorage/virt1_rootfs'
-    'virt2_rootfs': 'nonraidstorage/virt2_rootfs'
+    'virt1_rootfs':
+      'device': '/dev/nonraidstorage/virt1_rootfs'
+    'virt2_rootfs':
+      'device': 'nonraidstorage/virt2_rootfs'
   'machine1':
     'address': 'one.example.tld'
-    'postscript': '/usr/local/sbin/startcryptedxens'
-    'virt2_srv': '/dev/storage/virt2_srv_e'
-    'virt1_rootfs': '/dev/storage/virt1_rootfs_e'
+    'virt2_srv':
+      'device': '/dev/storage/virt2_srv_e'
+    'virt1_rootfs':
+      'device': '/dev/storage/virt1_rootfs_e'

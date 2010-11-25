@@ -1,6 +1,7 @@
 class Arver::Partition
 
   include Arver::PartitionHierarchyNode
+  include Arver::NodeWithScriptHooks
 
   attr_accessor :device
 
@@ -20,11 +21,17 @@ class Arver::Partition
   end
 
   def to_yaml
-    "'#{self.device}'"
+    yaml = ""
+    yaml += "'device': '#{device}'\n"
+    yaml += script_hooks_to_yaml
+    yaml.chop
   end
 
-  def from_hash(string)
-    self.device = string 
+  def from_hash( hash )
+    script_hooks_from_hash( hash )
+    hash.each do | name, data |
+      self.device= data if name == "device"
+    end
   end
 
   def pre_execute(action)

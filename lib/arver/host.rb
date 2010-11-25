@@ -4,7 +4,8 @@ module Arver
     attr_accessor :postscript, :port, :username
     attr_writer :address
     
-    include PartitionHierarchyNode
+    include Arver::PartitionHierarchyNode
+    include Arver::NodeWithScriptHooks
       
     def initialize( name, hostgroup )
       self.name = name
@@ -39,19 +40,13 @@ module Arver
       yaml += "'address': '"+address+"'\n" unless @address.nil?
       yaml += "'port': '"+port+"'\n" unless @port.nil?
       yaml += "'username': '"+username+"'\n" unless @username.nil?
-      yaml += "'postscript': '"+postscript+"'\n" unless @postscript.nil?
-      children.each do | name, child |
-        yaml += "'"+name+"': "+child.to_yaml+"\n"
-      end
-      yaml.chop
+      yaml += script_hooks_to_yaml
+      yaml += super
     end
     
-    def from_hash hash
+    def from_hash( hash )
+      script_hooks_from_hash( hash )
       hash.each do | name, data |
-        if( name == "postscript" )
-          self.postscript = data
-          next
-        end
         if( name == "port" )
           self.port = data
           next
@@ -64,6 +59,7 @@ module Arver
           self.username= data
           next
         end
+        #no matching keyword -> its a partition:
         p = Arver::Partition.new( name, self )
         p.from_hash( data )
       end
