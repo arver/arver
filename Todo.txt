@@ -1,5 +1,5 @@
 Important todos:
 
-2. clean termination with proper return codes (no exits!!). Which errors should lead to aborts and which can be skipped? How to detect if (on open) a disk is already open? Currently nearly any error on the remote server on create,open and close terminates arver and therefore any further actions. Which makes opening a whole box only working if the box was completely down. -> The current solution is to eleminate the pre-run and rather run preexecution per node before the run aka. node-wise.
+2. clean termination with proper (documented!) return codes. 
 3. kill singletons?
 
