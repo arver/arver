@@ -5,8 +5,9 @@ module Arver
       self.open_keystore
     end
     
-    def post_execution
+    def post_action
       keystore.save
+      true
     end
   end
 end

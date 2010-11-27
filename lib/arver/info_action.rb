@@ -6,7 +6,8 @@ module Arver
     end
 
     def pre_host( host )
-      Arver::Log.info( "-- "+host.name+":" );
+      Arver::Log.info( "-- "+host.name+":" )
+      true
     end
 
     def execute_partition( partition )

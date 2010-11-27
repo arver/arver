@@ -31,34 +31,21 @@ module Arver
       keystore.load
     end
     
-    def pre_run( node )
-      success = true
-      if( node.is_target( self.target_list ) )
-        success &= node.pre_execute( self )
-      end
-      success
-    end
-    
-    def run( node )
-      success = true
-      if( node.is_target( self.target_list ) )
-        success &= node.execute( self )
-        unless( success )
+    def run_on( node )
+      if( node.target?( self.target_list ) )
+        unless( node.run_action( self ) )
           Arver::Log.debug( "Execution on "+node.name+" failed. aborting" )
           return false
         end
       end
-      success
-    end
-    
-    def pre_execution
       true
     end
     
-    def post_execution
+    def pre_action
+      true
     end
     
-    def pre_run_execute_partition( partition )
+    def post_action
       true
     end
     
@@ -66,6 +53,10 @@ module Arver
       true
     end
     
+    def verify?( partition )
+      true
+    end
+
     def pre_partition( partition )
       true
     end

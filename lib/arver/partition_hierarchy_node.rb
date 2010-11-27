@@ -49,7 +49,7 @@ module Arver
       end
     end
     
-    def is_target( list )
+    def target?( list )
       list.any? do |target|
         self.has_child?( target ) || self.has_parent?( target )
       end
@@ -103,21 +103,10 @@ module Arver
       yaml.chop
     end
     
-    def pre_execute( action )
-      success = true
+    def run_action( action )
       self.children.each_value do | child |
-        success &= action.pre_run( child )
+        return false unless action.run_on( child )
       end
-      return success
-    end
-    
-    def execute( action )
-      success = true
-      self.children.each_value do | child |
-        success &= action.run( child )
-        return false unless success
-      end
-      success
     end
   end
 end

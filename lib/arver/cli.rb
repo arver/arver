@@ -97,12 +97,11 @@ module Arver
 
       action = (actions[ action ]).new( target_list )
             
-      return unless( action.on_user( target_user ) )
-
-      return unless action.pre_execution
-      return unless action.pre_run( Arver::Config.instance.tree )
-      return unless action.run( Arver::Config.instance.tree )
-      action.post_execution
+      return false unless( action.on_user( target_user ) )
+      
+      return false unless action.pre_action
+      return false unless action.run_on( Arver::Config.instance.tree )
+      return action.post_action
     end
   end
 end

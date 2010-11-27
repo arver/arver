@@ -16,7 +16,7 @@ describe "LuksWrapper" do
 
   it "executes pre_open hostscript" do
     action = Arver::OpenAction.new( [ host ] )
-    action.run( host )
+    action.run_on( host )
     File.exists?( "/tmp/arver-hook-executed" ).should == true
     File.safe_unlink( "/tmp/arver-hook-executed" )
   end

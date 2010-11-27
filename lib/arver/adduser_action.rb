@@ -7,7 +7,7 @@ module Arver
       self.new_key_generator
     end
     
-    def pre_execution
+    def pre_action
       tl = ""
       target_list.each { |t| tl += ( tl.empty? ? "": ", " )+t.name }
       Arver::Log.info( "adduser was called with target(s) #{tl} and user #{target_user} (slot-no #{slot_of_target_user})" )
@@ -47,8 +47,9 @@ module Arver
       true
     end
     
-    def post_execution
+    def post_action
       generator.dump
+      false
     end
   end
 end

@@ -7,10 +7,10 @@ module Arver
       self.new_key_generator
     end
 
-    def pre_run_execute_partition( partition )
+    def verify?( partition )
         key = self.keystore.luks_key( partition )
         if( ! key.nil? and ! Arver::RuntimeConfig.instance.force )
-          Arver::Log.warn( "DANGEROUS: you do have already a key for partition #{partition.path} - returning (apply --force to continue)" )
+          Arver::Log.warn( "DANGEROUS: you do have already a key for partition #{partition.path} (apply --force to continue)" )
           return false
         end
         true
@@ -51,6 +51,7 @@ module Arver
     
     def post_execution
       self.generator.dump
+      true
     end
   end
 end
