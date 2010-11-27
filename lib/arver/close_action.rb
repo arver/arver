@@ -1,5 +1,14 @@
 module Arver
   class CloseAction < Action
+
+    def verify?( partition )
+      if( Arver::LuksWrapper.check_closed?(partition) )
+        Arver::Log.error( partition.name+" not open. skipping." )
+        return false
+      end
+      true
+    end
+
     def execute_partition( partition )
         Arver::Log.info( "closing: "+partition.path )
         caller = Arver::LuksWrapper.close( partition )

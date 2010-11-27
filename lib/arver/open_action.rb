@@ -5,9 +5,13 @@ module Arver
       self.open_keystore
     end
 
-#    def pre_run_execute_partition( partition )
-#      self.target_list -= [ partition ] if Arver::LuksWrapper.open?(partition).execute
-#    end
+    def verify?( partition )
+      if( Arver::LuksWrapper.check_open?(partition) )
+        Arver::Log.error( partition.name+" already open. skipping." )
+        return false
+      end
+      true
+    end
 
     def execute_partition( partition )
       Arver::Log.info( "opening: "+partition.path )
