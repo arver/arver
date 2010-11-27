@@ -6,7 +6,7 @@ module Arver
     end
 
     def verify?( partition )
-      if( Arver::LuksWrapper.check_open?(partition) )
+      if( Arver::LuksWrapper.open?(partition).execute )
         Arver::Log.error( partition.name+" already open. skipping." )
         return false
       end

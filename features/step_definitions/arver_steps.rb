@@ -23,15 +23,13 @@ end
 
 Given /^all disks seem closed/ do
   command = Arver::SSHCommandWrapper.new(nil,nil,nil)
-  command.stubs(:execute).returns(true)
-  command.stubs(:output).returns("false\n")
+  command.stubs(:execute).returns(false)
   Arver::LuksWrapper.stubs(:open?).returns( command  )
 end
 
 Given /^all disks seem open/ do
   command = Arver::SSHCommandWrapper.new(nil,nil,nil)
   command.stubs(:execute).returns(true)
-  command.stubs(:output).returns("true\n")
   Arver::LuksWrapper.stubs(:open?).returns( command  )
 end
 

@@ -19,17 +19,7 @@ module Arver
       Arver::SSHCommandWrapper.new( "cryptsetup", [ "--batch-mode", "luksOpen", partition.device_path, partition.name ], partition.parent, true )
     end
     def self.open?( partition )
-      Arver::SSHCommandWrapper.new( "ruby", [ "-e", "p File.exists?('/dev/mapper/"+partition.name+"')" ], partition.parent, true )
-    end
-    def self.check_open?( partition )
-      c = open?( partition )
-      c.execute
-      c.output == "true\n" 
-    end
-    def self.check_closed?( partition )
-      c = open?( partition )
-      c.execute
-      c.output == "false\n" 
+      Arver::SSHCommandWrapper.new( "sh", [ "-c", "if [ -b '/dev/mapper/#{partition.name}' ]; then true; else false; fi" ], partition.parent, true )
     end
   end
 end

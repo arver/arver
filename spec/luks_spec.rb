@@ -39,13 +39,11 @@ describe "LuksWrapper" do
     c = Arver::LuksWrapper.open( partition )
     c.execute( "test_key" )
     c.success?.should == true
-    Arver::LuksWrapper.check_open?( partition ).should == true
-    Arver::LuksWrapper.check_closed?( partition ).should == false
+    Arver::LuksWrapper.open?( partition ).execute.should == true
     c = Arver::LuksWrapper.close( partition )
     c.execute
     c.success?.should == true
-    Arver::LuksWrapper.check_open?( partition ).should == false
-    Arver::LuksWrapper.check_closed?( partition ).should == true
+    Arver::LuksWrapper.open?( partition ).execute.should == false
   end
 
   it "can add and remove a key" do
