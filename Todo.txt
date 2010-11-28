@@ -1,5 +1,6 @@
 Important todos:
 
+* dont show cleartext keys in trace-logs
 * extend the manpage
 * use a trust-model for the gpg keys: the idea is, that you can only execute add-user if you have signed the other users gpg-key first.
 * clean termination with proper (documented!) return codes. 
