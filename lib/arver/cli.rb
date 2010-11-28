@@ -79,7 +79,8 @@ module Arver
       end
       
       target_list = TargetList.get_list( options[:argument][:target] )
-      
+      return false if target_list.empty? && ( options[:action] != :list && options[:action] != :gc )
+ 
       run_action( options[:action], target_list, options[:argument][:user] )
     end
     
