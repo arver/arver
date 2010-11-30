@@ -23,7 +23,7 @@ module Arver
                 a[a1[0].strip] = v if not a1[0].nil? }
       filling = 40-partition.device.length
       filling = 0 if filling < 0
-      Arver::Log.info( "  #{partition.device}#{' '*filling}: Slots: #{[0,1,2,3,4,5,6,7].map{|i| a['Key Slot '+i.to_s] == 'ENABLED' ? 'X' : '_'}.join}; LUKSv#{a['Version']}; Cypher: #{a['Cipher name']}:#{a['Cipher mode']}:#{a['Hash spec']}; UUID=#{a['UUID']}" )
+      Arver::Log.info( "  #{partition.device}#{' '*filling}: Slots: #{(0..7).map{|i| a['Key Slot '+i.to_s] == 'ENABLED' ? 'X' : '_'}.join}; LUKSv#{a['Version']}; Cypher: #{a['Cipher name']}:#{a['Cipher mode']}:#{a['Hash spec']}; UUID=#{a['UUID']}" )
       true
     end
   end
