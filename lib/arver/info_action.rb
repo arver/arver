@@ -10,21 +10,14 @@ module Arver
       true
     end
 
-    def execute_partition( partition )
-      caller = Arver::LuksWrapper.dump( partition )
-      caller.execute
-      result = caller.output
-      a= {}
-      result.each do |s|
-                a1=s.split(':').compact
-                v = ''
-                v = a1[1].strip if a1[1]
-                v = v + ':' + a1[2].strip if a1[2]
-                a[a1[0].strip] = v if a1[0]
+    def execute_partition(partition)
+      info = {}
+      (caller = Arver::LuksWrapper.dump(partition)).execute
+      caller.output.each do |line|
+        next unless line =~ /^[A-Z].*: .*$/
+        info.store(*line.split(':',2).collect{|f| f.strip })
       end
-      filling = 40-partition.device.length
-      filling = 0 if filling < 0
-      Arver::Log.info( "  #{partition.device}#{' '*filling}: Slots: #{(0..7).map{|i| a['Key Slot '+i.to_s] == 'ENABLED' ? 'X' : '_'}.join}; LUKSv#{a['Version']}; Cypher: #{a['Cipher name']}:#{a['Cipher mode']}:#{a['Hash spec']}; UUID=#{a['UUID']}" )
+      Arver::Log.info("  #{sprintf("%0-20s",partition.name.first(20))}:  #{sprintf("%0-40s",partition.device_path.first(40))}: Slots: #{(0..7).map{|i| info["Key Slot #{i}"] == 'ENABLED' ? 'X' : '_'}.join}; LUKSv#{info['Version']}; Cypher: #{info['Cipher name']}:#{info['Cipher mode']}:#{info['Hash spec']}; UUID=#{info['UUID']}")
       true
     end
   end
