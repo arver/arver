@@ -22,7 +22,7 @@ module Arver
       if not Arver::RuntimeConfig.instance.ask_password then
         return false unless load_key( partition )
       else
-        self.key= ask('Enter the password for this volume: ') {|q| q.echo = false}
+        self.key= ask("Enter the password for the volume: #{partition.device}") {|q| q.echo = false}
       end
       true
     end
