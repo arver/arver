@@ -1,7 +1,7 @@
 module Arver
   class Action
     
-    attr_accessor :keystore, :target_list, :target_user, :slot_of_target_user, :generator
+    attr_accessor :keystore, :target_list, :target_user, :slot_of_target_user, :generator, :key
     
     def initialize( target_list )
       self.target_list= target_list
@@ -56,6 +56,16 @@ module Arver
     def verify?( partition )
       true
     end
+
+    def load_key( partition )
+      self.key= keystore.luks_key( partition )
+
+      if( key.nil? )
+        Arver::Log.error( "No permission on #{partition.path}. Skipping." )
+        return false
+      end
+      true
+    end      
 
     def pre_partition( partition )
       true

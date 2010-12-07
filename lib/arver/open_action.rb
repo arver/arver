@@ -10,17 +10,12 @@ module Arver
         Arver::Log.error( partition.name+" already open. skipping." )
         return false
       end
+      return false unless load_key( partition )
       true
     end
 
     def execute_partition( partition )
       Arver::Log.info( "opening: "+partition.path )
-      key = keystore.luks_key( partition )
-      Arver::Log.debug( "Trying to open #{partition.path}" )
-      if( key.nil? )
-        Arver::Log.error( "No permission on #{partition.path}" )
-        return true
-      end
       caller = Arver::LuksWrapper.open( partition )
       caller.execute( key )
     end
