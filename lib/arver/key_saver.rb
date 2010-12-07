@@ -100,8 +100,8 @@ module Arver
 
     def self.add_padding( key )
       marker = "--"+ActiveSupport::SecureRandom.base64( 52 )
-      size = rand( 122880 )
-      padding = ActiveSupport::SecureRandom.base64( size )
+      size = rand( 328800 )
+      padding = ActiveSupport::SecureRandom.base64( 148800 + size )
       marker +"\n"+ key + "\n" + marker + "\n" + padding
     end
     
