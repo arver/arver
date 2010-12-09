@@ -1,89 +1,96 @@
-arver(5) -- Managing encrypted harddisks
+arver(5) -- LUKS on the loose
 ========================================
 
 ## SYNOPSIS
 
-    arver [-u user] [-c /path/to/datastore] -t group/server/harddisk --create
-    arver [-u user] [-c /path/to/datastore] -t ALL --open
-    arver [-u user] [-c /path/to/datastore] -t group/server/harddisk --open
-
-    arver [-u user] [-c /path/to/datastore] -t group/server/harddisk --close
-
-    arver [-u user] [-c /path/to/datastore] -t group/server/harddisk --add-user test
-
-    arver [-u user] [-c /path/to/datastore] -t group/server/harddisk --del-user test
+    arver [-u user] [-c datastore] [OPTIONS] -t TARGET ACTION
+    arver [-u user] [-c datastore] [OPTIONS] ACTION
     
-    arver [-u user] [-c /path/to/datastore] --list-targets
-    
-    arver [-u user] [-c /path/to/datastore] -t ALL --info
-    
-    arver [-u user] [-c /path/to/datastore] --garbage-collect
-
-
 ## DESCRIPTION
 
 arver is a tool that helps you to manage large amount of encrypted harddisks
 over mutliple servers and locations. Furthermore, it helps you to mange
 access policies to encrypted harddisks of a bunch of people.
 
+By default `arver` requires a specific action and (for most actions) a 
+target to work. 
+
 ## OPTIONS
 
-By default `arver` requires only a target and a specific action to work. However
-you can tweak some behavior with the following command line options:
+There are some generic command line options:
 
   * `-u USER`, `--user USER`:
-    By default `arver` will read `~/.arver` to get the username with which it
-    should work. Using `-u USER` you can override or specify your username.
-  * `-c PATH`, `--config-dir PATH`
+    By default `arver` will read `~/.arver` to get your username. Using `-u USER` you can override or specify it aswell.
+  * `-c PATH`, `--config-dir PATH`:
     By default `arver` will assume your data storage in `~/.arverdata`. However,
     if you have multiple data storage or you want to put it to a different
     location you can use the `-c PATH` option.
 
+## ACTIONS
+
+The following actions are supported:
+
+  * `--create`:
+    Creates LUKS partitions for `arver` on all targeted disks.
+  * `-o`, `--open`:
+    Opens all targeted disks.
+  * `--close`:
+    Closes all targeted disks.
+  * `-a USER`, `--add-user USER`:
+    Adds permissions for USER on all targeted disks.
+  * `--del-user`:
+    Removes permissions for USER on all targeted disks.
+  * `-i`, `--info`:
+    Display the LUKS configuration of all targeted disks.
+  * `-l`, `--list-targets`:
+    List all possible targets.
+  * `-g`, `--garbage-collect`:
+    Cleans old entries from your `arver` keys.
+
+## TARGETS
+
+All Targets are defined in the `disks` config file. See the section
+`Disks` for more details. A complete target looks like this:
+    /location_name/host_name/disk_name
+
+But the TARGET option accepts also partial names and lists. E.g 
+    -t location1,location2/host2,host4,disk3
+targets all disks at location1, all disks on host2 at location2, all disks on 
+host4 and disk3. If any of the provided target names are not unique `arver` will
+quit with an error message stating all matching targets.
+
+To run an action on all possible disks use `ALL` as target.
 
 ## Working with arver
 
 Working with arver is quite simple and straight forward. Within the next
-paragraphs we are giving more a detailed overview on the concept of arver,
-as well as how to set it up and what the different actions are doing. 
+paragraphs you'll find a detailed overview on the concept of arver,
+as well as how to set it up and what the different actions are doing exactly. 
 
 ## Concept
 
-The basic idea of arver is that we define in a bunch of configuration files our
-users and our disks and let arver operate with that information.
+To setup arver we only need to define in the corresponding configuration files our
+(admin-)users and our disks.
  
 Arver's configuration files are contained in a single directory which contains all
-the necessary non-private information to manage your disks. In further
-documentation this directory is referred to as `datastore`. We recommend you to
-share that directory amongs your group of admins with a distributed version
-control system such as git.
+the necessary (non-private) information to manage your disks. This directory will
+be referred to as `datastore`. We recommend you to share that directory amongs your
+group of admins with a distributed version control system such as git.
 
-By design it is not possible know who has access to which disks by looking at
-the `datastore`, as this information is only accessible via the LUKS devices on
-the servers itself.
-So to know who has access to which disks you will need to have access to the
-`datastore`, as well as the specific server and being able to read its LUKS
-devices. However if there is no direct mapping possible between the users in
-arver's configuration and your real world admin group, it is not possible to
-tell for outsiders which person has access to which device.
-
-Access to disks are managed via the specific LUKS slot, as each admin will get
-assigned one global LUKS slot. Arver will use this slot information to decide
-whether a user has access to a certain disk. Furthermore, this is the slot in
-which the specific disk key will be stored for a certain user.
+Eeach admin will be assigned one global LUKS slot. Arver will use this information
+to grant or revoke privileges to other users. See the `Managing users` section
+for a detailed descripton of how this is done.
 
 The `datastore` directory contains the following files and directories:
 
-    keys/            <- contains further directories with all the keys per user
-    keys/public/     <- contains the public keys of all participating admins
-    keys/public/foo1 <- export public key of user foo 
-    users            <- yaml file containing all users and their matching key-ids
-    disks            <- yaml file containing all hostgroups, hosts and disks 
-
-This is also the basic structure you need to setup to start with arver.
+    keys/            <- contains the users `arver` keyrings
+    keys/public/     <- contains the public keys of all admins
+    users            <- yaml file containing all users configuration (see `Users`)
+    disks            <- yaml file containing all disk configuration (see `Disks`)
 
 ### Users
 
-The `user` file contains all your users in the following structure:
+The `user` config file contains all your admins in the following structure:
 
     foo1: 
       slot: 0
@@ -92,61 +99,68 @@ The `user` file contains all your users in the following structure:
       slot 1
       gpg: AFFEBEAF
 
-`foo1` is the identifier of one of your admins. `slot` referes the LUKS slot which
-is used for this admin. `gpg` is the gpg-id of the public key for `foo1`.
+`foo1` is the identifier of one of your admins. `slot` referes to the LUKS slot which
+is used for this admin. This has to be a unique number between 0 and 7. If you'd like 
+to migrate existing LUKS devices take care to avoid the currently used slot number
+(usually 0). `gpg` is the gpg-id of the public key for `foo1`. We recommend to use a 
+dedicated gpg key just for `arver`.
 
-### Disks / Targets
+### Disks
 
 The `disks` file contains the following hash tree in yaml notation:
 
      'hostgroup1':
        'host1':
-         'address': 'host1.example.com'
-         'disk1'  : 'storage/disk1'
-         'disk2'  : 'sdb1'
+         'address' : 'host1.example.com'
+         'pre_open': 'pre_open_host_script.sh'
+         'disk1'   :
+           'device'   : 'storage/disk1'
+           'post_open': 'post_open_disk_script.sh'
+         'disk2'   : 
+           'device'   :  'sdb1'
        'host2':
          'address': 'host2.example.com'
-         'port'   : '2222' 
-         'foo'    : 'md1'
-         'mails'  : 'nonraid/mails'
+         'port'   : '2222'
+         'mails'  : 
+           'device'  : 'nonraid/mails'
+           'pre_open': 'pre_open_disk_script.sh'
      'hostgroup2':
        'host3':
-         'address': 'host3.example.com'
-         'secure' : 'storage/secure'
+         'address' : 'host3.example.com'
+         'username': 'foo'
+         'secure'  : 
+           'device'  : 'storage/secure'
          
-As you can see this allows you to organize your disks and servers in different
-ways, which will enable you to manage your disks more efficiently within the
-later commands.
+As you can see this allows you to organize your disks and servers in a tree
+structure, which will enable you to manage your disks more efficiently within 
+the later commands.
 
 `hostgroup1` and `hostgroup2` is just a logical container which can contain any
-amount of hosts. You can name them as you like. Later you will be able to use
-that identifier to for example open disks on the whole hostgroup. This is
-interesting if you have for example multiple hosts in one location and you need
-to quickly recover from a power outage from this location.
-All these containers are also generaly referred to as `targets` which is also
-the other mandatory option besides the action for most action invocations.
+amount of hosts. You can name them as you like. This is interesting if you have 
+for example multiple hosts in one location and you need to quickly recover from 
+a power outage from this location. 
 
 Invoking
 
     arver --list-targets
 
-will present you your configured tree of the various targets in your `disks`
-configuration file.
+will present you the tree of the various targets in your `disks` configuration 
+file.
 
 `host1`, `host2` and `host3` are identifiers for different hosts. These host-
 objects can contain multiple disks and can have further information such as the
 `address` of the host or the ssh-`port` number if the ssh daemon is not running
 on the standart port.
 
-Any other entry than `address` or `port` within the hosts-object are actual
-disks entries, which you want to manage on the host. These disks are represented
-by an identifier and the actual disk path. So for example the disks on `host1`
-can be read the following way: Open `/dev/storage/disk1` as LUKS device identified
-by `disk1`. The prefix `/dev/` is not required for the disk path. The second entry
-will open the LUKS container on `/dev/sdb1` as `disk2`.
+You can also add script hooks to any host or disk. Those will be run during the
+`open` and `close` actions at the appropriate time. The possible options are:
+`pre_open`, `pre_close`, `post_open` and `post_close`. 
 
-TODO: Any of these objects (`hostgroups`,`hosts` and `disks`) can contain certain
-actions which will be executed before or after working with the disk.
+Any other entry within the hosts-object are actual disks entries of that particular
+host. These disks are represented by an identifier and at least a `device` entry
+pointing to the actual disk path. So for example the disks on `host1` are:
+`/dev/storage/disk1` identified by `disk1` and `/dev/sdb1` idetified by `disk2`.
+The prefix `/dev/` is alays added to the disk path.
 
 ## Bootstrapping a new datastore
 
@@ -156,94 +170,94 @@ storage?
 First you need to create the basic structure for your `datastore`:
 
     $ mkdir ~/.arverdata # the location is configurable. We use the default one.
-    $ cd ~/.arverdata
-    $ mkdir keys/public -p
-    $ gpg --export -a myself@example.com > keys/public/myself
-    $ vi disks
-    $ # add your hostgroups, hosts and disks
-    $ vi users
-    $ # add your user and the key-id of your public gpg-key
-    $ # if your starting your infrastructure from scratch you can use slot: 0
-    $ # for your first user. If your migrating an existing infrastructure you
-    $ # should be aware that slot 0 as well as other slots are likely to be
-    $ # already in use and you should use a slot for your user which is free on
-    $ # _all_ systems.
+    $ gpg --gen-key      # create a dedicated gpg key for arver
+    $ vi users           # add your user and the key-id of your new public gpg-key
+    $ vi disks           # add your hostgroups, hosts and disks
+    $ echo "'username': '<your_arver_username>' > ~/.arver  #set your default user
 
 Then we can create the encrypted harddisk:
 
 ## Action Create
 
-To initially create an arver managed LUKS device you need to add the device
-to the disks list. See above for various examples.
-After adding the device to the disks list, you can create the LUKS device by
-invoking the following command:
+To initially create an arver managed LUKS device you first need to add the 
+device to the disks config. See above for various examples.
+You can create the LUKS device by invoking the following command:
 
-    $ arver -t hostgroup1/host1/disk1 --create 
-
-If there is already a LUKS container defined on that disk you will be notified
-about this issue and asked to either enforce violence on that disk or you can
-add an inital arver user or an additional user by add-user. Read more about that
-in one of the next section.
+    $ arver -t TARGET --create 
 
 What's happening behind the scene?
 
-arver creates a random password and stores it in your users' slot on the server.
-The password is then encrypted with the users' public key (key defined in
-`users`) and stored in `datastore/keys/USERNAME/key_X`
-X will be incremented with each usage of `arver --create`
+Arver creates a new LUKS device with a random password in your LUKS slot on the 
+server. The password is then encrypted with your public key (defined in `users`)
+and stored in `datastore/keys/USERNAME/key_X`
 
 ## Action Open
 
 To open a LUKS device managed by arver you can invoke the `--open` action on any
 target:
 
-    $ arver -t hostgroup1/host1/disk1 --open
+    $ arver -t TARGET --open
 
-arver retrieves the password by decrypting the data/keys/USERNAME/key_X files
-and uses the password matching this device to open the LUKS device on the server.
+arver retrieves the password by decrypting the keys in data/keys/YOURUSERNAME
+and uses this to open the LUKS device on the server.
 
-If you pass a host (in this example this would be `hostgroup1/host1`) or even a
-hostgroup (`hostgroup1`) as a target arver will open *all* devices that are
-contained in the specific group.
-This is how you can easily open various disks by invoking *one* arver command.
+See the section `TARGET` on how to open multiple disks at once.
+
+You can define script hooks to be executed before and after the open command.
+See `Disks` for details. The hooks are run in the following order:
+
+  * pre_open of host
+  *  pre_open of disk1
+  *   open disk1
+  *  post_open of disk1
+  *  pre_open of disk2
+  *   open disk2
+  *  post_open of disk1
+  * post_open of host
+
+Those scripts have to be present at the actual host.
+
+If you don't have a key for any of the disks that you wish to open it will be 
+skipped (along with its script hooks).
 
 ## Action Close
 
 Closing luks devices is simply done by invoking
 
-    $ arver -t hostgroup1/host1/disk1
+    $ arver -t TARGET
 
-So far you need to deal yourself with unmounting the opened device or stopping
-virtual guests accessing the encrypted device. In the near future this can be
-done by specifying appropriate actions on a device level.
-
-TODO: document the actions
+For this action you can define hooks as well. See `Disks` and `Action Open` 
+for details.
 
 ## Managing users
 
-To add another user to one of the disks you need to get the public key of that
-user. Store it in `datastore/keys/public/USERNAME` and add the user as `USERNAME`
-to the users list. Furthermore, you need to provide a not yet used luks SLOT as
-the users slot.
+To add another user to one of the disks you need to have the public key of that
+user. If you manage your `datastore` in a version controll system, you'll likely
+have the key already in `datastore/keys/public/USERNAME` where it will be 
+imported automatically.
 
-Granting the user access to that disk is done by invoking the following command:
+Otherwise store it there and add the user to the `user` config.
 
-    $ arver -t hostgroup1/host1/disk1 --add-user USERNAME
+Granting the user access to any disk is done by invoking the following command:
 
-arver will then create a random password for the specific user and
-add it to the user-slot on the server. Furthermore, the password is encrypted
+    $ arver -t TARGET --add-user USERNAME
+
+arver will then create a random password for the specific user and add it to 
+the user-slot on the targeted disks. Furthermore, the password is encrypted
 with the public key of the specific user and stored in the data storage under
-`datastore/keys/USERNAME/key_X`, where X is an incremented number.
+`datastore/keys/USERNAME/`.
+
+For the other user to receive those new privileges he has to import the new
+keys to his own `datastore`. So if you use a version controll system you should
+now also commit the new keys.
 
 If you are migrating from an existing LUKS infrastructure and want to add an
-initial user to the LUKS device, you will need to use as well `--add-user`.
-However to be able to manage the LUKS device you need provide the current
-existing password. By providing the option `--ask-password`, you will be asked
-for that password.
+initial user to the LUKS device, you will need to use the `--ask-password` option,
+to provide an existing password.
 
-To remove access of a certain user you can simply run
+To remove all permissions of a certain user you can simply run
 
-    $ arver -t hostgroup1/host1/disk1 --del-user USERNAME
+    $ arver -t TARGET --del-user USERNAME
 
 Which will remove the password stored in the LUKS slot of that device. Remember
 that you can also invoke this command on a whole hostgroup or even on all your
@@ -251,30 +265,41 @@ managed devices (using `-t ALL`). This will help you to quickly and savely
 removing any access to encrypted devices of one user immediately amongst the
 whole infrastructure.
 
+By design it is not possible to know who has access to which disks by just 
+looking at the `datastore`. All arver keys including the information on which
+disks they fit are encrypted with the users public key. So without the 
+corresponding private key it is not possible to see the privileges.
+
+You can however display the targets `information` to see which slots are used.
+But to do this you need access to the server and the `users` config.
+
 ## Information about targets
 
 To gather various information about the different targets you can invoke
 
-    $ arver -t ALL -i
+    $ arver -t TARGET -i
     
 Which will display you the current configuration of all devices, as well as
-different parameters of the LUKS device.
+different parameters of the LUKS device and slot usage.
 
 ## Garbage collection
 
-As you might add and remove users to disk or reset access to diskfiles the
-amount of generated key files with random passwords by user might grow and
-not all might be needed anymore. Furthermore it is likely that it due to various
+As you might add and remove users to disks or reset access to disks the
+amount of generated key files with random passwords might grow and not all
+might be needed anymore. Furthermore it is likely that due to various
 actions it might be obvious or at least reconstructable to which devices a
 certain user might have access.
 
 To address this problem arver provides a garbage collection process, which will
-rearrange all your own keyfiles. Only your own as you are not able to read the
-others key files.
+rearrange all your own keyfiles. (Only your own as you are not able to read the
+others key files.)
 
 You can do that by invoking the following command:
 
     $ arver -gc
+
+If you use a version controll system to store you `datastore` you should do this
+always before commiting the `datastore`.
 
 
 ## SEE ALSO

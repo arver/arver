@@ -29,6 +29,7 @@ module Arver
       caller.execute
       if caller.output.include?('LUKS header information') then
         Arver::Log.warn( "VERY DANGEROUS: the partition #{partition.device} is already formatted with LUKS - returning (continue with --violence)" ) 
+        Arver::Log.warn( "If you wish to integrate an existing disk into arver use --add-user #{Arver::LocalConfig.instance.username} instead." ) 
         if Arver::RuntimeConfig.instance.violence then
           Arver::Log.info( "you applied --violence, so we will continue ..." )
         else
