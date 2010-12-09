@@ -6,7 +6,7 @@ module Arver
 
      attr_accessor :level, :stream
   
-     def initialize( level, stream = $stdout )
+     def initialize( stream = $stdout, level = Info )
        @level = level
        @stream = stream
      end

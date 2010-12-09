@@ -9,7 +9,7 @@ describe "CommandWrapper" do
   end  
 
   it "can execute commands" do
-    caller = Arver::CommandWrapper.new( "echo", ["-n","hi"] )
+    caller = Arver::CommandWrapper.create( "echo", ["-n","hi"] )
     caller.escaped_command().include?("echo").should == true
     caller.escaped_total_command("").include?("echo").should == true
     caller.execute.should == true
@@ -18,13 +18,13 @@ describe "CommandWrapper" do
   end
   
   it "can pipe content through" do
-    caller = Arver::CommandWrapper.new( "cat" )
+    caller = Arver::CommandWrapper.create( "cat" )
     caller.execute( "hello" ).should == true
     "hello\n".should == caller.output
   end
   
   it "can get the right return value" do
-    caller = Arver::CommandWrapper.new( "false" )
+    caller = Arver::CommandWrapper.create( "false" )
     caller.execute.should == false
     caller.success?.should == false
   end
@@ -32,7 +32,7 @@ describe "CommandWrapper" do
   it "can execute ssh commands" do
     host = Arver::Host.new( "localhost", Arver::Config.instance.tree )
     host.username= Etc.getlogin
-    caller = Arver::SSHCommandWrapper.new( "echo", ["-n","hi"],  host )
+    caller = Arver::SSHCommandWrapper.create( "echo", ["-n","hi"],  host )
     caller.execute.should == true
     'hi'.should == caller.output
   end

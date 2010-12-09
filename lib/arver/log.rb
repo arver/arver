@@ -3,8 +3,8 @@ module Arver
     
     include LogLevels
     
-    def self.logger 
-      @@logger ||= Arver::IOLogger.new( Info )
+    def self.logger()
+      @@logger ||= IOLogger.new
     end
     def self.logger=( logger )
       @@logger = logger
@@ -31,6 +31,7 @@ module Arver
     def self.level( num )
       logger.level=( num )
     end
+
     
   end
 end

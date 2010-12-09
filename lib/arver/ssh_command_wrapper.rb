@@ -3,10 +3,13 @@ module Arver
     
     attr_accessor :host, :user, :port, :as_root
     
-    def initialize( cmd, args, host, as_root = false )
-      self.host= host
-      self.as_root= as_root
-      super( cmd, args )
+    def self.create( cmd, args, host, as_root = false )
+      c = SSHCommandWrapper.new
+      c.host= host
+      c.as_root= as_root
+      c.command= cmd
+      c.arguments_array= args
+      c
     end
     
     def escaped_command

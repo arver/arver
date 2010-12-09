@@ -2,7 +2,9 @@ require 'optparse'
 
 module Arver
   class CLI
-    def self.execute(arguments=[])
+    def self.execute(output,arguments=[])
+
+      Arver::Log.logger= IOLogger.new( output )
 
       options = {
         :user     => '',

@@ -1,28 +1,15 @@
 module Arver
   class CommandWrapper
 
-    @@test_failure = false
-    def self.test_failure
-      @@test_failure = true
-    end
-    
-    @@test_spoof_output= nil
-    def self.test_spoof_output( output )
-      @@test_spoof_output= output
-    end 
-
-    def self.reset_test
-      @@test_spoof_output= nil
-      @@test_failure = false
-    end
-
     attr_accessor :command, :arguments_array, :return_value, :output
   
-    def initialize( cmd, args = [] )
-      self.command= cmd
-      self.arguments_array= args
+    def self.create( cmd, args = [] )
+      c = CommandWrapper.new
+      c.command= cmd
+      c.arguments_array= args
+      c
     end
-  
+
     def escaped_command
       Escape.shell_command([ command ] + arguments_array )
     end
@@ -59,13 +46,6 @@ module Arver
         self.return_value= $?
       end
 
-      if( @@test_failure )
-        Arver::Log.trace( "** test: command failed" )
-        self.return_value= 1
-      end
-      if( ! @@test_spoof_output.nil? )
-        self.output= @@test_spoof_output
-      end
       self.success?
     end
   end

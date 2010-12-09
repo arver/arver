@@ -1,7 +1,6 @@
 After do  
   # remove all stubbed methods after each scenario
   Mocha::Mockery.instance.stubba.unstub_all
-  Arver::CommandWrapper.reset_test
 end
 
 Given /^there is a key for all test Partitions/ do
@@ -18,23 +17,29 @@ Given /^there is an unpadded keyfile/ do
 end
 
 Given /^there will be a failure/ do
-  Arver::CommandWrapper.test_failure
+  cm = Arver::SSHCommandWrapper.new
+  cm.stubs(:return_value).returns(1)
+  Arver::SSHCommandWrapper.stubs(:new).returns(cm)
+ # Arver::CommandWrapper.test_failure
 end
 
 Given /^all disks seem closed/ do
-  command = Arver::SSHCommandWrapper.new(nil,nil,nil)
+  command = Arver::SSHCommandWrapper.new
   command.stubs(:execute).returns(false)
   Arver::LuksWrapper.stubs(:open?).returns( command  )
 end
 
 Given /^all disks seem open/ do
-  command = Arver::SSHCommandWrapper.new(nil,nil,nil)
+  command = Arver::SSHCommandWrapper.new
   command.stubs(:execute).returns(true)
   Arver::LuksWrapper.stubs(:open?).returns( command  )
 end
 
 Given /^external commands will return "(.*)"/ do  | txt |
-  Arver::CommandWrapper.test_spoof_output( txt )
+  cm = Arver::SSHCommandWrapper.new
+  cm.stubs(:output).returns(txt)
+  Arver::SSHCommandWrapper.stubs(:new).returns(cm)
+ # Arver::CommandWrapper.test_spoof_output( txt )
 end
 
 Given /^there are no permissions set for "(.*)"/ do  | user |
@@ -48,10 +53,9 @@ When /^I run arver in test mode with arguments "(.*)"/ do | arguments|
    require File.expand_path("../lib/arver")
    require File.expand_path("../lib/arver/cli")
    arguments = "--vv -u test -c ../spec/data --test-mode "+arguments
-   
-   Arver::Log.logger= Arver::StringLogger.new( Arver::LogLevels::Debug)
 
-   Arver::CLI.execute( arguments.split(" ") )
+   @stdout = File.expand_path(File.join(@tmp_root, "executable.out"))
+   Arver::CLI.execute( File.open(@stdout,'w'), arguments.split(" ") )
   end
 
 end
@@ -64,25 +68,28 @@ When /^I run arver in test mode with user "(.*)" and arguments "(.*)"/ do | user
    require File.expand_path("../lib/arver/cli")
    arguments = "--vv -u #{user} -c ../spec/data --test-mode "+arguments
    
-   Arver::Log.logger= Arver::StringLogger.new( Arver::LogLevels::Debug)
-
-   Arver::CLI.execute( arguments.split(" ") )
+   @stdout = File.expand_path(File.join(@tmp_root, "executable.out"))
+   Arver::CLI.execute( File.open(@stdout,'w'), arguments.split(" ") )
   end
 
 end
 
 Then /^I should see "([^\"]*)"$/ do |text|
-  Arver::Log.logger.log.should contain(text)
+  output = File.read(@stdout)
+  output.should contain(text)
 end
 
 Then /^I should not see "([^\"]*)"$/ do |text|
-  Arver::Log.logger.log.should_not contain(text)
+  output = File.read(@stdout)
+  output.should_not contain(text)
 end
 
 Then /^I should see (\d+) lines of output$/ do |num|
-  Arver::Log.logger.log.split("\n").size().should == Integer(num)
+  output = File.read(@stdout)
+  output.split("\n").size().should == Integer(num)
 end
 
 Then /^I should see exactly "([^\"]*)"$/ do |text|
-  Arver::Log.logger.log.should == text
+  output = File.read(@stdout)
+  output.should == text
 end

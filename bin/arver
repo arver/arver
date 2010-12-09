@@ -7,4 +7,4 @@ $:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
 require 'arver'
 require "arver/cli"
 
-Arver::CLI.execute(ARGV)
+Arver::CLI.execute($stdout,ARGV)
