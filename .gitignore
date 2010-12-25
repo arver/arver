@@ -2,6 +2,7 @@
 .project
 tmp/
 spec/data/keys/test/
+spec/data/keys/test2/
 coverage/
 coverage.data
 *.swp
