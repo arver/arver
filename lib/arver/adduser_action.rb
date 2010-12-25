@@ -46,7 +46,7 @@ module Arver
     end
     
     def post_action
-      generator.dump
+      self.generator.dump
       false
     end
   end

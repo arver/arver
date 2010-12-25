@@ -50,7 +50,7 @@ module Arver
       true
     end
     
-    def post_execution
+    def post_action
       self.generator.dump
       true
     end
