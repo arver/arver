@@ -11,12 +11,20 @@ describe "CommandWrapper" do
   it "can execute commands" do
     caller = Arver::CommandWrapper.create( "echo", ["-n","hi"] )
     caller.escaped_command().include?("echo").should == true
-    caller.escaped_total_command("").include?("echo").should == true
     caller.execute.should == true
     caller.success?.should == true
     'hi'.should == caller.output
   end
 
+  it "should not leak input" do
+    caller = Arver::CommandWrapper.create( "false", [] )
+    caller.stub( :run ) do | command, input |
+      command.include?( "test" ).should be_false
+      input.include?( "test" ).should be_true
+    end
+    caller.execute( "test" )
+  end
+  
   it "can pipe content through" do
     caller = Arver::CommandWrapper.create( "cat" )
     caller.execute( "hello" ).should == true

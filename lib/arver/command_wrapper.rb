@@ -14,22 +14,9 @@ module Arver
       Escape.shell_command([ command ] + arguments_array )
     end
   
-    def escaped_total_command( input, masked=false )
-      if( input.empty? )
-        self.escaped_command
-      else
-        input = "**********" if masked
-        Escape.shell_command( ["echo", input] ) + " | " + self.escaped_command
-      end
-    end
-
-    def escaped_total_command_masked( input )
-      self.escaped_total_command( input, true )
-    end
-    
-    def execute( input = "")
-      Arver::Log.trace( "** Execute: "+self.escaped_total_command_masked( input ) )
-      self.run( self.escaped_total_command( input ) )
+    def execute( input = "" )
+      Arver::Log.trace( "** Execute: "+self.escaped_command )
+      self.run( escaped_command, input )
     end
     
     
@@ -37,15 +24,18 @@ module Arver
       return_value == 0
     end
     
-    def run( command )
+    def run( command, input )
       if( Arver::RuntimeConfig.instance.test_mode || Arver::RuntimeConfig.instance.dry_run )
         self.output= ""
         self.return_value= 0
       else
-        self.output= `#{command}`
+        IO.popen( command, "w+") do |pipe|
+          pipe.puts( input ) unless input.empty?
+          pipe.close_write
+          self.output= pipe.read
+        end
         self.return_value= $?
       end
-
       self.success?
     end
   end
