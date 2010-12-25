@@ -4,7 +4,7 @@ end
 
 
 When /^I boostrap arver$/ do
-  Arver::Config.any_instance.stubs(:load).returns(true)
+  Arver::Config.instance.stub( :load ).and_return( true )
   @bootstrap_process = Arver::Bootstrap.run(@options)
 end
 
@@ -14,9 +14,9 @@ end
 
 Given /^I supply a username with a (.*) key$/ do |keytype|
   @options[:user] = 'foo'
-  Arver::KeySaver.stubs(:check_key).returns(keytype == 'existing')
+  Arver::KeySaver.stub(:check_key).and_return(keytype == 'existing')
 end
 
 Given /^I don't supply any user as the one I use is correct$/ do
-  Arver::KeySaver.stubs(:check_key).returns(true)
+  Arver::KeySaver.stub(:check_key).and_return(true)
 end

@@ -16,7 +16,7 @@ describe "CommandWrapper" do
     caller.success?.should == true
     'hi'.should == caller.output
   end
-  
+
   it "can pipe content through" do
     caller = Arver::CommandWrapper.create( "cat" )
     caller.execute( "hello" ).should == true

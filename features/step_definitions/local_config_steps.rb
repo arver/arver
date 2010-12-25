@@ -1,14 +1,9 @@
-Before do
-  # reset the instance as we are testing a singleton
-  Arver::LocalConfig.reset_instance
-end
-
 After do
   Arver::LocalConfig.reset_instance
 end
 
 Given /^a (.*) local configuration file$/ do |ctype|
-  Arver::LocalConfig.any_instance.stubs(:path).returns(@local_configs[ctype.to_sym])
+  Arver::LocalConfig.instance.stub( :path ).and_return( @local_configs[ctype.to_sym] )
 end
 
 When /^I load the local_config$/ do

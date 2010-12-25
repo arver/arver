@@ -21,7 +21,6 @@ require 'cucumber'
 gem 'rspec'
 require 'spec'
 
-require 'mocha'
 require 'spec/stubs/cucumber'
 
 Before do

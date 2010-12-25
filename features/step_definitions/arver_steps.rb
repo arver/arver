@@ -1,8 +1,3 @@
-After do  
-  # remove all stubbed methods after each scenario
-  Mocha::Mockery.instance.stubba.unstub_all
-end
-
 Given /^there is a key for all test Partitions/ do
   `cp spec/data/fixtures/test_key_000001 spec/data/keys/test/key_000001`
 end
@@ -18,27 +13,27 @@ end
 
 Given /^there will be a failure/ do
   cm = Arver::SSHCommandWrapper.new
-  cm.stubs(:return_value).returns(1)
-  Arver::SSHCommandWrapper.stubs(:new).returns(cm)
+  cm.stub(:return_value).and_return(1)
+  Arver::SSHCommandWrapper.stub(:new).and_return(cm)
  # Arver::CommandWrapper.test_failure
 end
 
 Given /^all disks seem closed/ do
   command = Arver::SSHCommandWrapper.new
-  command.stubs(:execute).returns(false)
-  Arver::LuksWrapper.stubs(:open?).returns( command  )
+  command.stub(:execute).and_return(false)
+  Arver::LuksWrapper.stub(:open?).and_return( command  )
 end
 
 Given /^all disks seem open/ do
   command = Arver::SSHCommandWrapper.new
-  command.stubs(:execute).returns(true)
-  Arver::LuksWrapper.stubs(:open?).returns( command  )
+  command.stub(:execute).and_return(true)
+  Arver::LuksWrapper.stub(:open?).and_return( command  )
 end
 
 Given /^external commands will return "(.*)"/ do  | txt |
   cm = Arver::SSHCommandWrapper.new
-  cm.stubs(:output).returns(txt)
-  Arver::SSHCommandWrapper.stubs(:new).returns(cm)
+  cm.stub(:output).and_return(txt)
+  Arver::SSHCommandWrapper.stub(:new).and_return(cm)
  # Arver::CommandWrapper.test_spoof_output( txt )
 end
 
