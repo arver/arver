@@ -1,11 +1,11 @@
 --- 
-am: 
-  gpg: 3621064B
+bla: 
+  gpg: xxxxxx
   slot: 1
 test2: 
   gpg: 5A9195C8
   slot: 3
-mh: 
+bla2: 
   gpg: xxxxxx
   slot: 2
 test: 
