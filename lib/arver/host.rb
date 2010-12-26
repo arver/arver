@@ -66,9 +66,9 @@ module Arver
     end
     
     def run_action( action )
-      return false unless action.pre_host( self )
+      action.pre_host( self )
       super
-      return action.post_host( self )
+      action.post_host( self )
     end
   end
 end

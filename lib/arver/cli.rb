@@ -102,9 +102,12 @@ module Arver
             
       return false unless( action.on_user( target_user ) )
       
-      return false unless action.pre_action
-      return false unless action.run_on( Arver::Config.instance.tree )
-      return action.post_action
+      catch ( :abort_action ) do
+        action.pre_action
+        action.run_on( Arver::Config.instance.tree )
+        action.post_action
+      end
+
     end
   end
 end

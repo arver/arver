@@ -105,7 +105,7 @@ module Arver
     
     def run_action( action )
       self.children.each_value do | child |
-        return false unless action.run_on( child )
+        action.run_on( child )
       end
     end
   end

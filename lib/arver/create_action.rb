@@ -35,7 +35,7 @@ module Arver
         else
           Arver::Log.info( "for more information see /tmp/luks_create_error.txt" )
           system("echo \"#{caller.output}\" > /tmp/luks_create_error.txt")
-          return false if not Arver::RuntimeConfig.instance.violence
+          throw( :abort_action ) if not Arver::RuntimeConfig.instance.violence
         end
       end
       
@@ -47,12 +47,10 @@ module Arver
         Arver::Log.error( "Could not create Partition!" )
         self.generator.remove_key( Arver::LocalConfig.instance.username, partition )
       end
-      true
     end
     
     def post_action
       self.generator.dump
-      true
     end
   end
 end

@@ -10,7 +10,10 @@ module Arver
     end
     
     def verify?( partition )
-      return false unless load_key( partition )
+      unless( load_key( partition ) )
+        Arver::Log.error( "No permission on " + partition.path )
+        return false
+      end
       true
     end
     
@@ -22,7 +25,6 @@ module Arver
       unless( caller.success? )
         Arver::Log.error( "Could not remove user:\n" + caller.output )
       end
-      true
     end
   end
 end

@@ -7,7 +7,6 @@ module Arver
 
     def pre_host( host )
       Arver::Log.info( "\n-- "+host.path+":" )
-      true
     end
 
     def execute_partition(partition)
@@ -18,7 +17,6 @@ module Arver
         info.store(*line.split(':',2).collect{|f| f.strip })
       end
       Arver::Log.info("  #{sprintf("%0-20s",partition.name.first(20))}:  #{sprintf("%0-40s",partition.device_path.first(40))}: Slots: #{(0..7).map{|i| info["Key Slot #{i}"] == 'ENABLED' ? 'X' : '_'}.join}; LUKSv#{info['Version']}; Cypher: #{info['Cipher name']}:#{info['Cipher mode']}:#{info['Hash spec']}; UUID=#{info['UUID']}")
-      true
     end
   end
 end

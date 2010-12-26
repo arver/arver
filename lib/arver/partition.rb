@@ -40,11 +40,10 @@ class Arver::Partition
 
   def run_action( action )
     if( action.verify?( self ) )
-      return false unless action.pre_partition(self)
-      return false unless action.execute_partition(self)
-      return false unless action.post_partition(self)
+      action.pre_partition(self)
+      action.execute_partition(self)
+      action.post_partition(self)
     end
-    true
   end
 
   def device_path

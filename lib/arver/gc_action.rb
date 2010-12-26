@@ -7,7 +7,6 @@ module Arver
     
     def post_action
       keystore.save
-      true
     end
   end
 end
