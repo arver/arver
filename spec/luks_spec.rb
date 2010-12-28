@@ -63,6 +63,7 @@ describe "LuksWrapper" do
     c = Arver::LuksWrapper.open( partition )
     c.execute( "test2_key" )
     c.success?.should == false
+    Arver::LuksWrapper.was_wrong_key?( c ).should == true
     c.execute( "test_key" )
     c.success?.should == true
     c = Arver::LuksWrapper.close( partition )

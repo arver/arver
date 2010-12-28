@@ -34,7 +34,7 @@ module Arver
           pipe.close_write
           self.output= pipe.read
         end
-        self.return_value= $?
+        self.return_value= $?.exitstatus
       end
       self.success?
     end

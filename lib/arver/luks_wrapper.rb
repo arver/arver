@@ -21,5 +21,8 @@ module Arver
     def self.open?( partition )
       Arver::SSHCommandWrapper.create( "sh", [ "-c", "if [ -b '/dev/mapper/#{partition.name}' ]; then true; else false; fi" ], partition.parent, true )
     end
+    def self.was_wrong_key?( command_wrapper )
+      command_wrapper.return_value == 234
+    end
   end
 end
