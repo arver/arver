@@ -1,7 +1,6 @@
 Important todos:
 
-* extend the manpage
 * use a trust-model for the gpg keys: the idea is, that you can only execute add-user if you have signed the other users gpg-key first.
 * clean termination with proper (documented!) return codes. 
-* kill singletons?
-
+* provide a refresh-key action to change the luks passphrases. when i get new permissions from another admin i should be able to change
+  my luks-key. because the other admin could modify arver to display the key he gave to me.
