@@ -242,6 +242,10 @@ Granting the user access to any disk is done by invoking the following command:
 
     $ arver -t TARGET --add-user USERNAME
 
+For this command to work, you have to trust the gpg key of USERNAME. See 
+`man gpg` section --edit-key. You should always verify that you have the correct 
+key, e.g. by comparing the fingerprint over a trusted channel.
+
 arver will then create a random password for the specific user and add it to 
 the user-slot on the targeted disks. Furthermore, the password is encrypted
 with the public key of the specific user and stored in the data storage under

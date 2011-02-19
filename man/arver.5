@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ARVER" "5" "December 2010" "" ""
+.TH "ARVER" "5" "February 2011" "" ""
 .
 .SH "NAME"
 \fBarver\fR \- LUKS on the loose
@@ -342,6 +342,9 @@ $ arver \-t TARGET \-\-add\-user USERNAME
 .fi
 .
 .IP "" 0
+.
+.P
+For this command to work, you have to trust the gpg key of USERNAME\. See \fBman gpg\fR section \-\-edit\-key\. You should always verify that you have the correct key, e\.g\. by comparing the fingerprint over a trusted channel\.
 .
 .P
 arver will then create a random password for the specific user and add it to the user\-slot on the targeted disks\. Furthermore, the password is encrypted with the public key of the specific user and stored in the data storage under \fBdatastore/keys/USERNAME/\fR\.

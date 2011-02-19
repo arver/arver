@@ -337,6 +337,10 @@ imported automatically.</p>
 <pre><code>$ arver -t TARGET --add-user USERNAME
 </code></pre>
 
+<p>For this command to work, you have to trust the gpg key of USERNAME. See
+<code>man gpg</code> section --edit-key. You should always verify that you have the correct
+key, e.g. by comparing the fingerprint over a trusted channel.</p>
+
 <p>arver will then create a random password for the specific user and add it to
 the user-slot on the targeted disks. Furthermore, the password is encrypted
 with the public key of the specific user and stored in the data storage under
@@ -411,7 +415,7 @@ always before commiting the <code>datastore</code>.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
-    <li class='tc'>December 2010</li>
+    <li class='tc'>February 2011</li>
     <li class='tr'>arver(5)</li>
   </ol>
 

@@ -3,13 +3,17 @@ module Arver
     
     def self.save( user, key )
       unless check_key( user )
-        return false
+        return
       end
       gpg_key = key_of( user )
       key = add_padding( key )
       begin
-        # key_encrypted = GPGME::encrypt( gpg_key, key )
-        key_encrypted = GPGME::encrypt( gpg_key, key , {:armor => true, :always_trust => true})
+        if( Arver::RuntimeConfig.instance.test_mode )
+          # in test mode trust all keys since running arver in cucumber creates a fresh gpg-keyring
+          key_encrypted = GPGME::encrypt( gpg_key, key , {:armor => true, :always_trust => true})
+        else
+          key_encrypted = GPGME::encrypt( gpg_key, key , {:armor => true})
+        end
       rescue GPGME::Error => gpgerr
         Arver::Log.error( "GPGME Error #{gpgerr} Message: #{gpgerr.message}" )
         return
@@ -20,7 +24,6 @@ module Arver
           f.write key_encrypted
         end
       end
-      
     end
     
     def self.key_of user
@@ -46,8 +49,16 @@ module Arver
         key = File.read( user_pubkey )
         GPGME::import( key )
       end
-      if( found_in_keyring && ! found_on_disk )
+      if( found_in_keyring )
+        if( ! Arver::RuntimeConfig.instance.test_mode && GPGME::list_keys( key_id ).first.owner_trust != 5 )
+          Arver::Log.error( "You do not trust the key of #{user}!\nYou have to set the trust-level using 'gpg --edit-key #{key_id}'.\nYou should verify the fingerprint over a secure channel." );
+          return false
+        end
         key = GPGME::export( key_id, { :armor => true } )
+        if( found_on_disk )
+          key_on_disk = File.read( user_pubkey )
+          return true if key_on_disk == key
+        end
         File.open( user_pubkey, 'w' ) do |f|
           f.write( key )
         end
