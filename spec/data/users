@@ -4,7 +4,7 @@ bla:
   gpg: xxxxxx
 test2: 
   slot: 3
-  gpg: 5A9195C8
+  gpg: 42C68368
 bla2: 
   slot: 2
   gpg: xxxxxx
