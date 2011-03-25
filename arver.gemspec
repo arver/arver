@@ -24,4 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency('i18n','>=0.4.1')
   s.add_dependency('escape','>=0.0.4')
   s.add_dependency('activesupport','>=2.3.8')
+  s.add_dependency('rcov', '>=0.9.9')
+  s.add_dependency('cucumber', '>=0.10.2')
+  s.add_dependency('rspec', '>=2.5.0')
 end

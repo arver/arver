@@ -17,11 +17,9 @@ end
 require File.dirname(__FILE__) + "/../../lib/arver"
 
 gem 'cucumber'
-require 'cucumber'
 gem 'rspec'
-require 'spec'
 
-require 'spec/stubs/cucumber'
+require 'cucumber/rspec/doubles'
 
 Before do
   @tmp_root = File.dirname(__FILE__) + "/../../tmp"
