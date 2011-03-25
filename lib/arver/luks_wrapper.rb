@@ -16,13 +16,14 @@ module Arver
       Arver::SSHCommandWrapper.create( "cryptsetup", [ "--batch-mode", "luksKillSlot", partition.device_path, key_slot ], partition.parent, true )
     end
     def self.open( partition )
-      Arver::SSHCommandWrapper.create( "cryptsetup", [ "--batch-mode", "luksOpen", partition.device_path, partition.name ], partition.parent, true )
+      Arver::SSHCommandWrapper.create( "cryptsetup", [ "--batch-mode", "luksOpen", "-T 1", partition.device_path, partition.name ], partition.parent, true )
     end
     def self.open?( partition )
       Arver::SSHCommandWrapper.create( "sh", [ "-c", "if [ -b '/dev/mapper/#{partition.name}' ]; then true; else false; fi" ], partition.parent, true )
     end
     def self.was_wrong_key?( command_wrapper )
-      command_wrapper.return_value == 234
+      # before version 1.2 return value was 234
+      command_wrapper.return_value == 234 || command_wrapper.return_value == 2
     end
   end
 end
