@@ -23,10 +23,12 @@ module Arver
       Arver::Log.debug( "generating a new key for partition #{partition.device} on #{partition.path}" )
 
       # checking if disk is not already LUKS formatted
-      Arver::Log.debug( "checking if disk is not already LUKS formatted..." )
+      Arver::Log.debug( "checking if disk is already LUKS formatted." )
+      Arver::Log.info( "!! if the next line reads 'Command failed' please ignore it! (sorry this will become more sane soon) !!" )
 
       caller = Arver::LuksWrapper.dump( partition )
       caller.execute
+      
       if caller.output.include?('LUKS header information') then
         Arver::Log.warn( "VERY DANGEROUS: the partition #{partition.device} is already formatted with LUKS - returning (continue with --violence)" ) 
         Arver::Log.warn( "If you wish to integrate an existing disk into arver use --add-user #{Arver::LocalConfig.instance.username} instead." ) 
