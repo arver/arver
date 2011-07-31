@@ -37,6 +37,9 @@ module Arver
     def add_luks_key(partition, luks_key)
       @keys[partition.path] = luks_key
     end
-    
+
+    def luks_key?(partition)
+      ! @keys[partition.path].nil?
+    end
   end
 end  

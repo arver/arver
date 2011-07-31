@@ -45,12 +45,14 @@ module Arver
                 "Verbose") { Arver::Log.level( Arver::LogLevels::Debug ) }
         opts.on("--vv",
                 "Max Verbose") { Arver::Log.level( Arver::LogLevels::Trace ) }
-        opts.on("--test-mode",
-                "Test mode") { options[:test_mode] = true }
-        opts.on_tail( "-l", "--list-targets",
+        opts.on( "-l", "--list-targets",
                 "List targets." ) { options[:action] = :list; }
-        opts.on_tail( "-g", "--garbage-collect",
+        opts.on( "-g", "--garbage-collect",
                 "Expunge old keys." ) { options[:action] = :gc; }
+        opts.on( "-k TARGET", "--keys TARGET", String,
+                "List local keys for this target.") { |arg| options[:argument][:target] = arg; options[:action] = :key_info; }
+        opts.on("--test-mode",
+                "Test mode (internal use)") { options[:test_mode] = true }
         opts.separator "Targets:"
         opts.on(
                 "        Possible Paths are: 'Group', 'Host', 'Device', 'Host/Device',\n"+
@@ -69,8 +71,13 @@ module Arver
         opts.on_tail( "-d USER TARGET", "--del-user USER TARGET", String,
                 "Remove a user from target.") { |user| options[:action] = :deluser; options[:argument][:user] = user;  }
         opts.on_tail( "-i TARGET", "--info TARGET", String,
-                "Info about a target.") { |arg| options[:argument][:target] = arg; options[:action] = :info; }
-        opts.parse!(arguments)
+                "LUKS info about a target.") { |arg| options[:argument][:target] = arg; options[:action] = :info; }
+        
+        begin
+          opts.parse!(arguments)
+        rescue
+          Arver::Log.write opts; return
+        end
                 
         if options[:action] == :deluser || options[:action] == :adduser
           options[:argument][:target] = arguments.last
@@ -88,7 +95,10 @@ module Arver
       end
       
       target_list = TargetList.get_list( options[:argument][:target] )
-      return false if target_list.empty? && ( options[:action] != :list && options[:action] != :gc )
+      if target_list.empty? && ( options[:action] != :list && options[:action] != :gc )
+        Arver::Log.write( "No targets found" )
+        return false
+      end
  
       run_action( options[:action], target_list, options[:argument][:user] )
     end
@@ -103,6 +113,7 @@ module Arver
         :adduser => Arver::AdduserAction,
         :deluser => Arver::DeluserAction,
         :info => Arver::InfoAction,
+        :key_info => Arver::KeyInfoAction,
       }
 
       action = (actions[ action ]).new( target_list )
