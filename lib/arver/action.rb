@@ -11,7 +11,7 @@ module Arver
       return true unless needs_target_user?
       self.slot_of_target_user= Arver::Config.instance.slot( username )
       if slot_of_target_user.nil?
-        Arver::Log.error( "no such user" )
+        Arver::Log.error( "No such user" )
         return false
       end
       self.target_user= username

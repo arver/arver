@@ -6,7 +6,7 @@ module Arver
       self.open_keystore
       self.new_key_generator
     end
-    
+   
     def pre_action
       tl = ""
       target_list.each { |t| tl += ( tl.empty? ? "": ", " )+t.name }
@@ -23,6 +23,10 @@ module Arver
       else
         self.key= ask("Enter the password for the volume: #{partition.device}") {|q| q.echo = false}
       end
+      unless( Arver::LuksWrapper.open?(partition).execute )
+        Arver::Log.error( "WARNING: "+partition.name+" is not open. skipping." )
+        return false
+      end
       true
     end
 
@@ -38,7 +42,7 @@ module Arver
       caller.execute( key + "\n" + newkey )
       
       unless( caller.success? )
-        Arver::Log.error( "Could not add user to #{partition.path} \n" + caller.output )
+        Arver::Log.error( "Could not add user to #{partition.path} \n #{caller.output}" )
         generator.remove_key( target_user, partition )
       end
     end
