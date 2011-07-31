@@ -4,8 +4,7 @@ Feature: Adding a User
     Given there is a key for all test Partitions
     And there are no permissions set for "test2"
     When I run arver in test mode with arguments "--add-user test2 /location2/machine1" 
-    Then file "../spec/data/keys/test2/key_000002" is not created
-    And file "../spec/data/keys/test2/key_000001" is created
+    Then there should be 1 keyfiles for user "test2"
     And I should see "adduser was called with target(s) machine1 and user test2"
   
   Scenario: trying to add a wrong user

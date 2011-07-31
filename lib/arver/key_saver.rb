@@ -19,11 +19,13 @@ module Arver
         return
       end
       unless( Arver::RuntimeConfig.instance.dry_run )
-        FileUtils.mkdir_p config_path+"/keys/"+user unless File.exists?( config_path+"/keys/"+user )
-        File.open( next_key_path( user ), 'w' ) do |f|
+        FileUtils.mkdir_p key_path(user) unless File.exists?( key_path(user) )
+        filename = key_path(user)+"/"+OpenSSL::Digest::SHA1.new(key_encrypted).to_s
+        File.open( filename, 'w' ) do |f|
           f.write key_encrypted
         end
       end
+      filename
     end
     
     def self.key_of user
@@ -66,12 +68,6 @@ module Arver
       true
     end
     
-    def self.next_key_path( user )
-      nextNumber = Dir.entries( key_path( user ) ).map{|a| a.delete("key_").to_i if a.include?"key_"}.compact.max.to_i+1
-      nextNumber += 1 while( File.exists?( "#{key_path( user )}/key_#{'%06d' % nextNumber}" ) )
-      "#{key_path( user )}/key_#{'%06d' % nextNumber}"
-    end
-
     def self.key_path( user )
       config_path+"/keys/"+user
     end

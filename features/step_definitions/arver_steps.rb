@@ -38,7 +38,7 @@ Given /^external commands will return "(.*)"/ do  | txt |
 end
 
 Given /^there are no permissions set for "(.*)"/ do  | user |
-  `rm -rf spec/data/keys/#{user}/key_*`
+  `rm -rf spec/data/keys/#{user}/*`
 end
 
 When /^I run arver in test mode with arguments "(.*)"/ do | arguments|
@@ -67,6 +67,10 @@ When /^I run arver in test mode with user "(.*)" and arguments "(.*)"/ do | user
    Arver::CLI.execute( File.open(@stdout,'w'), arguments.split(" ") )
   end
 
+end
+
+Then /^there should be (\d+) keyfiles for user "([^"]*)"$/ do |n,user|
+  Dir.entries("spec/data/keys/#{user}").size.should == n.to_i+2
 end
 
 Then /^I should see "([^\"]*)"$/ do |text|

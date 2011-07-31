@@ -1,13 +1,13 @@
 --- 
 bla: 
+  gpg: xxxxxx
   slot: 1
-  gpg: xxxxxx
 test2: 
-  slot: 3
   gpg: 42C68368
+  slot: 3
 bla2: 
-  slot: 2
   gpg: xxxxxx
+  slot: 2
 test: 
-  slot: 7
   gpg: 46425E3B
+  slot: 7

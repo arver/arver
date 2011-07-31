@@ -20,11 +20,10 @@ describe "KeySaver" do
     self.load_test_config
     s = "test\ntest"
     Arver::KeySaver.purge_keys( "test" )
-    Arver::KeySaver.save( "test", s )
-    path =  Arver::KeySaver.key_path( "test" )+"/key_000001"
+    path = Arver::KeySaver.save( "test", s )
     size = File.size?( path )
     Arver::KeySaver.purge_keys( "test" )
-    Arver::KeySaver.save( "test", s )
+    path = Arver::KeySaver.save( "test", s )
     File.size?( path ).should_not == size
   end
 end

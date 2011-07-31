@@ -11,8 +11,8 @@ module Arver
     end
     
     def add( user, partition, luks_key )
-      @keys[user] = {} unless @keys[user]
-      @keys[user][partition.path] = luks_key
+      @keys[user] ||= {}
+      @keys[user][partition.path] = { :key => luks_key, :time => Time.now.to_f }
     end
 
     def remove_key( user, partition )

@@ -6,8 +6,7 @@ Feature: Createing luks
     Then I should see "creating: /location2/machine2/virt1_rootfs"
     And I should see "creating: /location2/machine2/virt2_rootfs"
     And I should see "creating: /location2/machine1/virt1_rootfs"
-    And file "../spec/data/keys/test/key_000001" is created
-    And file "../spec/data/keys/test/key_000002" is not created
+    And there should be 1 keyfiles for user "test"
 
   Scenario: create an disk but key exists
     Given there is a key for all test Partitions
