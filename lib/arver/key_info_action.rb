@@ -8,13 +8,13 @@ module Arver
       Arver::Log.write( "Listing keys: (+) available (-) not available: " )
     end 
     def pre_host(h)
-      Arver::Log.write( " + #{h.name}" )
+      Arver::Log.write( " #{h.name}" )
     end
     def pre_partition(p)
       if keystore.luks_key?(p)
-        Arver::Log.write( "     + #{p.device_path}" )
+        Arver::Log.write( "   + #{p.device_path}" )
       else
-        Arver::Log.write( "     - #{p.device_path}" )
+        Arver::Log.write( "   - #{p.device_path}" )
       end
     end
   end
