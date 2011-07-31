@@ -51,24 +51,31 @@ module Arver
                 "List targets." ) { options[:action] = :list; }
         opts.on_tail( "-g", "--garbage-collect",
                 "Expunge old keys." ) { options[:action] = :gc; }
-        opts.on_tail( "-t", "--target TARGETLIST", String,
-                "Select Target. Allowed Targets are commaseparated lists of:",
-                "'Group', 'Host', 'Device', 'Host/Device', 'Group/Host/Device' or 'ALL'.") { |arg| options[:argument][:target] = arg; }
+        opts.separator "Targets:"
+        opts.on(
+                "        Possible Paths are: 'Group', 'Host', 'Device', 'Host/Device',\n"+
+                "        'Group/Host/Device' or 'ALL'.\n"+
+                "        Multiple Parameters can be given as comma separated list.\n"+
+                "        Ambigues Target parameters will not be executed." )
         opts.separator "Actions:"
-        opts.on_tail( "--create",
-                "Create new arver partition on Target." ) { options[:action] = :create; }
-        opts.on_tail( "-o", "--open",
-                "Open target." ) { options[:action] = :open; }
-        opts.on_tail( "-c", "--close",
-                "Close target." ) { options[:action] = :close; }
-        opts.on_tail( "-a", "--add-user USER", String,
+        opts.on_tail( "--create TARGET", String,
+                "Create new arver partition on Target." ) { |arg| options[:argument][:target] = arg; options[:action] = :create; }
+        opts.on_tail( "-o TARGET", "--open TARGET", String,
+                "Open target." ) { |arg| options[:argument][:target] = arg; options[:action] = :open; }
+        opts.on_tail( "-c TARGET", "--close TARGET", String,
+                "Close target." ) { |arg| options[:argument][:target] = arg; options[:action] = :close; }
+        opts.on_tail( "-a USER TARGET", "--add-user USER TARGET", String,
                 "Add a user to target.") { |user| options[:action] = :adduser; options[:argument][:user] = user;  }
-        opts.on_tail( "-d", "--del-user USER", String,
+        opts.on_tail( "-d USER TARGET", "--del-user USER TARGET", String,
                 "Remove a user from target.") { |user| options[:action] = :deluser; options[:argument][:user] = user;  }
-        opts.on_tail( "-i", "--info", String,
-                "Info about a target.") { |user| options[:action] = :info; }
+        opts.on_tail( "-i TARGET", "--info TARGET", String,
+                "Info about a target.") { |arg| options[:argument][:target] = arg; options[:action] = :info; }
         opts.parse!(arguments)
                 
+        if options[:action] == :deluser || options[:action] == :adduser
+          options[:argument][:target] = arguments.last
+        end
+        
         if options[:action].nil? || 
            ( options[:action] != :list && options[:action] != :gc && ! options[:argument][:target] ) ||
            ( ( options[:action] == :adduser || options[:action] == :deluser ) && ! options[:argument][:target] )

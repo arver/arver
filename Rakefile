@@ -1,6 +1,7 @@
 require 'rake/testtask'
 require "rake/gempackagetask"
 require "rake/clean"
+require 'rake'
 
 CLEAN << "pkg" << "doc" << "coverage"
 task :default => [:spec, :features ]

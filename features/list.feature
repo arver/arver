@@ -7,10 +7,10 @@ Feature: Listing targets
 
   Scenario: not unique target
     Given there are no permissions set for "test"
-    When I run arver in test mode with arguments "-i -t machine1"
+    When I run arver in test mode with arguments "-i machine1"
     Then I should see "Target not unique. Found:"
   
   Scenario: no target
     Given there are no permissions set for "test"
-    When I run arver in test mode with arguments "-i -t alsdjkfhakl"
+    When I run arver in test mode with arguments "-i alsdjkfhakl"
     Then I should see "No such target"
