@@ -7,6 +7,7 @@ module Arver
         
     def initialize
       @keys = {}
+      @key_versions = {}
       self.username= Arver::LocalConfig.instance.username
     end
     
@@ -37,6 +38,7 @@ module Arver
     end
     
     def load_luks_key(partition, new_key)
+      mark_key_version(partition,new_key)
       if( new_key.kind_of? Hash )
         if( ! @keys[partition] || @keys[partition][:time] <= new_key[:time] )
           @keys[partition] = new_key
@@ -46,6 +48,15 @@ module Arver
           @keys[partition] = { :key => new_key, :time => 0.0 }
         end
       end
+    end
+
+    def mark_key_version(path,key)
+      @key_versions[path] ||= []
+      @key_versions[path] << key[:time]
+    end
+
+    def key_versions(partition)
+      @key_versions[partition.path] || []
     end
     
     def add_luks_key(partition, new_key)

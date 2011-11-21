@@ -12,10 +12,18 @@ module Arver
     end
     def pre_partition(p)
       if keystore.luks_key?(p)
-        Arver::Log.write( "   + #{p.device_path}" )
+        line = "   +"
       else
-        Arver::Log.write( "   - #{p.device_path}" )
+        line = "   -"
       end
+      versions = keystore.key_versions(p).collect do |v| 
+        if v == 0 
+          "0" 
+        else 
+          Date.strptime(v.to_s,'%s') 
+        end
+      end
+      Arver::Log.write( "#{line} #{p.device_path} (#{versions.join(", ")})" )
     end
   end
 end

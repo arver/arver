@@ -34,11 +34,16 @@ describe "Keystore" do
   end
   
   it "can do garbage collection right" do
+    @keystore.purge_keys
     gen = Arver::KeyGenerator.new
     gen.generate_key( "test", @partition )
     gen.dump
-    @keystore.purge_keys
-    @keystore.add_luks_key(@partition, @luks_key)
+    gen = Arver::KeyGenerator.new
+    gen.generate_key( "test", @partition )
+    gen.dump
+    Arver::KeySaver.num_of_key_files("test").should == 2
+    @keystore.flush_keys
+    @keystore.load
     @keystore.save
     Arver::KeySaver.num_of_key_files("test").should == 1
   end
