@@ -19,7 +19,7 @@ module Arver
       Arver::SSHCommandWrapper.create( "cryptsetup", [ "--batch-mode", "luksOpen", "-T 1", partition.device_path, partition.name ], partition.parent, true )
     end
     def self.open?( partition )
-      Arver::SSHCommandWrapper.create( "sh", [ "-c", "if [ -b '/dev/mapper/#{partition.name}' ]; then true; else false; fi" ], partition.parent, true )
+      Arver::SSHCommandWrapper.create( "test", [ "-b", "/dev/mapper/#{partition.name}" ], partition.parent, true )
     end
     def self.was_wrong_key?( command_wrapper )
       # before version 1.2 return value was 234
