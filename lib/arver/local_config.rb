@@ -16,7 +16,7 @@ class Arver::LocalConfig
 
   def load_file(filename)
     content = YAML.load(File.read(filename)) if File.exists?(filename)
-    default.merge(content||{})
+    self.default.merge(content||{})
   end
 
   def save
