@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency('gpgme','>=2.0.0')
   s.add_dependency('escape','>=0.0.2')
   s.add_dependency('activesupport','<3.0.0')
+  s.add_dependency('highline','>=1.6.2')
   s.add_development_dependency('cucumber', '>=0.10.2')
   s.add_development_dependency('rspec', '>=2.5.0')
   s.add_development_dependency('rake', '>=0.9.2')

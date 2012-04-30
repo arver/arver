@@ -48,6 +48,7 @@ The following ruby gems are required for arver:
 * gpgme 2
 * activesupport 2
 * escape
+* highline
 
 For development you will need the following additional gems:
 
