@@ -27,8 +27,7 @@ module Arver
           Options:
         BANNER
         opts.on("-c", "--config-dir PATH", String,
-                "Path to config dir.",
-                "Default: .arver") { |arg| options[:config_dir] = arg }
+                "Path to config dir.") { |arg| options[:config_dir] = arg }
         opts.on("-u", "--user NAME", String,
                 "Username." ) { |arg| options[:user] = arg }
         opts.on("-h", "--help",
