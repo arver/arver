@@ -14,9 +14,12 @@ class Arver::Bootstrap
       config.load
 
       self.load_runtime_config(options)
-      
-      return false unless Arver::GPGKeyManager.check_key_of(local.username)
-      true
+     
+      unless Arver::Config.instance.exists?(local.username)
+        Arver::Log.error( "No such user #{local.username}" )
+        return false
+      end
+      Arver::GPGKeyManager.check_key_of(local.username)
     end
 
     def load_runtime_config(options)

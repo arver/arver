@@ -95,7 +95,7 @@ module Arver
       unless( Arver::Bootstrap.run( options ) )
         return
       end
-
+      
       target_list = TargetList.get_list( options[:argument][:target] )
       if target_list.empty? && ( options[:action] != :list && options[:action] != :gc )
         Arver::Log.write( "No targets found" )

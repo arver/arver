@@ -33,13 +33,17 @@ module Arver
       File.open( path+"/users", 'w' ) { |f| f.write( users.to_yaml ) }
       File.open( path+"/disks", 'w' ) { |f| f.write( tree.to_yaml ) }
     end
-  
+    
+    def exists?( user )
+      ! users[user].nil?
+    end
+
     def gpg_key user
-      users[user]['gpg'] if users[user]
+      users[user]['gpg'] if exists?(user)
     end
 
     def slot user
-      users[user]['slot'] if users[user]
+      users[user]['slot'] if exists?(user)
     end
     
     def == other

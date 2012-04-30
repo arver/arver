@@ -38,6 +38,10 @@ module Arver
           Arver::Log.error( "Please use the full fingerprint to define the gpg key for #{user}. The current config might be ambiguous." )
         end
         
+        if( Arver::RuntimeConfig.instance.test_mode )
+          `gpg --import ../spec/data/fixtures/test_key 2> /dev/null`
+        end
+
         config_path = Arver::LocalConfig.instance.config_dir
         FileUtils.mkdir_p "#{config_path}/keys/public" unless File.exists?( "#{config_path}/keys/public" )
         key = _key_of( user )

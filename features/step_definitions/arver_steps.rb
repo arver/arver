@@ -42,7 +42,6 @@ Given /^there are no permissions set for "(.*)"/ do  | user |
 end
 
 When /^I run arver in test mode with arguments "(.*)"/ do | arguments|
-
   in_project_folder do  
    require 'rubygems'
    require File.expand_path("../lib/arver")

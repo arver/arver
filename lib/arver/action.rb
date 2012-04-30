@@ -9,12 +9,12 @@ module Arver
     
     def on_user( username )
       return true unless needs_target_user?
-      self.slot_of_target_user= Arver::Config.instance.slot( username )
-      if slot_of_target_user.nil?
+      unless Arver::Config.instance.exists?(username)
         Arver::Log.error( "No such user" )
         return false
       end
       return false unless verify_key_on_target( username ) 
+      self.slot_of_target_user= Arver::Config.instance.slot( username )
       self.target_user= username
       true
     end

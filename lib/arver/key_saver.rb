@@ -53,12 +53,12 @@ module Arver
       Dir.entries( key_path( user ) ).sort.each do | file |
         unless( file == "." || file == ".." )
           Arver::Log.trace( "Loading keyfile "+file )
-          key_encrypted = File.read( key_path( user )+"/"+file )
-          if( Arver::RuntimeConfig.instance.test_mode )
-            `gpg --import ../spec/data/fixtures/test_key 2> /dev/null`
-            decrypted_txt = crypto.decrypt( key_encrypted )
-          else
+          key_encrypted = File.open( key_path( user )+"/"+file )
+          begin
             decrypted_txt = crypto.decrypt( key_encrypted, { :passphrase_callback => method( :passfunc ) } )
+          rescue GPGME::Error => gpgerr
+            Arver::Log.error( "GPGME Error #{gpgerr} Message: #{gpgerr.message}" )
+            next
           end
           decrypted_key = substract_padding( decrypted_txt.read )
           decrypted += [ decrypted_key ];

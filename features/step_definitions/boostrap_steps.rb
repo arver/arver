@@ -14,9 +14,11 @@ end
 
 Given /^I supply a username with a (.*) key$/ do |keytype|
   @options[:user] = 'foo'
-  Arver::KeySaver.stub(:check_key).and_return(keytype == 'existing')
+  Arver::GPGKeyManager.stub(:check_key_of).and_return(keytype == 'existing')
+  Arver::Config.instance.stub(:exists?).and_return(keytype == 'existing')
 end
 
 Given /^I don't supply any user as the one I use is correct$/ do
-  Arver::KeySaver.stub(:check_key).and_return(true)
+  Arver::GPGKeyManager.stub(:check_key_of).and_return(true)
+  Arver::Config.instance.stub(:exists?).and_return(true)
 end

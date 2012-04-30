@@ -12,7 +12,7 @@ module Arver
     def execute_partition(partition)
       info = {}
       (caller = Arver::LuksWrapper.dump(partition)).execute
-      caller.output.each do |line|
+      caller.output.each_line do |line|
         next unless line =~ /^[A-Z].*: .*$/
         info.store(*line.split(':',2).collect{|f| f.strip })
       end
