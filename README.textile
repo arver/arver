@@ -1,77 +1,38 @@
 h1. arver
 
-* https://git.codecoop.org/projects/arver
-
-h2. DESCRIPTION:
+h2. Synopsis
 
 arver is a tool to manage encrypted harddisks.
 
-Imagine you are a collective with several admin members. Your servers have 
-diffrent LUKS encrypted devices.
+It is tailored for fine-grained access control to LUKS encrypted harddisks by 
+many users. Additionally it supports automation through scripts and facilitates
+key distribution. 
 
-Either you would need 1 password for every device which everyone needs to know
-or you use arver! Arver has 1 password for each device and for each member. This
-password is stored encrypted with the personal gpg-key in the data directory.
-The admins only need to know the password to the their own gpg secret key.
+As an example it can be used in an organisation to grant access to encrypted 
+partitions to a team of admins.
 
-This has the following advantages:
+h2. Addressed Problems
 
-* No need to share passwords or password patterns
-** Often people share passwords amongst each another. This has the drawback that
-   in case of an emergency every password needs to be changed. Which means that
-   everyone else needs to learn a bunch of new passwords and changing these
-   passwords is also quite cumbersome and time consuming.
-** As the amount of passwords might grow with your disks and hosts you will start
-   using a password pattern to derive passwords for each disk from that pattern.
-   This has the drawback that you can hardly share only partial access to disks
-   with a certain admin, as if she knows the pattern she will also likely have
-   access to every other disk. Furthermore, if once one password is leaked and
-   the patter is easily visible, all the other passwords are also compromised.
-* Managing your encrypted harddisks is scriptable, which means that you can
-  recover much faster from outages
-* Revoking access for an admin is scriptable and therefore done in one call and
-  also much safer than revoking manually for each disk.
-* Finer grained access. As for each user and each disk there will be a seperate
-  password by design. You can also grant access to certain disks only
-  selectively. So for example new admins in your group can only open the disks
-  for your most important services or for which they are responsible, while access
-  to the other disks is restriced to other admins.
+In a traditional setup with multiple LUKS devices most organisations resort
+to password sharing. This has multiple drawbacks, which arver tries to address:
+
+* In case of an emergency or scheduled password change, everyone needs to learn
+  a bunch of new passwords and changing them is cumbersome and time consuming.
+* If the password is leaked, all disks are compromised.
+* As the amount of passwords grows with the number of disks, password patterns
+  are common. This has the drawback that you can't grant per-disk access to others.
+
+Further arver can ease many associated tasks:
+
+* Arver is scriptable - all actions support script hooks, which means that you can
+  recover much faster from outages.
+* Revoking all access for an admin can be done with only one command.
+* Since arver keys are encrypted using publickey cryptography it is very easy to
+  safely distribute arver keys.
 
 h1. Usage
 
 arver ships with a detailed man page, describing the usage in detail. 
-
-h1. Limitations
-
-* arver supports only up to 8 users as LUKS has only 8 key slots (LUKS NUMKEYS).
-
-h1. Known Issues
-
-h2. GPGME and gpg-agent
-
-If arver asks you multiple times for the password, you might consider to use
-gpg-agent, so you can decrypt your keypair once and the use it for all your
-stored keys.
-
-You can test gpg-agent by trying to decrypt an encrypted file for your user in
-data/keys/USERNAME/key_X . It will tell you about possible gpg-erorrs.
-
-Configuring gpg-agent is quite simple and you find information on the following
-website: http://dougbarton.us/PGP/gpg-agent.html
-
-If you install gpg-agent like dougbarton recomends, you need to further verify
-that the environment variable GPG_AGENT_INFO is accessible within the arver
-script. An option is to add the following entry to your .bashrc
-
-    if [ -r "${HOME}/.gpg-agent-info" ]; then
-      . ${HOME}/.gpg-agent-info
-      export GPG_AGENT_INFO
-    fi
-
-h1. Requirements
-
-arver only works with cryptsetup-luks >= 1.0.5 as previous versions do not
-support key slots properly for our usage.
 
 h1. Installation
 
@@ -93,6 +54,40 @@ For development you will need the following additional gems:
 * rake
 * cucumber
 * rspec
+
+h1. Requirements
+
+arver only works with cryptsetup-luks >= 1.0.5 as previous versions do not
+support key slots properly for our usage.
+
+h1. Limitations
+
+* arver only supports LUKS as backend.
+* arver supports only up to 8 users as LUKS has only 8 key slots (LUKS NUMKEYS).
+
+h2. Known Issues
+
+h3. GPGME and gpg-agent
+
+If arver asks you multiple times for the password, you might consider to use
+gpg-agent, so you can decrypt your keypair once and the use it for all your
+stored keys.
+
+You can test gpg-agent by trying to decrypt an encrypted file for your user in
+data/keys/USERNAME/key_X . It will tell you about possible gpg-erorrs.
+
+Configuring gpg-agent is quite simple and you find information on the following
+website: http://dougbarton.us/PGP/gpg-agent.html
+
+If you install gpg-agent like dougbarton recomends, you need to further verify
+that the environment variable GPG_AGENT_INFO is accessible within the arver
+script. An option is to add the following entry to your .bashrc
+
+    if [ -r "${HOME}/.gpg-agent-info" ]; then
+      . ${HOME}/.gpg-agent-info
+      export GPG_AGENT_INFO
+    fi
+
 
 h1. License
 
