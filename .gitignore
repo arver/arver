@@ -6,4 +6,4 @@ spec/data/keys/test2/
 coverage/
 coverage.data
 *.swp
-pkg/
+pkg/*/*
