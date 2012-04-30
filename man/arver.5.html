@@ -61,7 +61,7 @@
     <a href="#TARGETS">TARGETS</a>
     <a href="#Working-with-arver">Working with arver</a>
     <a href="#Concept">Concept</a>
-    <a href="#Bootstrapping-a-new-datastore">Bootstrapping a new datastore</a>
+    <a href="#Bootstrapping-a-new-arverdata">Bootstrapping a new arverdata</a>
     <a href="#Action-Create">Action Create</a>
     <a href="#Action-Open">Action Open</a>
     <a href="#Action-Close">Action Close</a>
@@ -69,7 +69,7 @@
     <a href="#Information-about-targets">Information about targets</a>
     <a href="#Garbage-collection">Garbage collection</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
-    </div>
+  </div>
 
   <ol class='man-decor man-head man head'>
     <li class='tl'>arver(5)</li>
@@ -84,8 +84,8 @@
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<pre><code>arver [-u user] [-c datastore] [OPTIONS] -t TARGET ACTION
-arver [-u user] [-c datastore] [OPTIONS] ACTION
+<pre><code>arver [-u user] [-c arverdata] [OPTIONS] -t TARGET ACTION
+arver [-u user] [-c arverdata] [OPTIONS] ACTION
 </code></pre>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
@@ -114,13 +114,14 @@ location you can use the <code>-c PATH</code> option.</dd>
 <p>The following actions are supported:</p>
 
 <dl>
-<dt><code>--create</code></dt><dd>Creates LUKS partitions for <code>arver</code> on all targeted disks.</dd>
-<dt><code>-o</code>, <code>--open</code></dt><dd>Opens all targeted disks.</dd>
-<dt class="flush"><code>--close</code></dt><dd>Closes all targeted disks.</dd>
-<dt><code>-a USER</code>, <code>--add-user USER</code></dt><dd>Adds permissions for USER on all targeted disks.</dd>
-<dt><code>--del-user</code></dt><dd>Removes permissions for USER on all targeted disks.</dd>
-<dt><code>-i</code>, <code>--info</code></dt><dd>Display the LUKS configuration of all targeted disks.</dd>
+<dt><code>--create TARGET</code></dt><dd>Creates LUKS partitions for <code>arver</code> on all targeted disks.</dd>
+<dt><code>-o</code>, <code>--open TARGET</code></dt><dd>Opens all targeted disks.</dd>
+<dt><code>--close TARGET</code></dt><dd>Closes all targeted disks.</dd>
+<dt><code>-a</code>, <code>--add-user USER TARGET</code></dt><dd>Adds permissions for USER on all targeted disks.</dd>
+<dt><code>-d</code>, <code>--del-user USER TARGET</code></dt><dd>Removes permissions for USER on all targeted disks.</dd>
+<dt><code>-i</code>, <code>--info TARGET</code></dt><dd>Display the LUKS configuration of all targeted disks.</dd>
 <dt><code>-l</code>, <code>--list-targets</code></dt><dd>List all possible targets.</dd>
+<dt><code>-k</code>, <code>--keys TARGET</code></dt><dd>List available keys for the target.</dd>
 <dt><code>-g</code>, <code>--garbage-collect</code></dt><dd>Cleans old entries from your <code>arver</code> keys.</dd>
 </dl>
 
@@ -157,19 +158,19 @@ as well as how to set it up and what the different actions are doing exactly.</p
 
 <p>Arver's configuration files are contained in a single directory which contains all
 the necessary (non-private) information to manage your disks. This directory will
-be referred to as <code>datastore</code>. We recommend you to share that directory amongs your
+be referred to as <code>arverdata</code>. We recommend you to share that directory amongs your
 group of admins with a distributed version control system such as git.</p>
 
 <p>Eeach admin will be assigned one global LUKS slot. Arver will use this information
 to grant or revoke privileges to other users. See the <code>Managing users</code> section
 for a detailed descripton of how this is done.</p>
 
-<p>The <code>datastore</code> directory contains the following files and directories:</p>
+<p>The <code>arverdata</code> directory contains the following files and directories:</p>
 
 <pre><code>keys/            &lt;- contains the users `arver` keyrings
-keys/public/     &lt;- contains the public keys of all admins
 users            &lt;- yaml file containing all users configuration (see `Users`)
 disks            &lt;- yaml file containing all disk configuration (see `Disks`)
+keys/public/     &lt;- contains gpg public keys of the admins (managed by arver)
 </code></pre>
 
 <h3 id="Users">Users</h3>
@@ -178,17 +179,17 @@ disks            &lt;- yaml file containing all disk configuration (see `Disks`)
 
 <pre><code>foo1: 
   slot: 0
-  gpg: BEAFAFFE
+  gpg: BEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFE
 foo2:
   slot 1
-  gpg: AFFEBEAF
+  gpg: AFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAF
 </code></pre>
 
 <p><code>foo1</code> is the identifier of one of your admins. <code>slot</code> referes to the LUKS slot which
 is used for this admin. This has to be a unique number between 0 and 7. If you'd like
 to migrate existing LUKS devices take care to avoid the currently used slot number
-(usually 0). <code>gpg</code> is the gpg-id of the public key for <code>foo1</code>. We recommend to use a
-dedicated gpg key just for <code>arver</code>.</p>
+(usually 0). <code>gpg</code> is the gpg-fingerprint of the public key for <code>foo1</code>. We recommend
+to use a dedicated gpg key just for <code>arver</code>.</p>
 
 <h3 id="Disks">Disks</h3>
 
@@ -249,12 +250,12 @@ pointing to the actual disk path. So for example the disks on <code>host1</code>
 <code>/dev/storage/disk1</code> identified by <code>disk1</code> and <code>/dev/sdb1</code> idetified by <code>disk2</code>.
 The prefix <code>/dev/</code> is alays added to the disk path.</p>
 
-<h2 id="Bootstrapping-a-new-datastore">Bootstrapping a new datastore</h2>
+<h2 id="Bootstrapping-a-new-arverdata">Bootstrapping a new arverdata</h2>
 
-<p>How do you start and bootstrap a new <code>datastore</code>, so you can use arver for your
+<p>How do you start and bootstrap a new <code>arverdata</code>, so you can use arver for your
 storage?</p>
 
-<p>First you need to create the basic structure for your <code>datastore</code>:</p>
+<p>First you need to create the basic structure for your <code>arverdata</code>:</p>
 
 <pre><code>$ mkdir ~/.arverdata # the location is configurable. We use the default one.
 $ gpg --gen-key      # create a dedicated gpg key for arver
@@ -271,21 +272,21 @@ $ echo "'username': '&lt;your_arver_username>' &gt; ~/.arver  #set your default 
 device to the disks config. See above for various examples.
 You can create the LUKS device by invoking the following command:</p>
 
-<pre><code>$ arver -t TARGET --create 
+<pre><code>$ arver --create TARGET 
 </code></pre>
 
 <p>What's happening behind the scene?</p>
 
 <p>Arver creates a new LUKS device with a random password in your LUKS slot on the
 server. The password is then encrypted with your public key (defined in <code>users</code>)
-and stored in <code>datastore/keys/USERNAME/key_X</code></p>
+and stored in <code>arverdata/keys/USERNAME/xxxx</code></p>
 
 <h2 id="Action-Open">Action Open</h2>
 
 <p>To open a LUKS device managed by arver you can invoke the <code>--open</code> action on any
 target:</p>
 
-<pre><code>$ arver -t TARGET --open
+<pre><code>$ arver --open TARGET
 </code></pre>
 
 <p>arver retrieves the password by decrypting the keys in data/keys/YOURUSERNAME
@@ -317,7 +318,7 @@ skipped (along with its script hooks).</p>
 
 <p>Closing luks devices is simply done by invoking</p>
 
-<pre><code>$ arver -t TARGET
+<pre><code>$ arver --close TARGET
 </code></pre>
 
 <p>For this action you can define hooks as well. See <code>Disks</code> and <code>Action Open</code>
@@ -326,37 +327,38 @@ for details.</p>
 <h2 id="Managing-users">Managing users</h2>
 
 <p>To add another user to one of the disks you need to have the public key of that
-user. If you manage your <code>datastore</code> in a version controll system, you'll likely
-have the key already in <code>datastore/keys/public/USERNAME</code> where it will be
-imported automatically.</p>
+user. Just import his key into your gpg keyring.</p>
 
-<p>Otherwise store it there and add the user to the <code>user</code> config.</p>
+<p>If you manage your <code>.arverdata</code> in a version controll system, you'll likely
+have the key already in <code>.arverdata/keys/public/USERNAME</code> where it will be
+imported automatically.</p>
 
 <p>Granting the user access to any disk is done by invoking the following command:</p>
 
-<pre><code>$ arver -t TARGET --add-user USERNAME
+<pre><code>$ arver --add-user USERNAME TARGET
 </code></pre>
 
 <p>For this command to work, you have to trust the gpg key of USERNAME. See
 <code>man gpg</code> section --edit-key. You should always verify that you have the correct
-key, e.g. by comparing the fingerprint over a trusted channel.</p>
+key, e.g. by comparing the fingerprint over a trusted channel. Alternately
+you can run <code>arver</code> with <code>--trust-all</code> option.</p>
 
-<p>arver will then create a random password for the specific user and add it to
+<p><code>arver</code> will create a random password for the specific user and add it to
 the user-slot on the targeted disks. Furthermore, the password is encrypted
 with the public key of the specific user and stored in the data storage under
-<code>datastore/keys/USERNAME/</code>.</p>
+<code>arverdata/keys/USERNAME/</code>.</p>
 
-<p>For the other user to receive those new privileges he has to import the new
-keys to his own <code>datastore</code>. So if you use a version controll system you should
-now also commit the new keys.</p>
+<p>For the other user to receive those new privileges he has to copy the new
+keys to his own <code>arverdata</code>. So if you use a version controll system you should
+now commit the new keys.</p>
 
 <p>If you are migrating from an existing LUKS infrastructure and want to add an
 initial user to the LUKS device, you will need to use the <code>--ask-password</code> option,
 to provide an existing password.</p>
 
-<p>To remove all permissions of a certain user you can simply run</p>
+<p>To remove the permissions of a certain user you can simply run</p>
 
-<pre><code>$ arver -t TARGET --del-user USERNAME
+<pre><code>$ arver --del-user USERNAME TARGET
 </code></pre>
 
 <p>Which will remove the password stored in the LUKS slot of that device. Remember
@@ -366,7 +368,7 @@ removing any access to encrypted devices of one user immediately amongst the
 whole infrastructure.</p>
 
 <p>By design it is not possible to know who has access to which disks by just
-looking at the <code>datastore</code>. All arver keys including the information on which
+looking at the <code>arverdata</code>. All arver keys including the information on which
 disks they fit are encrypted with the users public key. So without the
 corresponding private key it is not possible to see the privileges.</p>
 
@@ -377,7 +379,7 @@ But to do this you need access to the server and the <code>users</code> config.<
 
 <p>To gather various information about the different targets you can invoke</p>
 
-<pre><code>$ arver -t TARGET -i
+<pre><code>$ arver -i TARGET
 </code></pre>
 
 <p>Which will display you the current configuration of all devices, as well as
@@ -391,17 +393,17 @@ might be needed anymore. Furthermore it is likely that due to various
 actions it might be obvious or at least reconstructable to which devices a
 certain user might have access.</p>
 
-<p>To address this problem arver provides a garbage collection process, which will
+<p>To address this problem <code>arver</code> provides a garbage collection process, which will
 rearrange all your own keyfiles. (Only your own as you are not able to read the
 others key files.)</p>
 
 <p>You can do that by invoking the following command:</p>
 
-<pre><code>$ arver -gc
+<pre><code>$ arver -g
 </code></pre>
 
-<p>If you use a version controll system to store you <code>datastore</code> you should do this
-always before commiting the <code>datastore</code>.</p>
+<p>If you use a version controll system to store your <code>arverdata</code> you should do this
+always before commiting the <code>arverdata</code>.</p>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
@@ -415,7 +417,7 @@ always before commiting the <code>datastore</code>.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
-    <li class='tc'>February 2011</li>
+    <li class='tc'>April 2012</li>
     <li class='tr'>arver(5)</li>
   </ol>
 

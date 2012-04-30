@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ARVER" "5" "February 2011" "" ""
+.TH "ARVER" "5" "April 2012" "" ""
 .
 .SH "NAME"
 \fBarver\fR \- LUKS on the loose
@@ -10,8 +10,8 @@
 .
 .nf
 
-arver [\-u user] [\-c datastore] [OPTIONS] \-t TARGET ACTION
-arver [\-u user] [\-c datastore] [OPTIONS] ACTION
+arver [\-u user] [\-c arverdata] [OPTIONS] \-t TARGET ACTION
+arver [\-u user] [\-c arverdata] [OPTIONS] ACTION
 .
 .fi
 .
@@ -36,32 +36,36 @@ By default \fBarver\fR will assume your data storage in \fB~/\.arverdata\fR\. Ho
 The following actions are supported:
 .
 .TP
-\fB\-\-create\fR
+\fB\-\-create TARGET\fR
 Creates LUKS partitions for \fBarver\fR on all targeted disks\.
 .
 .TP
-\fB\-o\fR, \fB\-\-open\fR
+\fB\-o\fR, \fB\-\-open TARGET\fR
 Opens all targeted disks\.
 .
 .TP
-\fB\-\-close\fR
+\fB\-\-close TARGET\fR
 Closes all targeted disks\.
 .
 .TP
-\fB\-a USER\fR, \fB\-\-add\-user USER\fR
+\fB\-a\fR, \fB\-\-add\-user USER TARGET\fR
 Adds permissions for USER on all targeted disks\.
 .
 .TP
-\fB\-\-del\-user\fR
+\fB\-d\fR, \fB\-\-del\-user USER TARGET\fR
 Removes permissions for USER on all targeted disks\.
 .
 .TP
-\fB\-i\fR, \fB\-\-info\fR
+\fB\-i\fR, \fB\-\-info TARGET\fR
 Display the LUKS configuration of all targeted disks\.
 .
 .TP
 \fB\-l\fR, \fB\-\-list\-targets\fR
 List all possible targets\.
+.
+.TP
+\fB\-k\fR, \fB\-\-keys TARGET\fR
+List available keys for the target\.
 .
 .TP
 \fB\-g\fR, \fB\-\-garbage\-collect\fR
@@ -106,22 +110,22 @@ Working with arver is quite simple and straight forward\. Within the next paragr
 To setup arver we only need to define in the corresponding configuration files our (admin\-)users and our disks\.
 .
 .P
-Arver\'s configuration files are contained in a single directory which contains all the necessary (non\-private) information to manage your disks\. This directory will be referred to as \fBdatastore\fR\. We recommend you to share that directory amongs your group of admins with a distributed version control system such as git\.
+Arver\'s configuration files are contained in a single directory which contains all the necessary (non\-private) information to manage your disks\. This directory will be referred to as \fBarverdata\fR\. We recommend you to share that directory amongs your group of admins with a distributed version control system such as git\.
 .
 .P
 Eeach admin will be assigned one global LUKS slot\. Arver will use this information to grant or revoke privileges to other users\. See the \fBManaging users\fR section for a detailed descripton of how this is done\.
 .
 .P
-The \fBdatastore\fR directory contains the following files and directories:
+The \fBarverdata\fR directory contains the following files and directories:
 .
 .IP "" 4
 .
 .nf
 
 keys/            <\- contains the users `arver` keyrings
-keys/public/     <\- contains the public keys of all admins
 users            <\- yaml file containing all users configuration (see `Users`)
 disks            <\- yaml file containing all disk configuration (see `Disks`)
+keys/public/     <\- contains gpg public keys of the admins (managed by arver)
 .
 .fi
 .
@@ -136,17 +140,17 @@ The \fBuser\fR config file contains all your admins in the following structure:
 
 foo1:
   slot: 0
-  gpg: BEAFAFFE
+  gpg: BEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFE
 foo2:
   slot 1
-  gpg: AFFEBEAF
+  gpg: AFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAF
 .
 .fi
 .
 .IP "" 0
 .
 .P
-\fBfoo1\fR is the identifier of one of your admins\. \fBslot\fR referes to the LUKS slot which is used for this admin\. This has to be a unique number between 0 and 7\. If you\'d like to migrate existing LUKS devices take care to avoid the currently used slot number (usually 0)\. \fBgpg\fR is the gpg\-id of the public key for \fBfoo1\fR\. We recommend to use a dedicated gpg key just for \fBarver\fR\.
+\fBfoo1\fR is the identifier of one of your admins\. \fBslot\fR referes to the LUKS slot which is used for this admin\. This has to be a unique number between 0 and 7\. If you\'d like to migrate existing LUKS devices take care to avoid the currently used slot number (usually 0)\. \fBgpg\fR is the gpg\-fingerprint of the public key for \fBfoo1\fR\. We recommend to use a dedicated gpg key just for \fBarver\fR\.
 .
 .SS "Disks"
 The \fBdisks\fR file contains the following hash tree in yaml notation:
@@ -212,11 +216,11 @@ You can also add script hooks to any host or disk\. Those will be run during the
 .P
 Any other entry within the hosts\-object are actual disks entries of that particular host\. These disks are represented by an identifier and at least a \fBdevice\fR entry pointing to the actual disk path\. So for example the disks on \fBhost1\fR are: \fB/dev/storage/disk1\fR identified by \fBdisk1\fR and \fB/dev/sdb1\fR idetified by \fBdisk2\fR\. The prefix \fB/dev/\fR is alays added to the disk path\.
 .
-.SH "Bootstrapping a new datastore"
-How do you start and bootstrap a new \fBdatastore\fR, so you can use arver for your storage?
+.SH "Bootstrapping a new arverdata"
+How do you start and bootstrap a new \fBarverdata\fR, so you can use arver for your storage?
 .
 .P
-First you need to create the basic structure for your \fBdatastore\fR:
+First you need to create the basic structure for your \fBarverdata\fR:
 .
 .IP "" 4
 .
@@ -242,7 +246,7 @@ To initially create an arver managed LUKS device you first need to add the devic
 .
 .nf
 
-$ arver \-t TARGET \-\-create
+$ arver \-\-create TARGET
 .
 .fi
 .
@@ -252,7 +256,7 @@ $ arver \-t TARGET \-\-create
 What\'s happening behind the scene?
 .
 .P
-Arver creates a new LUKS device with a random password in your LUKS slot on the server\. The password is then encrypted with your public key (defined in \fBusers\fR) and stored in \fBdatastore/keys/USERNAME/key_X\fR
+Arver creates a new LUKS device with a random password in your LUKS slot on the server\. The password is then encrypted with your public key (defined in \fBusers\fR) and stored in \fBarverdata/keys/USERNAME/xxxx\fR
 .
 .SH "Action Open"
 To open a LUKS device managed by arver you can invoke the \fB\-\-open\fR action on any target:
@@ -261,7 +265,7 @@ To open a LUKS device managed by arver you can invoke the \fB\-\-open\fR action 
 .
 .nf
 
-$ arver \-t TARGET \-\-open
+$ arver \-\-open TARGET
 .
 .fi
 .
@@ -315,7 +319,7 @@ Closing luks devices is simply done by invoking
 .
 .nf
 
-$ arver \-t TARGET
+$ arver \-\-close TARGET
 .
 .fi
 .
@@ -325,10 +329,10 @@ $ arver \-t TARGET
 For this action you can define hooks as well\. See \fBDisks\fR and \fBAction Open\fR for details\.
 .
 .SH "Managing users"
-To add another user to one of the disks you need to have the public key of that user\. If you manage your \fBdatastore\fR in a version controll system, you\'ll likely have the key already in \fBdatastore/keys/public/USERNAME\fR where it will be imported automatically\.
+To add another user to one of the disks you need to have the public key of that user\. Just import his key into your gpg keyring\.
 .
 .P
-Otherwise store it there and add the user to the \fBuser\fR config\.
+If you manage your \fB\.arverdata\fR in a version controll system, you\'ll likely have the key already in \fB\.arverdata/keys/public/USERNAME\fR where it will be imported automatically\.
 .
 .P
 Granting the user access to any disk is done by invoking the following command:
@@ -337,32 +341,32 @@ Granting the user access to any disk is done by invoking the following command:
 .
 .nf
 
-$ arver \-t TARGET \-\-add\-user USERNAME
+$ arver \-\-add\-user USERNAME TARGET
 .
 .fi
 .
 .IP "" 0
 .
 .P
-For this command to work, you have to trust the gpg key of USERNAME\. See \fBman gpg\fR section \-\-edit\-key\. You should always verify that you have the correct key, e\.g\. by comparing the fingerprint over a trusted channel\.
+For this command to work, you have to trust the gpg key of USERNAME\. See \fBman gpg\fR section \-\-edit\-key\. You should always verify that you have the correct key, e\.g\. by comparing the fingerprint over a trusted channel\. Alternately you can run \fBarver\fR with \fB\-\-trust\-all\fR option\.
 .
 .P
-arver will then create a random password for the specific user and add it to the user\-slot on the targeted disks\. Furthermore, the password is encrypted with the public key of the specific user and stored in the data storage under \fBdatastore/keys/USERNAME/\fR\.
+\fBarver\fR will create a random password for the specific user and add it to the user\-slot on the targeted disks\. Furthermore, the password is encrypted with the public key of the specific user and stored in the data storage under \fBarverdata/keys/USERNAME/\fR\.
 .
 .P
-For the other user to receive those new privileges he has to import the new keys to his own \fBdatastore\fR\. So if you use a version controll system you should now also commit the new keys\.
+For the other user to receive those new privileges he has to copy the new keys to his own \fBarverdata\fR\. So if you use a version controll system you should now commit the new keys\.
 .
 .P
 If you are migrating from an existing LUKS infrastructure and want to add an initial user to the LUKS device, you will need to use the \fB\-\-ask\-password\fR option, to provide an existing password\.
 .
 .P
-To remove all permissions of a certain user you can simply run
+To remove the permissions of a certain user you can simply run
 .
 .IP "" 4
 .
 .nf
 
-$ arver \-t TARGET \-\-del\-user USERNAME
+$ arver \-\-del\-user USERNAME TARGET
 .
 .fi
 .
@@ -372,7 +376,7 @@ $ arver \-t TARGET \-\-del\-user USERNAME
 Which will remove the password stored in the LUKS slot of that device\. Remember that you can also invoke this command on a whole hostgroup or even on all your managed devices (using \fB\-t ALL\fR)\. This will help you to quickly and savely removing any access to encrypted devices of one user immediately amongst the whole infrastructure\.
 .
 .P
-By design it is not possible to know who has access to which disks by just looking at the \fBdatastore\fR\. All arver keys including the information on which disks they fit are encrypted with the users public key\. So without the corresponding private key it is not possible to see the privileges\.
+By design it is not possible to know who has access to which disks by just looking at the \fBarverdata\fR\. All arver keys including the information on which disks they fit are encrypted with the users public key\. So without the corresponding private key it is not possible to see the privileges\.
 .
 .P
 You can however display the targets \fBinformation\fR to see which slots are used\. But to do this you need access to the server and the \fBusers\fR config\.
@@ -384,7 +388,7 @@ To gather various information about the different targets you can invoke
 .
 .nf
 
-$ arver \-t TARGET \-i
+$ arver \-i TARGET
 .
 .fi
 .
@@ -397,7 +401,7 @@ Which will display you the current configuration of all devices, as well as diff
 As you might add and remove users to disks or reset access to disks the amount of generated key files with random passwords might grow and not all might be needed anymore\. Furthermore it is likely that due to various actions it might be obvious or at least reconstructable to which devices a certain user might have access\.
 .
 .P
-To address this problem arver provides a garbage collection process, which will rearrange all your own keyfiles\. (Only your own as you are not able to read the others key files\.)
+To address this problem \fBarver\fR provides a garbage collection process, which will rearrange all your own keyfiles\. (Only your own as you are not able to read the others key files\.)
 .
 .P
 You can do that by invoking the following command:
@@ -406,14 +410,14 @@ You can do that by invoking the following command:
 .
 .nf
 
-$ arver \-gc
+$ arver \-g
 .
 .fi
 .
 .IP "" 0
 .
 .P
-If you use a version controll system to store you \fBdatastore\fR you should do this always before commiting the \fBdatastore\fR\.
+If you use a version controll system to store your \fBarverdata\fR you should do this always before commiting the \fBarverdata\fR\.
 .
 .SH "SEE ALSO"
 \fBcryptsetup\fR(8)\. \fBgnupg\fR(7)\.
