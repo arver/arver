@@ -1,4 +1,4 @@
-=== 0.0.4 2012-04-30
+=== 0.0.5 2012-04-30
 
 * Updated to run with ruby 1.9
 * Validate gpg fingerprints
