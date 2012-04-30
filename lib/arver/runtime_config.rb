@@ -13,6 +13,10 @@ module Arver
     instance.violence= false
     instance.ask_password= false
     instance.trust_all= false
-    
+
+    def trust_all
+      # in test mode trust all keys since running arver in cucumber creates a fresh gpg-keyring
+      @trust_all || test_mode
+    end
   end
 end

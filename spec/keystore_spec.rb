@@ -2,6 +2,8 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 
 describe "Keystore" do
   before(:each) do
+    self.extend( TestConfigLoader )
+    self.load_test_config
     @luks_key = "someStringASDdf"
     @keystore = Arver::Keystore.instance
     @keystore.username= "test"
