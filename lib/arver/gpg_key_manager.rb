@@ -11,7 +11,7 @@ module Arver
           return false
         end
         key = key.first
-        if fp.size == 40 && fp != key.fingerprint
+        if fp.size != 8 && fp != key.fingerprint
           return false
         end
         key
@@ -34,7 +34,7 @@ module Arver
           return false
         end
         fp = fp.gsub(" ","")
-        if fp.size != 40
+        if fp.size == 8
           Arver::Log.error( "Please use the full fingerprint to define the gpg key for #{user}. The current config might be ambiguous." )
         end
         

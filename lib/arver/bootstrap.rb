@@ -4,6 +4,8 @@ class Arver::Bootstrap
       local = Arver::LocalConfig.instance
       local.config_dir = options[:config_dir] unless options[:config_dir].empty?
       local.username = options[:user] unless options[:user].empty?
+      
+      return true if options[:action] == :init
 
       unless local.username.present?
         Arver::Log.error( "No user defined" )
@@ -14,7 +16,7 @@ class Arver::Bootstrap
       config.load
 
       self.load_runtime_config(options)
-     
+
       unless Arver::Config.instance.exists?(local.username)
         Arver::Log.error( "No such user #{local.username}" )
         return false

@@ -73,6 +73,8 @@ module Arver
                 "LUKS info about a target.") { |arg| options[:argument][:target] = arg; options[:action] = :info; }
         opts.on_tail( "-l", "--list-targets",
                 "List targets." ) { options[:action] = :list; }
+        opts.on_tail( "--init",
+                "Setup a sample configuration." ) { options[:action] = :init; }
         
         begin
           opts.parse!(arguments)
@@ -85,18 +87,18 @@ module Arver
         end
         
         if options[:action].nil? || 
-           ( options[:action] != :list && options[:action] != :gc && ! options[:argument][:target] ) ||
+           ( options[:action] != :list && options[:action] != :gc && options[:action] != :init && ! options[:argument][:target] ) ||
            ( ( options[:action] == :adduser || options[:action] == :deluser ) && ! options[:argument][:target] )
           Arver::Log.write opts; return
         end
       end
-      
+
       unless( Arver::Bootstrap.run( options ) )
         return
       end
       
       target_list = TargetList.get_list( options[:argument][:target] )
-      if target_list.empty? && ( options[:action] != :list && options[:action] != :gc )
+      if target_list.empty? && ( options[:action] != :list && options[:action] != :gc && options[:action] != :init )
         Arver::Log.write( "No targets found" )
         return false
       end
@@ -115,6 +117,7 @@ module Arver
         :deluser => Arver::DeluserAction,
         :info => Arver::InfoAction,
         :key_info => Arver::KeyInfoAction,
+        :init => Arver::InitialConfigAction,
       }
 
       action = (actions[ action ]).new( target_list )
