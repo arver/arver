@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    arver (0.0.4)
+    arver (0.1.0)
       activesupport (< 3.0.0)
       escape (>= 0.0.2)
       gpgme (>= 2.0.0)
