@@ -32,9 +32,9 @@ This has the following advantages:
 * Revoking access for an admin is scriptable and therefore done in one call and
   also much safer than revoking manually for each disk.
 * Finer grained access. As for each user and each disk there will be a seperate
-  password by design. You can also grant access to certain disks also only
+  password by design. You can also grant access to certain disks only
   selectively. So for example new admins in your group can only open the disks
-  for your most important services or for which they are respnsible, while access
+  for your most important services or for which they are responsible, while access
   to the other disks is restriced to other admins.
 
 h1. Usage

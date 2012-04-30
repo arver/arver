@@ -3,8 +3,7 @@ arver(5) -- LUKS on the loose
 
 ## SYNOPSIS
 
-    arver [-u user] [-c arverdata] [OPTIONS] -t TARGET ACTION
-    arver [-u user] [-c arverdata] [OPTIONS] ACTION
+    arver [-u user] [-c arverdata] [OPTIONS] ACTION [USER] [TARGET]
     
 ## DESCRIPTION
 
@@ -20,11 +19,13 @@ target to work.
 There are some generic command line options:
 
   * `-u USER`, `--user USER`:
-    By default `arver` will read `~/.arver` to get your username. Using `-u USER` you can override or specify it aswell.
+    By default `arver` will read `~/.arver` to get your username. Using `-u USER` you can override it.
   * `-c PATH`, `--config-dir PATH`:
     By default `arver` will assume your data storage in `~/.arverdata`. However,
     if you have multiple data storage or you want to put it to a different
     location you can use the `-c PATH` option.
+
+For more options see `arver -h`
 
 ## ACTIONS
 
@@ -58,7 +59,7 @@ All Targets are defined in the `disks` config file. See the section
 
 But the TARGET option accepts also partial names and lists. E.g 
 
-    -t location1,location2/host2,host4,disk3
+    location1,location2/host2,host4,disk3
 
 targets all disks at location1, all disks on host2 at location2, all disks on 
 host4 and disk3. If any of the provided target names are not unique `arver` will

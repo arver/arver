@@ -84,8 +84,7 @@
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<pre><code>arver [-u user] [-c arverdata] [OPTIONS] -t TARGET ACTION
-arver [-u user] [-c arverdata] [OPTIONS] ACTION
+<pre><code>arver [-u user] [-c arverdata] [OPTIONS] ACTION [USER] [TARGET]
 </code></pre>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
@@ -102,12 +101,14 @@ target to work.</p>
 <p>There are some generic command line options:</p>
 
 <dl>
-<dt><code>-u USER</code>, <code>--user USER</code></dt><dd>By default <code>arver</code> will read <code>~/.arver</code> to get your username. Using <code>-u USER</code> you can override or specify it aswell.</dd>
+<dt><code>-u USER</code>, <code>--user USER</code></dt><dd>By default <code>arver</code> will read <code>~/.arver</code> to get your username. Using <code>-u USER</code> you can override it.</dd>
 <dt><code>-c PATH</code>, <code>--config-dir PATH</code></dt><dd>By default <code>arver</code> will assume your data storage in <code>~/.arverdata</code>. However,
 if you have multiple data storage or you want to put it to a different
 location you can use the <code>-c PATH</code> option.</dd>
 </dl>
 
+
+<p>For more options see <code>arver -h</code></p>
 
 <h2 id="ACTIONS">ACTIONS</h2>
 
@@ -136,7 +137,7 @@ location you can use the <code>-c PATH</code> option.</dd>
 
 <p>But the TARGET option accepts also partial names and lists. E.g</p>
 
-<pre><code>-t location1,location2/host2,host4,disk3
+<pre><code>location1,location2/host2,host4,disk3
 </code></pre>
 
 <p>targets all disks at location1, all disks on host2 at location2, all disks on
