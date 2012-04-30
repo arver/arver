@@ -80,6 +80,7 @@ h1. Requirements
 arver only works with cryptsetup-luks >= 1.0.5 as previous versions do not
 support key slots properly for our usage.
 
+
 h1. Installation
 
 The easiest way to install arver is by gem
@@ -89,15 +90,18 @@ The easiest way to install arver is by gem
 This will install all required dependecies automatically. If your distributions
 contains an arver package we recommend installation by your package manager.
 
-For development you will need the following gems installed:
+The following ruby gems are required for arver:
 
-* gpgme
-* i18n
-* activesupport
+* gpgme 2
+* activesupport 2
 * highline
-* hoe
+* escape
+
+For development you will need the following additional gems:
+
+* rake
 * cucumber
-* mocha
+* rspec
 
 h1. License
 
