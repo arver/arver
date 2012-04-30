@@ -1,3 +1,8 @@
+=== 0.1.1 2012-05-01
+
+* Fixed bug in password dialog
+* Added an --init action
+
 === 0.1.0 2012-04-30
 
 * Fixed documentation
