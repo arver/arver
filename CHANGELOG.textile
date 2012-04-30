@@ -1,3 +1,8 @@
+=== 0.0.4 2012-04-30
+
+* Updated to run with ruby 1.9
+* Validate gpg fingerprints
+
 === 0.0.1 2010-07-11
 
 * 1 major enhancement:

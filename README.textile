@@ -45,7 +45,7 @@ h1. Limitations
 
 * arver supports only up to 8 users as LUKS has only 8 key slots (LUKS NUMKEYS).
 
-h1. Problems
+h1. Known Issues
 
 h2. GPGME and gpg-agent
 
@@ -68,18 +68,10 @@ script. An option is to add the following entry to your .bashrc
       export GPG_AGENT_INFO
     fi
 
-Other helpful information can be found on the following websites:
-
-* http://live.gnome.org/GnomeKeyring/Ssh
-* http://thefunkcorner.blogspot.com/2008/06/using-gnupg-agent-on-console.html
-* http://fedoraproject.org/wiki/DocsProject/UsingGpg/CreatingKeys#head-afa09100f0b78b006dfdc62b5d9e0f315ddabfaf
-
-
 h1. Requirements
 
 arver only works with cryptsetup-luks >= 1.0.5 as previous versions do not
 support key slots properly for our usage.
-
 
 h1. Installation
 
