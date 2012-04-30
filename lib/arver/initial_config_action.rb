@@ -1,6 +1,10 @@
 module Arver
   class InitialConfigAction < Action
     def post_action
+      if LocalConfig.instance.username.empty?
+        Log.warn( "Please choose a username using '-u'" )
+        return
+      end
       local_config = LocalConfig.instance.path
       if File.exist?( local_config )
         Log.warn( "#{local_config} already exists" )
