@@ -14,10 +14,15 @@ module Arver
         Arver::Log.error( "No such user" )
         return false
       end
+      return false unless verify_key_on_target( username ) 
       self.target_user= username
       true
     end
-    
+
+    def verify_key_on_target( username )
+      Arver::GPGKeyManager.check_key_of( username )
+    end
+
     def needs_target_user?
       false
     end

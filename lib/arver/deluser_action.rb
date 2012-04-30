@@ -8,6 +8,10 @@ module Arver
     def needs_target_user?
       true
     end
+    def verify_key_on_target( username )
+      #del user needs no key, slot number is enough
+      true
+    end
     
     def verify?( partition )
       unless( load_key( partition ) )

@@ -55,7 +55,7 @@ module Arver
           key = _key_of( user )
         end
         if key 
-          if( ! Arver::RuntimeConfig.instance.test_mode && ! Arver::RuntimeConfig.instance.trust_all && key.owner_trust != 5 )
+          if( ! Arver::RuntimeConfig.instance.trust_all && key.owner_trust != 5 )
             Arver::Log.error( "You do not trust the key of #{user}!\nYou have to set the trust-level using 'gpg --edit-key #{key.primary_subkey.keyid}'.\nYou should verify the fingerprint over a secure channel." );
             return false
           end

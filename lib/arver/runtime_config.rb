@@ -16,7 +16,7 @@ module Arver
 
     def trust_all
       # in test mode trust all keys since running arver in cucumber creates a fresh gpg-keyring
-      @trust_all || test_mode
+      @trust_all || @test_mode
     end
   end
 end

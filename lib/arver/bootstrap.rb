@@ -13,8 +13,9 @@ class Arver::Bootstrap
       config = Arver::Config.instance
       config.load
 
-      return false unless Arver::KeySaver.check_key(local.username)
       self.load_runtime_config(options)
+      
+      return false unless Arver::GPGKeyManager.check_key_of(local.username)
       true
     end
 
@@ -25,6 +26,7 @@ class Arver::Bootstrap
       rtc.force = options[:force]
       rtc.violence = options[:violence]
       rtc.test_mode = options[:test_mode]
+      rtc.trust_all = options[:trust_all]
     end  
   end
 end
