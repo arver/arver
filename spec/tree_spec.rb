@@ -13,12 +13,10 @@ describe "Config" do
   it "can iterate" do
     test_disks = [ @d, @d2, @d3, @d4 ]    
     Arver::Config.instance.tree.each_partition do | partition |
-      #TODO: thats a horrible line. How can i test if an aray contains an element???
-      #sth like:  test_disks.should include?( partition )
-      ( test_disks - [ partition ] ).should_not == test_disks
+      test_disks.include?(partition).should be_true
       test_disks.delete( partition )
     end
-    test_disks.size.should == 0 
+    test_disks.should be_empty
   end
   
   it "generates corect path" do
@@ -27,8 +25,9 @@ describe "Config" do
   
   it "can compare trees" do
     other = Marshal.load( Marshal.dump( Arver::Config.instance.tree ) )
-    Arver::Host.new "testOther", other.child( "testG" )
-    other.should != Arver::Config.instance.tree
+    other.should == Arver::Config.instance.tree
+    other.children["testG"] = ""
+    other.should_not == Arver::Config.instance.tree
   end
   
 end

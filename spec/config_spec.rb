@@ -15,7 +15,7 @@ describe "Config" do
     i = 0
     config.tree.each_partition { i+=1 }
     i.should == 5
-    config.gpg_key( "test" ).should == "46425E3B"
+    config.gpg_key( "test" ).should == "2CF22C173F56F59E84CCEB152A4A13ED46425E3B"
   end 
 
   it "can read partitions" do

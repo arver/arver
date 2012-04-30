@@ -17,7 +17,7 @@ describe "LuksWrapper" do
     action = Arver::OpenAction.new( [ host ] )
     action.run_on( host )
     File.exists?( "/tmp/arver-hook-executed" ).should == true
-    File.safe_unlink( "/tmp/arver-hook-executed" )
+    FileUtils.safe_unlink( "/tmp/arver-hook-executed" )
   end
 
 end

@@ -10,7 +10,7 @@ bla2:
   gpg: xxxxxx
 test:
   slot: 7
-  gpg: 46425E3B
+  gpg: 2CF22C173F56F59E84CCEB152A4A13ED46425E3B
 key_import:
   slot: 0
   gpg: 6AA9 1388 1145 A5C9 F081  2801 371A D434 0C8D C1C7
