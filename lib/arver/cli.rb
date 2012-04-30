@@ -27,15 +27,13 @@ module Arver
           Options:
         BANNER
         opts.on("-c", "--config-dir PATH", String,
-                "Path to config dir.") { |arg| options[:config_dir] = arg }
+                "Path to arverdata dir.") { |arg| options[:config_dir] = arg }
         opts.on("-u", "--user NAME", String,
-                "Username." ) { |arg| options[:user] = arg }
+                "Your username." ) { |arg| options[:user] = arg }
         opts.on("-h", "--help",
                 "Show this help message.") { Arver::Log.write opts; return }
-        opts.on("--dry-run",
-                "Test your command.") { options[:dry_run] = true }
         opts.on("--ask-password",
-                "Ask for Password when --add-user.") { options[:ask_password] = true }
+                "Ask for an existing LUKS password when adding a new user.") { options[:ask_password] = true }
         opts.on("-t", "--trust-all",
                 "Use untrusted GPG Keys.") { options[:trust_all] = true }
         opts.on("--force",
@@ -46,33 +44,35 @@ module Arver
                 "Verbose") { Arver::Log.level( Arver::LogLevels::Debug ) }
         opts.on("--vv",
                 "Max Verbose") { Arver::Log.level( Arver::LogLevels::Trace ) }
-        opts.on( "-l", "--list-targets",
-                "List targets." ) { options[:action] = :list; }
-        opts.on( "-g", "--garbage-collect",
-                "Expunge old keys." ) { options[:action] = :gc; }
-        opts.on( "-k TARGET", "--keys TARGET", String,
-                "List local keys for this target.") { |arg| options[:argument][:target] = arg; options[:action] = :key_info; }
+        opts.on("--dry-run",
+                "Test your command.") { options[:dry_run] = true }
         opts.on("--test-mode",
                 "Test mode (internal use)") { options[:test_mode] = true }
         opts.separator "Targets:"
         opts.on(
-                "        Possible Paths are: 'Group', 'Host', 'Device', 'Host/Device',\n"+
-                "        'Group/Host/Device' or 'ALL'.\n"+
-                "        Multiple Parameters can be given as comma separated list.\n"+
-                "        Ambigues Target parameters will not be executed." )
+                "        Possible targets are: '<Group>', '<Host>', '<Disk>', '<Host>/<Device>',\n"+
+                "        '<Group>/<Host>/<Disk>' or 'ALL'.\n"+
+                "        Multiple parameters can be given as comma separated list.\n"+
+                "        Ambigues targets yield an error." )
         opts.separator "Actions:"
-        opts.on_tail( "--create TARGET", String,
-                "Create new arver partition on Target." ) { |arg| options[:argument][:target] = arg; options[:action] = :create; }
         opts.on_tail( "-o TARGET", "--open TARGET", String,
                 "Open target." ) { |arg| options[:argument][:target] = arg; options[:action] = :open; }
         opts.on_tail( "-c TARGET", "--close TARGET", String,
                 "Close target." ) { |arg| options[:argument][:target] = arg; options[:action] = :close; }
+        opts.on_tail( "--create TARGET", String,
+                "Create new arver partition on the target." ) { |arg| options[:argument][:target] = arg; options[:action] = :create; }
         opts.on_tail( "-a USER TARGET", "--add-user USER TARGET", String,
                 "Add a user to target.") { |user| options[:action] = :adduser; options[:argument][:user] = user;  }
         opts.on_tail( "-d USER TARGET", "--del-user USER TARGET", String,
                 "Remove a user from target.") { |user| options[:action] = :deluser; options[:argument][:user] = user;  }
+        opts.on_tail( "-g", "--garbage-collect",
+                "Expunge old keys." ) { options[:action] = :gc; }
+        opts.on_tail( "-k TARGET", "--keys TARGET", String,
+                "List local keys for this target.") { |arg| options[:argument][:target] = arg; options[:action] = :key_info; }
         opts.on_tail( "-i TARGET", "--info TARGET", String,
                 "LUKS info about a target.") { |arg| options[:argument][:target] = arg; options[:action] = :info; }
+        opts.on_tail( "-l", "--list-targets",
+                "List targets." ) { options[:action] = :list; }
         
         begin
           opts.parse!(arguments)
