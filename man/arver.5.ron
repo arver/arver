@@ -76,12 +76,13 @@ as well as how to set it up and what the different actions are doing exactly.
 ## Concept
 
 To setup arver we only need to define in the corresponding configuration files our
-(admin-)users and our disks.
+(admin-)users and our disks. See section `Bootstrapping a new arverdata directory`
+on how to setup your config.
  
 Arver's configuration files are contained in a single directory which contains all
 the necessary (non-private) information to manage your disks. This directory will
-be referred to as `arverdata`. We recommend you to share that directory amongs your
-group of admins with a distributed version control system such as git.
+be referred to as `arverdata`. We recommend you to share that directory among your
+group with a distributed version control system such as git.
 
 Eeach admin will be assigned one global LUKS slot. Arver will use this information
 to grant or revoke privileges to other users. See the `Managing users` section
@@ -94,22 +95,38 @@ The `arverdata` directory contains the following files and directories:
     disks            <- yaml file containing all disk configuration (see `Disks`)
     keys/public/     <- contains gpg public keys of the admins (managed by arver)
 
+## Bootstrapping a new arverdata directory
+
+To bootstrap a new `arverdata` directory just run:
+
+arver -u <new_username> --init
+
+This will create ~/.arverdata with a sample configuration. See the next two sections
+on how to adapt it to your setup:
+
 ### Users
 
-The `user` config file contains all your admins in the following structure:
+The `user` config file contains all your users. It is very important that all users
+use exactly the same configuration! It has the following structure:
 
-    foo1: 
-      slot: 0
+    me: 
+      slot: 1
       gpg: BEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFE
-    foo2:
-      slot 1
+    foo:
+      slot 2
       gpg: AFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAF
 
-`foo1` is the identifier of one of your admins. `slot` referes to the LUKS slot which
-is used for this admin. This has to be a unique number between 0 and 7. If you'd like 
+`me` is the identifier you selected on `--init`. `slot` referes to the LUKS slot which
+will be used. This has to be a unique number between 0 and 7. If you'd like 
 to migrate existing LUKS devices take care to avoid the currently used slot number
-(usually 0). `gpg` is the gpg-fingerprint of the public key for `foo1`. We recommend 
-to use a dedicated gpg key just for `arver`.
+(usually 0). `gpg` is the (40 digit) fingerprint of the gpg-key. We recommend to use 
+a dedicated gpg key just for `arver`. You can create one with:
+
+gpg --gen-key
+
+And you can find out the fingerprint of your key with:
+
+gpg --fingerprint --list-key <key-id>
 
 ### Disks
 
@@ -167,21 +184,6 @@ host. These disks are represented by an identifier and at least a `device` entry
 pointing to the actual disk path. So for example the disks on `host1` are:
 `/dev/storage/disk1` identified by `disk1` and `/dev/sdb1` idetified by `disk2`.
 The prefix `/dev/` is alays added to the disk path.
-
-## Bootstrapping a new arverdata
-
-How do you start and bootstrap a new `arverdata`, so you can use arver for your
-storage?
-
-First you need to create the basic structure for your `arverdata`:
-
-    $ mkdir ~/.arverdata # the location is configurable. We use the default one.
-    $ gpg --gen-key      # create a dedicated gpg key for arver
-    $ vi users           # add your user and the key-id of your new public gpg-key
-    $ vi disks           # add your hostgroups, hosts and disks
-    $ echo "'username': '<your_arver_username>' > ~/.arver  #set your default user
-
-Then we can create the encrypted harddisk:
 
 ## Action Create
 

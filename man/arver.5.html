@@ -61,7 +61,7 @@
     <a href="#TARGETS">TARGETS</a>
     <a href="#Working-with-arver">Working with arver</a>
     <a href="#Concept">Concept</a>
-    <a href="#Bootstrapping-a-new-arverdata">Bootstrapping a new arverdata</a>
+    <a href="#Bootstrapping-a-new-arverdata-directory">Bootstrapping a new arverdata directory</a>
     <a href="#Action-Create">Action Create</a>
     <a href="#Action-Open">Action Open</a>
     <a href="#Action-Close">Action Close</a>
@@ -155,12 +155,13 @@ as well as how to set it up and what the different actions are doing exactly.</p
 <h2 id="Concept">Concept</h2>
 
 <p>To setup arver we only need to define in the corresponding configuration files our
-(admin-)users and our disks.</p>
+(admin-)users and our disks. See section <code>Bootstrapping a new arverdata directory</code>
+on how to setup your config.</p>
 
 <p>Arver's configuration files are contained in a single directory which contains all
 the necessary (non-private) information to manage your disks. This directory will
-be referred to as <code>arverdata</code>. We recommend you to share that directory amongs your
-group of admins with a distributed version control system such as git.</p>
+be referred to as <code>arverdata</code>. We recommend you to share that directory among your
+group with a distributed version control system such as git.</p>
 
 <p>Eeach admin will be assigned one global LUKS slot. Arver will use this information
 to grant or revoke privileges to other users. See the <code>Managing users</code> section
@@ -174,23 +175,39 @@ disks            &lt;- yaml file containing all disk configuration (see `Disks`)
 keys/public/     &lt;- contains gpg public keys of the admins (managed by arver)
 </code></pre>
 
+<h2 id="Bootstrapping-a-new-arverdata-directory">Bootstrapping a new arverdata directory</h2>
+
+<p>To bootstrap a new <code>arverdata</code> directory just run:</p>
+
+<p>arver -u <var>new_username</var> --init</p>
+
+<p>This will create ~/.arverdata with a sample configuration. See the next two sections
+on how to adapt it to your setup:</p>
+
 <h3 id="Users">Users</h3>
 
-<p>The <code>user</code> config file contains all your admins in the following structure:</p>
+<p>The <code>user</code> config file contains all your users. It is very important that all users
+use exactly the same configuration! It has the following structure:</p>
 
-<pre><code>foo1: 
-  slot: 0
+<pre><code>me: 
+  slot: 1
   gpg: BEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFE
-foo2:
-  slot 1
+foo:
+  slot 2
   gpg: AFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAF
 </code></pre>
 
-<p><code>foo1</code> is the identifier of one of your admins. <code>slot</code> referes to the LUKS slot which
-is used for this admin. This has to be a unique number between 0 and 7. If you'd like
+<p><code>me</code> is the identifier you selected on <code>--init</code>. <code>slot</code> referes to the LUKS slot which
+will be used. This has to be a unique number between 0 and 7. If you'd like
 to migrate existing LUKS devices take care to avoid the currently used slot number
-(usually 0). <code>gpg</code> is the gpg-fingerprint of the public key for <code>foo1</code>. We recommend
-to use a dedicated gpg key just for <code>arver</code>.</p>
+(usually 0). <code>gpg</code> is the (40 digit) fingerprint of the gpg-key. We recommend to use
+a dedicated gpg key just for <code>arver</code>. You can create one with:</p>
+
+<p>gpg --gen-key</p>
+
+<p>And you can find out the fingerprint of your key with:</p>
+
+<p>gpg --fingerprint --list-key <var>key-id</var></p>
 
 <h3 id="Disks">Disks</h3>
 
@@ -250,22 +267,6 @@ host. These disks are represented by an identifier and at least a <code>device</
 pointing to the actual disk path. So for example the disks on <code>host1</code> are:
 <code>/dev/storage/disk1</code> identified by <code>disk1</code> and <code>/dev/sdb1</code> idetified by <code>disk2</code>.
 The prefix <code>/dev/</code> is alays added to the disk path.</p>
-
-<h2 id="Bootstrapping-a-new-arverdata">Bootstrapping a new arverdata</h2>
-
-<p>How do you start and bootstrap a new <code>arverdata</code>, so you can use arver for your
-storage?</p>
-
-<p>First you need to create the basic structure for your <code>arverdata</code>:</p>
-
-<pre><code>$ mkdir ~/.arverdata # the location is configurable. We use the default one.
-$ gpg --gen-key      # create a dedicated gpg key for arver
-$ vi users           # add your user and the key-id of your new public gpg-key
-$ vi disks           # add your hostgroups, hosts and disks
-$ echo "'username': '&lt;your_arver_username>' &gt; ~/.arver  #set your default user
-</code></pre>
-
-<p>Then we can create the encrypted harddisk:</p>
 
 <h2 id="Action-Create">Action Create</h2>
 

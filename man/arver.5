@@ -109,10 +109,10 @@ To run an action on all possible disks use \fBALL\fR as target\.
 Working with arver is quite simple and straight forward\. Within the next paragraphs you\'ll find a detailed overview on the concept of arver, as well as how to set it up and what the different actions are doing exactly\.
 .
 .SH "Concept"
-To setup arver we only need to define in the corresponding configuration files our (admin\-)users and our disks\.
+To setup arver we only need to define in the corresponding configuration files our (admin\-)users and our disks\. See section \fBBootstrapping a new arverdata directory\fR on how to setup your config\.
 .
 .P
-Arver\'s configuration files are contained in a single directory which contains all the necessary (non\-private) information to manage your disks\. This directory will be referred to as \fBarverdata\fR\. We recommend you to share that directory amongs your group of admins with a distributed version control system such as git\.
+Arver\'s configuration files are contained in a single directory which contains all the necessary (non\-private) information to manage your disks\. This directory will be referred to as \fBarverdata\fR\. We recommend you to share that directory among your group with a distributed version control system such as git\.
 .
 .P
 Eeach admin will be assigned one global LUKS slot\. Arver will use this information to grant or revoke privileges to other users\. See the \fBManaging users\fR section for a detailed descripton of how this is done\.
@@ -133,18 +133,27 @@ keys/public/     <\- contains gpg public keys of the admins (managed by arver)
 .
 .IP "" 0
 .
+.SH "Bootstrapping a new arverdata directory"
+To bootstrap a new \fBarverdata\fR directory just run:
+.
+.P
+arver \-u \fInew_username\fR \-\-init
+.
+.P
+This will create ~/\.arverdata with a sample configuration\. See the next two sections on how to adapt it to your setup:
+.
 .SS "Users"
-The \fBuser\fR config file contains all your admins in the following structure:
+The \fBuser\fR config file contains all your users\. It is very important that all users use exactly the same configuration! It has the following structure:
 .
 .IP "" 4
 .
 .nf
 
-foo1:
-  slot: 0
+me:
+  slot: 1
   gpg: BEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFE
-foo2:
-  slot 1
+foo:
+  slot 2
   gpg: AFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAFAFFEBEAF
 .
 .fi
@@ -152,7 +161,16 @@ foo2:
 .IP "" 0
 .
 .P
-\fBfoo1\fR is the identifier of one of your admins\. \fBslot\fR referes to the LUKS slot which is used for this admin\. This has to be a unique number between 0 and 7\. If you\'d like to migrate existing LUKS devices take care to avoid the currently used slot number (usually 0)\. \fBgpg\fR is the gpg\-fingerprint of the public key for \fBfoo1\fR\. We recommend to use a dedicated gpg key just for \fBarver\fR\.
+\fBme\fR is the identifier you selected on \fB\-\-init\fR\. \fBslot\fR referes to the LUKS slot which will be used\. This has to be a unique number between 0 and 7\. If you\'d like to migrate existing LUKS devices take care to avoid the currently used slot number (usually 0)\. \fBgpg\fR is the (40 digit) fingerprint of the gpg\-key\. We recommend to use a dedicated gpg key just for \fBarver\fR\. You can create one with:
+.
+.P
+gpg \-\-gen\-key
+.
+.P
+And you can find out the fingerprint of your key with:
+.
+.P
+gpg \-\-fingerprint \-\-list\-key \fIkey\-id\fR
 .
 .SS "Disks"
 The \fBdisks\fR file contains the following hash tree in yaml notation:
@@ -217,29 +235,6 @@ You can also add script hooks to any host or disk\. Those will be run during the
 .
 .P
 Any other entry within the hosts\-object are actual disks entries of that particular host\. These disks are represented by an identifier and at least a \fBdevice\fR entry pointing to the actual disk path\. So for example the disks on \fBhost1\fR are: \fB/dev/storage/disk1\fR identified by \fBdisk1\fR and \fB/dev/sdb1\fR idetified by \fBdisk2\fR\. The prefix \fB/dev/\fR is alays added to the disk path\.
-.
-.SH "Bootstrapping a new arverdata"
-How do you start and bootstrap a new \fBarverdata\fR, so you can use arver for your storage?
-.
-.P
-First you need to create the basic structure for your \fBarverdata\fR:
-.
-.IP "" 4
-.
-.nf
-
-$ mkdir ~/\.arverdata # the location is configurable\. We use the default one\.
-$ gpg \-\-gen\-key      # create a dedicated gpg key for arver
-$ vi users           # add your user and the key\-id of your new public gpg\-key
-$ vi disks           # add your hostgroups, hosts and disks
-$ echo "\'username\': \'<your_arver_username>\' > ~/\.arver  #set your default user
-.
-.fi
-.
-.IP "" 0
-.
-.P
-Then we can create the encrypted harddisk:
 .
 .SH "Action Create"
 To initially create an arver managed LUKS device you first need to add the device to the disks config\. See above for various examples\. You can create the LUKS device by invoking the following command:
