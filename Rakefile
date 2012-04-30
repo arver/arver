@@ -1,13 +1,16 @@
 require 'rake/testtask'
-require "rake/gempackagetask"
+require "rubygems/package_task"
 require "rake/clean"
 require 'rake'
 
-CLEAN << "pkg" << "doc" << "coverage"
+CLEAN << "pkg" << "doc"
 task :default => [:spec, :features ]
 
 Dir['tasks/**/*.rake'].each { |t| load t }
 
-Rake::GemPackageTask.new(eval(File.read("arver.gemspec"))) { |pkg| }
+Gem::PackageTask.new(eval(File.read("arver.gemspec"))) do |pkg|
+  pkg.need_zip = true
+  pkg.need_tar = true
+end
 
 

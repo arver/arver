@@ -18,14 +18,12 @@ Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.require_path = 'lib'
   s.rubyforge_project = '[none]'
-  s.required_rubygems_version = '>= 1.3.5'
-  s.add_dependency('gpgme','>=1.0.8')
-  s.add_dependency('highline','>=1.6.1')
-  s.add_dependency('i18n','>=0.4.1')
-  s.add_dependency('escape','>=0.0.4')
+  s.required_rubygems_version = '>= 1.3.6'
+  s.add_dependency('gpgme','>=2.0.0')
+  s.add_dependency('highline','>=1.6.2')
+  s.add_dependency('escape','>=0.0.2')
   s.add_dependency('activesupport','<3.0.0')
-  s.add_dependency('rcov', '>=0.9.9')
-  s.add_dependency('cucumber', '>=0.10.2')
-  s.add_dependency('rspec', '>=2.5.0')
-  s.add_dependency('rake')
+  s.add_development_dependency('cucumber', '>=0.10.2')
+  s.add_development_dependency('rspec', '>=2.5.0')
+  s.add_development_dependency('rake', '>=0.9.2')
 end

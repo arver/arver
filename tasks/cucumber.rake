@@ -1,5 +1,12 @@
-require 'cucumber'
-require 'cucumber/rake/task'
+begin
+  require 'cucumber'
+  require 'cucumber/rake/task'
+  has_cucumber = true
+rescue LoadError
+  puts "cucumber bdd framework not available (only needed for development)"
+end
 
-Cucumber::Rake::Task.new(:cucumber) do |t|    
+if has_cucumber
+  Cucumber::Rake::Task.new(:cucumber) do |t|
+  end
 end
