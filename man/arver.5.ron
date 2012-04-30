@@ -318,6 +318,8 @@ always before commiting the `arverdata`.
 `cryptsetup`(8).
 `gnupg`(7).
  
+Arver description: <https://tech.immerda.ch/2011/08/arver-distributed-luks-key-management/>
+
 Arver project site: <https://git.codecoop.org/projects/arver/>
  
 YAML website: <http://www.yaml.org/>
