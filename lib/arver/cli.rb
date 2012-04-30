@@ -37,6 +37,8 @@ module Arver
                 "Test your command.") { options[:dry_run] = true }
         opts.on("--ask-password",
                 "Ask for Password when --add-user.") { options[:ask_password] = true }
+        opts.on("-t", "--trust-all",
+                "Use untrusted GPG Keys.") { options[:trust_all] = true }
         opts.on("--force",
                 "Apply force (allow duplicate keys)") { options[:force] = true }
         opts.on("--violence",
