@@ -22,13 +22,8 @@ module Arver
         return false unless load_key( partition )
       else
         self.key= ask("Enter the password for the volume: #{partition.device}") {|q| q.echo = false}
-	return true
+        return true
       end
-      unless( Arver::LuksWrapper.open?(partition).execute )
-        Arver::Log.error( "WARNING: "+partition.name+" is not open. skipping." )
-        return false
-      end
-      true
     end
 
     def execute_partition( partition )
