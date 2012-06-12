@@ -2,6 +2,20 @@ module Arver
   class KeySaver
     
     def self.save( user, key )
+      filename = save_tmp( user, key )
+      purge_keys(user)
+      FileUtils.mv("#{tmp_key_path(user)}", "#{key_path(user)}")
+      "#{key_path(user)}/#{filename}"
+    end
+
+    def self.add( user, key )
+      filename = save_tmp( user, key )
+      FileUtils.mkdir_p key_path(user) unless File.exists?( key_path(user) )
+      FileUtils.mv( Dir.glob("#{tmp_key_path(user)}/*"), "#{key_path(user)}")
+      "#{key_path(user)}/#{filename}"
+    end
+
+    def self.save_tmp( user, key )
       unless GPGKeyManager.check_key_of( user )
         return
       end
@@ -20,9 +34,9 @@ module Arver
       end
       key_encrypted = encrypted.read
       unless( Arver::RuntimeConfig.instance.dry_run )
-        FileUtils.mkdir_p key_path(user) unless File.exists?( key_path(user) )
-        filename = key_path(user)+"/"+OpenSSL::Digest::SHA1.new(key_encrypted).to_s
-        File.open( filename, 'w' ) do |f|
+        FileUtils.mkdir_p tmp_key_path(user) unless File.exists?( tmp_key_path(user) )
+        filename = "#{OpenSSL::Digest::SHA1.new(key_encrypted)}"
+        File.open( "#{tmp_key_path(user)}/#{filename}", 'w' ) do |f|
           f.write key_encrypted
         end
       end
@@ -30,7 +44,11 @@ module Arver
     end
     
     def self.key_path( user )
-      config_path+"/keys/"+user
+      "#{config_path}/keys/#{user}"
+    end
+    
+    def self.tmp_key_path( user )
+      "#{config_path}/tmp/#{user}"
     end
     
     def self.config_path

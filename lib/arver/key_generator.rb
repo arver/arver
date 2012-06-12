@@ -21,7 +21,7 @@ module Arver
     
     def dump
       @keys.each do | user, user_keys |
-        KeySaver.save( user, user_keys.to_yaml ) unless user_keys.empty?
+        KeySaver.add( user, user_keys.to_yaml ) unless user_keys.empty?
       end
       @keys = {}
     end

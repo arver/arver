@@ -21,7 +21,6 @@ module Arver
     end
     
     def save
-      purge_keys
       KeySaver.save(username, @keys.to_yaml)
     end
     
