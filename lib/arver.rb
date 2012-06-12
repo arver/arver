@@ -1,4 +1,4 @@
-%w{ singleton yaml fileutils active_support highline/import gpgme escape openssl}.each {|f| require f }
+%w{singleton yaml fileutils active_support highline/import gpgme escape openssl}.each {|f| require f }
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
  

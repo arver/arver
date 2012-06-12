@@ -8,13 +8,12 @@ Feature: Adding a User
     Then there should be 1 keyfiles for user "test2"
     And I should see "adduser was called with target(s) machine1 and user test2"
   
-  Scenario: closed disks are skipped
+  Scenario: closed disks are not skipped
     Given there is a key for all test Partitions
     And there are no permissions set for "test2"
     And all disks seem closed
     When I run arver in test mode with arguments "--add-user test2 /location2/machine1" 
-    Then there should be 0 keyfiles for user "test2"
-    And I should see "not open. skipping"
+    Then there should be 1 keyfiles for user "test2"
   
   Scenario: trying to add a wrong user
     When I run arver in test mode with arguments "--add-user asf /location2"

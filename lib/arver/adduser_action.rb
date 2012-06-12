@@ -18,12 +18,11 @@ module Arver
     end
 
     def verify?( partition )
-      if not Arver::RuntimeConfig.instance.ask_password then
-        return false unless load_key( partition )
-      else
-        self.key= ask("Enter the password for the volume: #{partition.device}") {|q| q.echo = false}
-        return true
+      unless Arver::RuntimeConfig.instance.ask_password
+        return load_key( partition )
       end
+      self.key= ask("Enter the password for the volume: #{partition.device}") {|q| q.echo = false}
+      true
     end
 
     def execute_partition( partition )
@@ -36,7 +35,7 @@ module Arver
 
       caller = Arver::LuksWrapper.addKey( slot_of_target_user.to_s, partition )
       caller.execute( key + "\n" + newkey )
-      
+
       unless( caller.success? )
         Arver::Log.error( "Could not add user to #{partition.path} \n #{caller.output}" )
         generator.remove_key( target_user, partition )
