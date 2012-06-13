@@ -15,10 +15,10 @@
 'location2':
   'machine2':
     'address': 'two.example.tld'
-    'virt1_rootfs':
-      'device': '/dev/nonraidstorage/virt1_rootfs'
     'virt2_rootfs':
       'device': 'nonraidstorage/virt2_rootfs'
+    'virt1_rootfs':
+      'device': '/dev/nonraidstorage/virt1_rootfs'
   'machine1':
     'address': 'one.example.tld'
     'virt2_srv':
