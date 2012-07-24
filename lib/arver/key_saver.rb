@@ -5,14 +5,14 @@ module Arver
       filename = save_tmp( user, key )
       purge_keys(user)
       FileUtils.mv("#{tmp_key_path(user)}", "#{key_path(user)}")
-      "#{key_path(user)}/#{filename}"
+      File.join("#{key_path(user)}","#{filename}")
     end
 
     def self.add( user, key )
       filename = save_tmp( user, key )
       FileUtils.mkdir_p key_path(user) unless File.exists?( key_path(user) )
-      FileUtils.mv( Dir.glob("#{tmp_key_path(user)}/*"), "#{key_path(user)}")
-      "#{key_path(user)}/#{filename}"
+      FileUtils.mv( Dir.glob(File.join("#{tmp_key_path(user)}","*")), "#{key_path(user)}")
+      File.join("#{key_path(user)}","#{filename}")
     end
 
     def self.save_tmp( user, key )
@@ -36,7 +36,7 @@ module Arver
       unless( Arver::RuntimeConfig.instance.dry_run )
         FileUtils.mkdir_p tmp_key_path(user) unless File.exists?( tmp_key_path(user) )
         filename = "#{OpenSSL::Digest::SHA1.new(key_encrypted)}"
-        File.open( "#{tmp_key_path(user)}/#{filename}", 'w' ) do |f|
+        File.open( File.join("#{tmp_key_path(user)}","#{filename}"), 'w' ) do |f|
           f.write key_encrypted
         end
       end
@@ -44,11 +44,11 @@ module Arver
     end
     
     def self.key_path( user )
-      "#{config_path}/keys/#{user}"
+      File.join("#{config_path}","keys","#{user}")
     end
     
     def self.tmp_key_path( user )
-      "#{config_path}/tmp/#{user}"
+      File.join("#{config_path}","tmp","#{user}")
     end
     
     def self.config_path
@@ -71,7 +71,7 @@ module Arver
       Dir.entries( key_path( user ) ).sort.each do | file |
         unless( file == "." || file == ".." )
           Arver::Log.trace( "Loading keyfile "+file )
-          key_encrypted = File.open( key_path( user )+"/"+file )
+          key_encrypted = File.open( File.join( key_path( user ),file) )
           begin
             decrypted_txt = crypto.decrypt( key_encrypted, { :passphrase_callback => method( :passfunc ) } )
           rescue GPGME::Error => gpgerr

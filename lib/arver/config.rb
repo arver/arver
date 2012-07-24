@@ -19,9 +19,9 @@ module Arver
         Arver::Log.error( "config-dir "+path+" does not exist" )
         exit
       end
-      @users= ( load_file( path+"/users" ) )
+      @users= ( load_file( File.join(path,'users') ) )
       tree.clear
-      tree.from_hash( load_file( path+"/disks" ) )
+      tree.from_hash( load_file( File.join(path,'disks') ) )
     end
     
     def load_file( filename )
@@ -30,8 +30,8 @@ module Arver
     
     def save
       FileUtils.mkdir_p( path ) unless File.exists?( path )
-      File.open( path+"/users", 'w' ) { |f| f.write( users.to_yaml ) }
-      File.open( path+"/disks", 'w' ) { |f| f.write( tree.to_yaml ) }
+      File.open( File.join(path,'users'), 'w' ) { |f| f.write( users.to_yaml ) }
+      File.open( File.join(path,'disks'), 'w' ) { |f| f.write( tree.to_yaml ) }
     end
     
     def exists?( user )
