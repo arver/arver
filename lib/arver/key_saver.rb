@@ -18,7 +18,24 @@ module Arver
       File.join(path,filename)
     end
 
+    def self.deflate(string, level=6)
+      z = Zlib::Deflate.new(level)
+      dst = z.deflate(string, Zlib::FINISH)
+      z.close
+      dst
+    end
+
+    def self.inflate(string)
+      zstream = Zlib::Inflate.new
+      buf = zstream.inflate(string)
+      zstream.finish
+      zstream.close
+      buf
+    end
+
     def self.save_to( user, key, path )
+      #compress the key before applying padding, so the size after encryption+compression by gpg is more stable...
+      key = deflate(key)
       unless GPGKeyManager.check_key_of( user )
         return
       end
@@ -86,6 +103,7 @@ module Arver
             next
           end
           decrypted_key = substract_padding( decrypted_txt.read )
+          decrypted_key = inflate( decrypted_key )
           decrypted += [ decrypted_key ];
         end
       end
@@ -94,13 +112,13 @@ module Arver
 
     def self.add_padding( key )
       marker = "--"+ActiveSupport::SecureRandom.base64( 82 )
-      size = 450000
+      size = 200000
       padding_size = size - key.size
       if padding_size <= 0
         padding_size = 0
         Arver::Log.warn( "Warning: Your arver keys exceed the maximal padding size, therefore i can no longer disguise how many keys you possess.")
       end
-      padding = ActiveSupport::SecureRandom.base64( padding_size )
+      padding = ActiveSupport::SecureRandom.base64( padding_size )[0..padding_size]
       marker +"\n"+ key + "\n" + marker + "\n" + padding
     end
     

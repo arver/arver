@@ -27,12 +27,13 @@ describe "KeySaver" do
 
   it "applies padding to the keys" do
     self.load_test_config
-    s = "test\ntest"
     Arver::KeySaver.purge_keys( "test" )
-    path = Arver::KeySaver.save( "test", s )
-    size = File.size?( path )
+    path = Arver::KeySaver.save( "test", "as" )
+    File.size?( path ).should < 207000
+    File.size?( path ).should > 206000
     Arver::KeySaver.purge_keys( "test" )
-    path = Arver::KeySaver.save( "test", s )
-    File.size?( path ).should_not == size
+    path = Arver::KeySaver.save( "test", "ssssssssss"*10000 )
+    File.size?( path ).should < 207000
+    File.size?( path ).should > 206000
   end
 end
