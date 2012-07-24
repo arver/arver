@@ -41,6 +41,8 @@ The following actions are supported:
     Adds permissions for USER on all targeted disks.
   * `-d`, `--del-user USER TARGET`:
     Removes permissions for USER on all targeted disks.
+  * `-r`, `--refresh TARGET`:
+    Refresh the key on the target.
   * `-i`, `--info TARGET`:
     Display the LUKS configuration of all targeted disks.
   * `-l`, `--list-targets`:
@@ -237,6 +239,15 @@ Closing luks devices is simply done by invoking
 For this action you can define hooks as well. See `Disks` and `Action Open` 
 for details.
 
+## Information about targets
+
+To gather various information about the different targets you can invoke
+
+    $ arver -i TARGET
+    
+Which will display you the current configuration of all devices, as well as
+different parameters of the LUKS device and slot usage.
+
 ## Managing users
 
 To add another user to one of the disks you need to have the public key of that
@@ -260,9 +271,9 @@ the user-slot on the targeted disks. Furthermore, the password is encrypted
 with the public key of the specific user and stored in the data storage under
 `arverdata/keys/USERNAME/`.
 
-For the other user to receive those new privileges he has to copy the new
-keys to his own `arverdata`. So if you use a version controll system you should
-now commit the new keys.
+You now need to pass the new keyfile to the other user. So if you use a version
+controll system you should now commit the new keys. The other user should 
+follow the paragraph `receiving new keys`.
 
 If you are migrating from an existing LUKS infrastructure and want to add an
 initial user to the LUKS device, you will need to use the `--ask-password` option,
@@ -286,34 +297,35 @@ corresponding private key it is not possible to see the privileges.
 You can however display the targets `information` to see which slots are used.
 But to do this you need access to the server and the `users` config.
 
-## Information about targets
+## Receiving new Keys
 
-To gather various information about the different targets you can invoke
+If you have been granted permission to a certain disk, the first thing you
+need to do, is to integrate the new keyfile in your arverdata. If your group
+uses a version controll system, you can just pull the arverdata. Otherwise
+you copy the received file into `arverdata/keys/USERNAME/`.
 
-    $ arver -i TARGET
+Important: The next thing you really should do, is to call
     
-Which will display you the current configuration of all devices, as well as
-different parameters of the LUKS device and slot usage.
+    $ arver --refresh TARGET
 
-## Garbage collection
+This will replace the actual luks key on the target once more with a fresh
+random key and also collect all your keys into one file. Replacing the key
+is important to ensure, that the user who sent you the key, cannot record 
+the actual luks key he sent you and use it as a backdoor in the future.
 
-As you might add and remove users to disks or reset access to disks the
-amount of generated key files with random passwords might grow and not all
-might be needed anymore. Furthermore it is likely that due to various
-actions it might be obvious or at least reconstructable to which devices a
-certain user might have access.
+If you use a version controll system to store your `arverdata` you should 
+commit the new key.
 
-To address this problem `arver` provides a garbage collection process, which will
-rearrange all your own keyfiles. (Only your own as you are not able to read the
-others key files.)
-
-You can do that by invoking the following command:
+If you use an old cryptsetup version refresh might not work. In that case you
+cannot replace the luks key. Another problem in that case is, that it might become
+obvious or at least reconstructable to which devices you have access. To counter 
+this problem, do a garbage collection, which will collect all keys into one 
+keyfile, with:
 
     $ arver -g
 
 If you use a version controll system to store your `arverdata` you should do this
 always before commiting the `arverdata`.
-
 
 ## SEE ALSO
  

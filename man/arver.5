@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ARVER" "5" "April 2012" "" ""
+.TH "ARVER" "5" "July 2012" "" ""
 .
 .SH "NAME"
 \fBarver\fR \- LUKS on the loose
@@ -56,6 +56,10 @@ Adds permissions for USER on all targeted disks\.
 .TP
 \fB\-d\fR, \fB\-\-del\-user USER TARGET\fR
 Removes permissions for USER on all targeted disks\.
+.
+.TP
+\fB\-r\fR, \fB\-\-refresh TARGET\fR
+Refresh the key on the target\.
 .
 .TP
 \fB\-i\fR, \fB\-\-info TARGET\fR
@@ -325,6 +329,22 @@ $ arver \-\-close TARGET
 .P
 For this action you can define hooks as well\. See \fBDisks\fR and \fBAction Open\fR for details\.
 .
+.SH "Information about targets"
+To gather various information about the different targets you can invoke
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-i TARGET
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Which will display you the current configuration of all devices, as well as different parameters of the LUKS device and slot usage\.
+.
 .SH "Managing users"
 To add another user to one of the disks you need to have the public key of that user\. Just import his key into your gpg keyring\.
 .
@@ -351,7 +371,7 @@ For this command to work, you have to trust the gpg key of USERNAME\. See \fBman
 \fBarver\fR will create a random password for the specific user and add it to the user\-slot on the targeted disks\. Furthermore, the password is encrypted with the public key of the specific user and stored in the data storage under \fBarverdata/keys/USERNAME/\fR\.
 .
 .P
-For the other user to receive those new privileges he has to copy the new keys to his own \fBarverdata\fR\. So if you use a version controll system you should now commit the new keys\.
+You now need to pass the new keyfile to the other user\. So if you use a version controll system you should now commit the new keys\. The other user should follow the paragraph \fBreceiving new keys\fR\.
 .
 .P
 If you are migrating from an existing LUKS infrastructure and want to add an initial user to the LUKS device, you will need to use the \fB\-\-ask\-password\fR option, to provide an existing password\.
@@ -378,30 +398,30 @@ By design it is not possible to know who has access to which disks by just looki
 .P
 You can however display the targets \fBinformation\fR to see which slots are used\. But to do this you need access to the server and the \fBusers\fR config\.
 .
-.SH "Information about targets"
-To gather various information about the different targets you can invoke
+.SH "Receiving new Keys"
+If you have been granted permission to a certain disk, the first thing you need to do, is to integrate the new keyfile in your arverdata\. If your group uses a version controll system, you can just pull the arverdata\. Otherwise you copy the received file into \fBarverdata/keys/USERNAME/\fR\.
+.
+.P
+Important: The next thing you really should do, is to call
 .
 .IP "" 4
 .
 .nf
 
-$ arver \-i TARGET
+$ arver \-\-refresh TARGET
 .
 .fi
 .
 .IP "" 0
 .
 .P
-Which will display you the current configuration of all devices, as well as different parameters of the LUKS device and slot usage\.
-.
-.SH "Garbage collection"
-As you might add and remove users to disks or reset access to disks the amount of generated key files with random passwords might grow and not all might be needed anymore\. Furthermore it is likely that due to various actions it might be obvious or at least reconstructable to which devices a certain user might have access\.
+This will replace the actual luks key on the target once more with a fresh random key and also collect all your keys into one file\. Replacing the key is important to ensure, that the user who sent you the key, cannot record the actual luks key he sent you and use it as a backdoor in the future\.
 .
 .P
-To address this problem \fBarver\fR provides a garbage collection process, which will rearrange all your own keyfiles\. (Only your own as you are not able to read the others key files\.)
+If you use a version controll system to store your \fBarverdata\fR you should commit the new key\.
 .
 .P
-You can do that by invoking the following command:
+If you use an old cryptsetup version refresh might not work\. In that case you cannot replace the luks key\. Another problem in that case is, that it might become obvious or at least reconstructable to which devices you have access\. To counter this problem, do a garbage collection, which will collect all keys into one keyfile, with:
 .
 .IP "" 4
 .
