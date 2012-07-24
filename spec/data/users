@@ -1,16 +1,16 @@
---- 
-test2: 
-  slot: 3
-  gpg: 892989DB5337551D15CB5475409E413142C68368
-key_import: 
+---
+bla:
+  slot: 1
+  gpg: xxxxxx
+key_import:
   slot: 0
   gpg: 6AA9 1388 1145 A5C9 F081  2801 371A D434 0C8D C1C7
-bla2: 
-  slot: 2
-  gpg: xxxxxx
-test: 
+test:
   slot: 7
   gpg: 2CF22C173F56F59E84CCEB152A4A13ED46425E3B
-bla: 
-  slot: 1
+test2:
+  slot: 3
+  gpg: 892989DB5337551D15CB5475409E413142C68368
+bla2:
+  slot: 2
   gpg: xxxxxx

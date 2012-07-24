@@ -1,3 +1,9 @@
+=== 0.1.4 2012-07-24
+
+* Introducing the --refresh action to renew the luks key. You should always run this command, when receiving a new permission.
+* Fixed a security bug in the padding algorithm, which might reveal the magnitude of the ammount of keys in a keyfile. Please run --garbage-collect to fix your old keys. 
+* Some code cleanup and improved tests.
+
 === 0.1.2 2012-05-01
 
 * Fixed bug in password dialog
