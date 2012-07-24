@@ -1,0 +1,5 @@
+'location':
+  'localhost':
+    'address': 'localhost'
+    'arver_test_luks_device':
+      'device': 'loop2'

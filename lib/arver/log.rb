@@ -31,8 +31,9 @@ module Arver
     def self.level( num )
       logger.level=( num )
     end
-
-    
+    def flush
+      logger.flush
+    end
   end
 end
       

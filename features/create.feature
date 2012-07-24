@@ -25,7 +25,7 @@ Feature: Createing luks
    And external commands will return "LUKS header information for"
    When I run arver in test mode with arguments "--force --create machine1/virt1_rootfs"
    Then I should see "is already formatted with LUKS - returning"
-   And I should not see "starting key generation"
+   And I should not see "generating a new key for partition"
   
   Scenario: overwriting existing luksDevice
    Given there are no permissions set for "test"
@@ -33,4 +33,4 @@ Feature: Createing luks
    When I run arver in test mode with arguments "--force --violence --create machine1/virt1_rootfs"
    Then I should see "is already formatted with LUKS - returning"
    And I should see "you applied --violence, so we will"
-   And I should see "starting key generation"
+   And I should see "generating a new key for partition"

@@ -24,14 +24,17 @@ module Arver
     def execute_partition( partition )
       Arver::Log.info( "Generating a new key for partition #{partition.device}" )
 
+      slot_of_user = Arver::Config.instance.slot( Arver::LocalConfig.instance.username )
       newkey = generator.generate_key( partition )
 
-      caller = Arver::LuksWrapper.changeKey( slot_of_target_user.to_s, partition )
+      caller = Arver::LuksWrapper.changeKey( slot_of_user.to_s, partition )
       caller.execute( key + "\n" + newkey )
 
       unless( caller.success? )
-        Arver::Log.error( "Warning: i believe that i could not change the key on #{partition.path}, therefore i keep the old one!" )
-        Arver::Log.error( "Please verify that the old one still works. If i'm wrong, the key i tried to install would be: #{key}" )
+        Arver::Log.error( "Warning: i believe that i could not change the key on #{partition.path}, therefore i kept the old one!" )
+        Arver::Log.error( "Maybe the version of cryptsetup on that host does not yet support the luksChangeKey command. " )
+        Arver::Log.error( "Please verify that the old one still works. If the changeKey did in fact succeed, the plaintext key would now be: #{key}" )
+        Arver::Log.debug( "The output was: #{caller.output}" )
         generator.remove_key( partition )
       end
     end
