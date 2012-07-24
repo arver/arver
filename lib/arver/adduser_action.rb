@@ -31,7 +31,7 @@ module Arver
       # generate a key for the new user
       Arver::Log.debug( "generate_key (#{target_user},#{partition.path})" )
       
-      newkey = generator.generate_key( target_user, partition )
+      newkey = generator.generate_key( partition )
 
       caller = Arver::LuksWrapper.addKey( slot_of_target_user.to_s, partition )
       caller.execute( key + "\n" + newkey )
@@ -43,7 +43,7 @@ module Arver
     end
     
     def post_action
-      self.generator.dump
+      self.generator.dump( Keystore.for( target_user ) )
     end
   end
 end

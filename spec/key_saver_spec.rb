@@ -15,6 +15,15 @@ describe "KeySaver" do
     Arver::KeySaver.save( "test", s )
     Arver::KeySaver.read( "test" ).should == [ s ]
   end
+  
+  it "can save multiple times" do
+    self.load_test_config
+    s = "test\ntest"
+    Arver::KeySaver.purge_keys( "test" )
+    Arver::KeySaver.save( "test", s )
+    Arver::KeySaver.save( "test", s )
+    Arver::KeySaver.save( "test", s )
+  end
 
   it "applies padding to the keys" do
     self.load_test_config

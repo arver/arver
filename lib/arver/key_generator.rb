@@ -4,26 +4,22 @@ module Arver
       @keys = {}
     end
     
-    def generate_key( user, partition )
+    def generate_key( partition )
       key = ActiveSupport::SecureRandom.base64(192)
-      add( user, partition, key )
-      key
+      @keys[partition] = key
     end
     
-    def add( user, partition, luks_key )
-      @keys[user] ||= {}
-      @keys[user][partition.path] = { :key => luks_key, :time => Time.now.to_f }
-    end
-
     def remove_key( user, partition )
-      @keys[user].delete( partition.path )
+      @keys.delete( partition )
     end
     
-    def dump
-      @keys.each do | user, user_keys |
-        KeySaver.add( user, user_keys.to_yaml ) unless user_keys.empty?
+    def dump( keystore )
+      return if @keys.empty?
+      @keys.each do | partition, key |
+        keystore.add_luks_key( partition, key )
       end
       @keys = {}
+      keystore.save
     end
   end
 end

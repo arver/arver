@@ -1,14 +1,27 @@
 module Arver
   class Keystore
+    class << self
+      def for( username )
+        if username.empty?
+          Log.error("no user given, cannot create keystore")
+          return
+        end
+        @@keystores           ||= {}
+        @@keystores[username] ||= Keystore.new( username )
+      end
       
-    include Singleton
-    
-    attr_accessor :username
+      def reset
+        @@keystores = {}
+      end
+    end
+          
+    attr_accessor :username, :loaded
         
-    def initialize
+    def initialize( name )
       @keys = {}
       @key_versions = {}
-      self.username= Arver::LocalConfig.instance.username
+      self.username= name
+      self.loaded = false
     end
     
     def load
@@ -18,10 +31,15 @@ module Arver
           load_luks_key(target,key)
         end
       end
+      self.loaded = true
     end
     
     def save
-      KeySaver.save(username, @keys.to_yaml)
+      if loaded
+        KeySaver.save(username, @keys.to_yaml)
+      else
+        KeySaver.add(username, @keys.to_yaml)
+      end 
     end
     
     def purge_keys
@@ -43,6 +61,7 @@ module Arver
         end
       else
         unless( @keys[partition] )
+          Log.debug("loding key in old format")          
           @keys[partition] = { :key => new_key, :time => 0.0 }
         end
       end

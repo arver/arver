@@ -7,6 +7,7 @@ describe "LuksWrapper" do
   before(:each) do
     self.extend( TestConfigLoader )
     self.load_sample_tree
+    self.load_test_config
     self.host= Arver::Host.new( "localhost", Arver::Config.instance.tree )
     host.username= "root"
     script= File.expand_path("spec/data/fixtures/test_hook_script.sh")

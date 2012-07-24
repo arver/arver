@@ -32,7 +32,7 @@ module Arver
     end
     
     def open_keystore
-      self.keystore= Arver::Keystore.instance
+      self.keystore= Arver::Keystore.for( LocalConfig.instance.username )
       keystore.load
     end
     

@@ -5,10 +5,13 @@ describe "Keystore" do
     self.extend( TestConfigLoader )
     self.load_test_config
     @luks_key = "someStringASDdf"
-    @keystore = Arver::Keystore.instance
-    @keystore.username= "test"
+    @keystore = Arver::Keystore.for('test')
     @partition = Arver::TestPartition.new("sometest")
     @partition2 = Arver::TestPartition.new("sometest2")
+  end
+  
+  after(:each) do
+    Arver::Keystore.reset
   end
   
   it "can add a key" do
@@ -38,11 +41,11 @@ describe "Keystore" do
   it "can do garbage collection right" do
     @keystore.purge_keys
     gen = Arver::KeyGenerator.new
-    gen.generate_key( "test", @partition )
-    gen.dump
+    gen.generate_key( @partition )
+    gen.dump( @keystore )
     gen = Arver::KeyGenerator.new
-    gen.generate_key( "test", @partition )
-    gen.dump
+    gen.generate_key( @partition )
+    gen.dump( @keystore )
     Arver::KeySaver.num_of_key_files("test").should == 2
     @keystore.flush_keys
     @keystore.load
@@ -53,11 +56,11 @@ describe "Keystore" do
    it "can load splitted and updated key" do
     @keystore.purge_keys
     gen = Arver::KeyGenerator.new
-    gen.generate_key( "test", @partition )
-    gen.dump
-    key = gen.generate_key( "test", @partition )
-    key2 = gen.generate_key( "test", @partition2 )
-    gen.dump
+    gen.generate_key( @partition )
+    gen.dump( @keystore )
+    key = gen.generate_key( @partition )
+    key2 = gen.generate_key( @partition2 )
+    gen.dump( @keystore )
     @keystore.flush_keys
     @keystore.load
     key.should == @keystore.luks_key(@partition)
@@ -68,34 +71,12 @@ describe "Keystore" do
   it "can load more than 10 keyfiles" do
     @keystore.purge_keys
     gen = Arver::KeyGenerator.new
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    gen.generate_key( "test", @partition )
-    gen.dump
-    key = gen.generate_key( "test", @partition )
-    gen.dump
+    10.times do
+      gen.generate_key( @partition )
+      gen.dump( @keystore )
+    end    
+    key = gen.generate_key( @partition )
+    gen.dump( @keystore )
     Arver::KeySaver.num_of_key_files("test").should >= 10
     @keystore.flush_keys
     @keystore.load

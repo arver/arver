@@ -42,7 +42,7 @@ module Arver
       end
       
       Arver::Log.trace( "starting key generation..." )
-      key = self.generator.generate_key( Arver::LocalConfig.instance.username, partition )
+      key = self.generator.generate_key( partition )
       caller = Arver::LuksWrapper.create( slot_of_user.to_s, partition )
       caller.execute( key )
       unless( caller.success? )
@@ -52,7 +52,7 @@ module Arver
     end
     
     def post_action
-      self.generator.dump
+      self.generator.dump( self.keystore )
     end
   end
 end
