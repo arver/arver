@@ -103,7 +103,11 @@ module Arver
             next
           end
           decrypted_key = substract_padding( decrypted_txt.read )
-          decrypted_key = inflate( decrypted_key )
+          begin
+            decrypted_key = inflate( decrypted_key )
+          rescue Zlib::DataError
+            Log.write("You have an outdated key. Run garbage collect to update it.")
+          end
           decrypted += [ decrypted_key ];
         end
       end
