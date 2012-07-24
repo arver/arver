@@ -1,5 +1,5 @@
 module Arver
-  class AdduserAction < Action
+  class RefreshAction < Action
         
     def initialize( target_list )
       super( target_list )
@@ -10,13 +10,9 @@ module Arver
     def pre_action
       tl = ""
       target_list.each { |t| tl += ( tl.empty? ? "": ", " )+t.name }
-      Arver::Log.info( "adduser was called with target(s) #{tl} and user #{target_user} (slot-no #{slot_of_target_user})" )
+      Arver::Log.info( "refresh was called with target(s) #{tl}" )
     end
     
-    def needs_target_user?
-      true
-    end
-
     def verify?( partition )
       unless Arver::RuntimeConfig.instance.ask_password
         return load_key( partition )
@@ -26,24 +22,22 @@ module Arver
     end
 
     def execute_partition( partition )
-      Arver::Log.info( "Generating keys for partition #{partition.device}" )
+      Arver::Log.info( "Generating a new key for partition #{partition.device}" )
 
-      # generate a key for the new user
-      Arver::Log.debug( "generate_key (#{target_user},#{partition.path})" )
-      
       newkey = generator.generate_key( partition )
 
-      caller = Arver::LuksWrapper.addKey( slot_of_target_user.to_s, partition )
+      caller = Arver::LuksWrapper.changeKey( slot_of_target_user.to_s, partition )
       caller.execute( key + "\n" + newkey )
 
       unless( caller.success? )
-        Arver::Log.error( "Could not add user to #{partition.path} \n #{caller.output}" )
+        Arver::Log.error( "Warning: i believe that i could not change the key on #{partition.path}, therefore i keep the old one!" )
+        Arver::Log.error( "Please verify that the old one still works. If i'm wrong, the key i tried to install would be: #{key}" )
         generator.remove_key( partition )
       end
     end
     
     def post_action
-      self.generator.dump( Keystore.for( target_user ) )
+      self.generator.dump( self.keystore )
     end
   end
 end

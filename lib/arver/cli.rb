@@ -65,6 +65,8 @@ module Arver
                 "Add a user to target.") { |user| options[:action] = :adduser; options[:argument][:user] = user;  }
         opts.on_tail( "-d USER TARGET", "--del-user USER TARGET", String,
                 "Remove a user from target.") { |user| options[:action] = :deluser; options[:argument][:user] = user;  }
+        opts.on_tail( "-r TARGET", "--refresh TARGET", String,
+                "Refresh the key on target." ) { |arg| options[:argument][:target] = arg; options[:action] = :refresh; }
         opts.on_tail( "-g", "--garbage-collect",
                 "Expunge old keys." ) { options[:action] = :gc; }
         opts.on_tail( "-k TARGET", "--keys TARGET", String,
@@ -118,6 +120,7 @@ module Arver
         :info => Arver::InfoAction,
         :key_info => Arver::KeyInfoAction,
         :init => Arver::InitialConfigAction,
+        :refresh => Arver::RefreshAction,
       }
 
       action = (actions[ action ]).new( target_list )

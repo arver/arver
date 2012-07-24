@@ -47,7 +47,7 @@ module Arver
       caller.execute( key )
       unless( caller.success? )
         Arver::Log.error( "Could not create Partition!" )
-        self.generator.remove_key( Arver::LocalConfig.instance.username, partition )
+        self.generator.remove_key( partition )
       end
     end
     

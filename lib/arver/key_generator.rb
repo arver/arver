@@ -9,7 +9,7 @@ module Arver
       @keys[partition] = key
     end
     
-    def remove_key( user, partition )
+    def remove_key( partition )
       @keys.delete( partition )
     end
     

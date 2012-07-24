@@ -3,6 +3,9 @@ module Arver
     def self.addKey( key_slot, partition )
       Arver::SSHCommandWrapper.create( "cryptsetup", [ "--batch-mode", "--key-slot=#{key_slot}", "luksAddKey", partition.device_path ], partition.parent, true )
     end
+    def self.changeKey( key_slot, partition )
+      Arver::SSHCommandWrapper.create( "cryptsetup", [ "--batch-mode", "--key-slot=#{key_slot}", "luksChangeKey", partition.device_path ], partition.parent, true )
+    end
     def self.close( partition )
       Arver::SSHCommandWrapper.create( "cryptsetup", [ "luksClose", "#{partition.name}"], partition.parent, true )
     end

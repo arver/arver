@@ -70,6 +70,23 @@ describe "LuksWrapper" do
     c.execute
   end
 
+  it "can refresh a key" do
+    c = Arver::LuksWrapper.create( "0", partition )
+    c.execute( "test_key" )
+    c = Arver::LuksWrapper.changeKey( "0", partition )
+    c.execute( "test_key\ntest2_key" )
+    c.success?.should == true
+    c = Arver::LuksWrapper.open( partition )
+    c.execute( "test2_key" )
+    c.success?.should == true
+    c = Arver::LuksWrapper.close( partition )
+    c.execute
+    c = Arver::LuksWrapper.open( partition )
+    c.execute( "test_key" )
+    c.success?.should == false 
+    Arver::LuksWrapper.was_wrong_key?( c ).should == true
+  end
+
   it "can dump infos" do
     c = Arver::LuksWrapper.create( "0", partition )
     c.execute( "test_key" )
