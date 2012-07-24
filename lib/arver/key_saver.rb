@@ -6,7 +6,7 @@ module Arver
       back_path = backup_key_path( user )
       path      = key_path( user )
       filename  = save_to( user, key, tmp_path )
-      FileUtils.mv(path,back_path)
+      FileUtils.mv(path,back_path) if File.exists?(path) 
       FileUtils.mv(tmp_path,path)
       FileUtils.rm_rf(back_path)
       File.join(path,filename)
