@@ -1,4 +1,4 @@
-%w{singleton yaml fileutils rubygems active_support/secure_random highline/import gpgme escape openssl zlib}.each {|f| require f }
+%w{singleton yaml fileutils rubygems active_support/secure_random highline/import gpgme openssl zlib}.each {|f| require f }
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
  

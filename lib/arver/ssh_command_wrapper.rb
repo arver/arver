@@ -13,9 +13,8 @@ module Arver
     end
     
     def escaped_command
-      return Escape.shell_command( [ "ssh", "-p #{host.port}", "#{host.username}@#{host.address}", "sudo", super ] ) if( as_root && host.username != "root" )
-      Escape.shell_command( [ "ssh", "-p #{host.port}", "#{host.username}@#{host.address}", super ] ) 
+      sudo = if as_root && host.username != "root" then "sudo" else "" end
+      "ssh -p #{shellescape(host.port)} #{shellescape(host.username)}@#{shellescape(host.address)} #{sudo} #{super}" 
     end
-    
   end
 end
