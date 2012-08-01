@@ -450,6 +450,32 @@ $ arver \-g
 .P
 If you use a version controll system to store your \fBarverdata\fR you should do this always before commiting the \fBarverdata\fR\.
 .
+.SH "Migrating keys"
+If you want to move a disk to a different server or a server to a different location, there is currently no nice way of doing this\. You can however apply the following workaround, after you moved/renamed a disk in the config file:
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-\-set\-key /OLD_LOCATION/OLD_MACHINE/OLD_NAME \-\-refresh NEW_NAME
+.
+.fi
+.
+.IP "" 0
+.
+.P
+For example after moving \fBa_disk\fR from \fBa_server\fR at \fBa_location\fR to \fBsome_server\fR at \fBsome_location\fR in the config, you can restore your access with:
+.
+.IP "" 4
+.
+.nf
+
+$ arver \-\-set\-key /a_location/a_server/a_disk \-\-refresh /some_location/some_server/a_disk
+.
+.fi
+.
+.IP "" 0
+.
 .SH "SEE ALSO"
 \fBcryptsetup\fR(8)\. \fBgnupg\fR(7)\.
 .

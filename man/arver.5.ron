@@ -336,6 +336,19 @@ keyfile, with:
 If you use a version controll system to store your `arverdata` you should do this
 always before commiting the `arverdata`.
 
+## Migrating keys
+
+If you want to move a disk to a different server or a server to a different 
+location, there is currently no nice way of doing this. You can however apply the
+following workaround, after you moved/renamed a disk in the config file:
+
+    $ arver --set-key /OLD_LOCATION/OLD_MACHINE/OLD_NAME --refresh NEW_NAME
+
+For example after moving `a_disk` from `a_server` at `a_location` to `some_server` 
+at `some_location` in the config, you can restore your access with:
+
+    $ arver --set-key /a_location/a_server/a_disk --refresh /some_location/some_server/a_disk
+
 ## SEE ALSO
  
 `cryptsetup`(8).

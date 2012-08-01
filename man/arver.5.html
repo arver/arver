@@ -68,6 +68,7 @@
     <a href="#Information-about-targets">Information about targets</a>
     <a href="#Managing-users">Managing users</a>
     <a href="#Receiving-new-Keys">Receiving new Keys</a>
+    <a href="#Migrating-keys">Migrating keys</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
   </div>
 
@@ -429,6 +430,21 @@ keyfile, with:</p>
 
 <p>If you use a version controll system to store your <code>arverdata</code> you should do this
 always before commiting the <code>arverdata</code>.</p>
+
+<h2 id="Migrating-keys">Migrating keys</h2>
+
+<p>If you want to move a disk to a different server or a server to a different
+location, there is currently no nice way of doing this. You can however apply the
+following workaround, after you moved/renamed a disk in the config file:</p>
+
+<pre><code>$ arver --set-key /OLD_LOCATION/OLD_MACHINE/OLD_NAME --refresh NEW_NAME
+</code></pre>
+
+<p>For example after moving <code>a_disk</code> from <code>a_server</code> at <code>a_location</code> to <code>some_server</code>
+at <code>some_location</code> in the config, you can restore your access with:</p>
+
+<pre><code>$ arver --set-key /a_location/a_server/a_disk --refresh /some_location/some_server/a_disk
+</code></pre>
 
 <h2 id="SEE-ALSO">SEE ALSO</h2>
 
