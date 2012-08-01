@@ -54,7 +54,11 @@ module Arver
     end
 
     def load_key( partition )
-      self.key= keystore.luks_key( partition )
+      if Arver::RuntimeConfig.instance.global_key_path
+        self.key= keystore.luks_key_for_path( Arver::RuntimeConfig.instance.global_key_path )
+      else
+        self.key= keystore.luks_key( partition )
+      end
 
       if( key.nil? )
         Arver::Log.error( "No permission on #{partition.path}. Skipping." )

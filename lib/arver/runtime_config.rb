@@ -5,7 +5,7 @@ module Arver
     
     include Singleton
 
-    attr_accessor :test_mode, :dry_run, :force, :violence, :ask_password, :trust_all
+    attr_accessor :test_mode, :dry_run, :force, :violence, :ask_password, :trust_all, :global_key_path
     
     instance.test_mode= false
     instance.dry_run= false

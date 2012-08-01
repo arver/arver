@@ -51,9 +51,13 @@ module Arver
     end
   
     def luks_key(partition)
-      @keys[partition.path][:key] unless ! @keys[partition.path]
+      luks_key_for_path(partition.path)
     end
     
+    def luks_key_for_path(path)
+      @keys[path][:key] unless ! @keys[path]
+    end
+
     def load_luks_key(partition, new_key)
       if( new_key.kind_of? Hash )
         if( ! @keys[partition] || @keys[partition][:time] <= new_key[:time] )

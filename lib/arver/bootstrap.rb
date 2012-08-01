@@ -32,6 +32,7 @@ class Arver::Bootstrap
       rtc.violence = options[:violence]
       rtc.test_mode = options[:test_mode]
       rtc.trust_all = options[:trust_all]
+      rtc.global_key_path = options[:global_key_path]
     end  
   end
 end

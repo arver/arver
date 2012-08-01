@@ -34,6 +34,8 @@ module Arver
                 "Show this help message.") { Arver::Log.write opts; return }
         opts.on("--ask-password",
                 "Ask for an existing LUKS password when adding a new user.") { options[:ask_password] = true }
+        opts.on("--set-key KEYNAME", String,
+                "Manuall choose a key to use. The KEYNAME is in the format /LOCATION/MACHINE/DISK.") { |arg| options[:global_key_path] = arg }
         opts.on("-t", "--trust-all",
                 "Use untrusted GPG Keys.") { options[:trust_all] = true }
         opts.on("--force",
