@@ -144,15 +144,16 @@ The `disks` file contains the following hash tree in yaml notation:
          'disk2'   : 
            'device'   :  'sdb1'
        'host2':
-         'address': 'host2.example.com'
-         'port'   : '2222'
-         'mails'  : 
+         'address' : 'host2.example.com'
+         'port'    : '2222'
+         'username': 'hans'
+         'mails'   : 
            'device'  : 'nonraid/mails'
            'pre_open': 'pre_open_disk_script.sh'
      'hostgroup2':
        'host3':
          'address' : 'host3.example.com'
-         'username': 'foo'
+         'username': '#arveruser'
          'secure'  : 
            'device'  : 'storage/secure'
          
@@ -176,6 +177,14 @@ file.
 objects can contain multiple disks and can have further information such as the
 `address` of the host or the ssh-`port` number if the ssh daemon is not running
 on the standart port.
+
+`username` defines the ssh login-user. By default it is `root`. To always use
+the same username as arver (as defined by `-u` or in `.arver`) set the
+username to `#arveruser`. If the user is not `root`, the actual LUKS commands 
+will be executed via `sudo` and you need the following entry in your sudoers 
+file on this machine (assuming the user is in the admin group):
+
+    %admin ALL=NOPASSWD: /usr/bin/test, /sbin/cryptsetup
 
 You can also add script hooks to any host or disk. Those will be run during the
 `open` and `close` actions at the appropriate time. The possible options are:

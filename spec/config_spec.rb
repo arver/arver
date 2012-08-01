@@ -14,7 +14,7 @@ describe "Config" do
     config.tree.child( "location2" ).child( "machine2" ).address.should == 'two.example.tld'
     i = 0
     config.tree.each_partition { i+=1 }
-    i.should == 5
+    i.should == 6
     config.gpg_key( "test" ).should == "2CF22C173F56F59E84CCEB152A4A13ED46425E3B"
   end 
 
@@ -29,6 +29,12 @@ describe "Config" do
     self.load_test_config
     config = Arver::Config.instance
     config.tree.child( "location1" ).child( 'machine1_1.example.tld' ).username.should == 'test'
+  end 
+  
+  it "can use #arveruser as username" do
+    self.load_test_config
+    config = Arver::Config.instance
+    config.tree.child( "location1" ).child( 'machine_with_arveruser' ).username.should == 'test'
   end 
 
   it "can save the config to disk" do

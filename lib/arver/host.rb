@@ -31,15 +31,21 @@ module Arver
     end
 
     def username
-      return @username unless @username.nil?
-      'root'
+      case @username 
+        when nil
+          'root'
+        when '#arveruser'
+          Arver::LocalConfig.instance.username
+        else 
+          @username
+      end
     end
     
     def to_yaml
       yaml = ""
-      yaml += "'address': '"+address+"'\n" unless @address.nil?
-      yaml += "'port': '"+port+"'\n" unless @port.nil?
-      yaml += "'username': '"+username+"'\n" unless @username.nil?
+      yaml += "'address': '"+@address+"'\n" unless @address.nil?
+      yaml += "'port': '"+@port+"'\n" unless @port.nil?
+      yaml += "'username': '"+@username+"'\n" unless @username.nil?
       yaml += script_hooks_to_yaml
       yaml += super
     end

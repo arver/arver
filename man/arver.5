@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ARVER" "5" "July 2012" "" ""
+.TH "ARVER" "5" "August 2012" "" ""
 .
 .SH "NAME"
 \fBarver\fR \- LUKS on the loose
@@ -193,15 +193,16 @@ The \fBdisks\fR file contains the following hash tree in yaml notation:
      \'disk2\'   :
        \'device\'   :  \'sdb1\'
    \'host2\':
-     \'address\': \'host2\.example\.com\'
-     \'port\'   : \'2222\'
-     \'mails\'  :
+     \'address\' : \'host2\.example\.com\'
+     \'port\'    : \'2222\'
+     \'username\': \'hans\'
+     \'mails\'   :
        \'device\'  : \'nonraid/mails\'
        \'pre_open\': \'pre_open_disk_script\.sh\'
  \'hostgroup2\':
    \'host3\':
      \'address\' : \'host3\.example\.com\'
-     \'username\': \'foo\'
+     \'username\': \'#arveruser\'
      \'secure\'  :
        \'device\'  : \'storage/secure\'
 .
@@ -233,6 +234,19 @@ will present you the tree of the various targets in your \fBdisks\fR configurati
 .
 .P
 \fBhost1\fR, \fBhost2\fR and \fBhost3\fR are identifiers for different hosts\. These host\- objects can contain multiple disks and can have further information such as the \fBaddress\fR of the host or the ssh\-\fBport\fR number if the ssh daemon is not running on the standart port\.
+.
+.P
+\fBusername\fR defines the ssh login\-user\. By default it is \fBroot\fR\. To always use the same username as arver (as defined by \fB\-u\fR or in \fB\.arver\fR) set the username to \fB#arveruser\fR\. If the user is not \fBroot\fR, the actual LUKS commands will be executed via \fBsudo\fR and you need the following entry in your sudoers file on this machine (assuming the user is in the admin group):
+.
+.IP "" 4
+.
+.nf
+
+%admin ALL=NOPASSWD: /usr/bin/test, /sbin/cryptsetup
+.
+.fi
+.
+.IP "" 0
 .
 .P
 You can also add script hooks to any host or disk\. Those will be run during the \fBopen\fR and \fBclose\fR actions at the appropriate time\. The possible options are: \fBpre_open\fR, \fBpre_close\fR, \fBpost_open\fR and \fBpost_close\fR\.

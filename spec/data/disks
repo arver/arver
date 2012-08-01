@@ -1,4 +1,8 @@
 'location1':
+  'machine_with_arveruser':
+    'username': '#arveruser'
+    'somedisk':
+      'device': 'bla'
   'machine1_1.example.tld':
     'port': '2222'
     'username': 'test'

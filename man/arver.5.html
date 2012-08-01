@@ -224,15 +224,16 @@ a dedicated gpg key just for <code>arver</code>. You can create one with:</p>
      'disk2'   : 
        'device'   :  'sdb1'
    'host2':
-     'address': 'host2.example.com'
-     'port'   : '2222'
-     'mails'  : 
+     'address' : 'host2.example.com'
+     'port'    : '2222'
+     'username': 'hans'
+     'mails'   : 
        'device'  : 'nonraid/mails'
        'pre_open': 'pre_open_disk_script.sh'
  'hostgroup2':
    'host3':
      'address' : 'host3.example.com'
-     'username': 'foo'
+     'username': '#arveruser'
      'secure'  : 
        'device'  : 'storage/secure'
 </code></pre>
@@ -258,6 +259,15 @@ file.</p>
 objects can contain multiple disks and can have further information such as the
 <code>address</code> of the host or the ssh-<code>port</code> number if the ssh daemon is not running
 on the standart port.</p>
+
+<p><code>username</code> defines the ssh login-user. By default it is <code>root</code>. To always use
+the same username as arver (as defined by <code>-u</code> or in <code>.arver</code>) set the
+username to <code>#arveruser</code>. If the user is not <code>root</code>, the actual LUKS commands
+will be executed via <code>sudo</code> and you need the following entry in your sudoers
+file on this machine (assuming the user is in the admin group):</p>
+
+<pre><code>%admin ALL=NOPASSWD: /usr/bin/test, /sbin/cryptsetup
+</code></pre>
 
 <p>You can also add script hooks to any host or disk. Those will be run during the
 <code>open</code> and <code>close</code> actions at the appropriate time. The possible options are:
@@ -434,7 +444,7 @@ always before commiting the <code>arverdata</code>.</p>
 
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
-    <li class='tc'>July 2012</li>
+    <li class='tc'>August 2012</li>
     <li class='tr'>arver(5)</li>
   </ol>
 
