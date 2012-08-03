@@ -1,8 +1,4 @@
 'location1':
-  'machine_with_arveruser':
-    'username': '#arveruser'
-    'somedisk':
-      'device': 'bla'
   'machine1_1.example.tld':
     'port': '2222'
     'username': 'test'
@@ -16,6 +12,10 @@
       'pre_close': 'pre_close_disk_script.sh'
       'post_open': 'post_open_disk_script.sh'
       'post_close': 'post_close_disk_script.sh'
+  'machine_with_arveruser':
+    'username': '#arveruser'
+    'somedisk':
+      'device': 'bla'
 'location2':
   'machine2':
     'address': 'two.example.tld'
@@ -25,7 +25,7 @@
       'device': 'nonraidstorage/virt2_rootfs'
   'machine1':
     'address': 'one.example.tld'
-    'virt1_rootfs':
-      'device': '/dev/storage/virt1_rootfs_e'
     'virt2_srv':
       'device': '/dev/storage/virt2_srv_e'
+    'virt1_rootfs':
+      'device': '/dev/storage/virt1_rootfs_e'
