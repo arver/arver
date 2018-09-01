@@ -9,30 +9,28 @@ describe "GPGKeyManager" do
   end
   
   it "has a key for test2" do
-    Arver::GPGKeyManager.key_of("test2").should_not be_false
+    Arver::GPGKeyManager.key_of("test2").should_not be_falsey
   end
 
   it "has a key for test" do
-    Arver::GPGKeyManager.key_of("test").should_not be_false
+    Arver::GPGKeyManager.key_of("test").should_not be_falsey
   end
   
   it "can detect missing key" do
-    Arver::GPGKeyManager.check_key_of("asfafaf").should be_false
+    Arver::GPGKeyManager.check_key_of("asfafaf").should be_falsey
   end
   
   it "can check the key for test" do
-    Arver::GPGKeyManager.check_key_of("test").should_not be_false
+    Arver::GPGKeyManager.check_key_of("test").should_not be_falsey
   end
   
   it "can check the key for test2" do
-    Arver::GPGKeyManager.check_key_of("test2").should_not be_false
+    Arver::GPGKeyManager.check_key_of("test2").should_not be_falsey
   end
   
   it "can restore the key for test2" do
-    k = Arver::GPGKeyManager.key_of("key_import")
+    k = Arver::GPGKeyManager.key_of("test2")
     k.delete!( :allow_secret => true )
-    Arver::RuntimeConfig.instance.trust_all = true
-    Arver::GPGKeyManager.check_key_of("key_import").should_not be_false
-    Arver::RuntimeConfig.instance.trust_all = false
+    Arver::GPGKeyManager.check_key_of("test2").should_not be_falsey
   end
 end

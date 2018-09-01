@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Arver
   class KeyGenerator
     def initialize
@@ -5,7 +7,7 @@ module Arver
     end
     
     def generate_key( partition )
-      key = ActiveSupport::SecureRandom.base64(192)
+      key = SecureRandom.base64(192)
       @keys[partition] = key
     end
     

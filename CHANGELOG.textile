@@ -1,3 +1,7 @@
+=== 0.1.7 2018-09-01
+
+* Updated gems to work with 2.5.1
+
 === 0.1.4 2012-07-24
 
 * Introducing the --refresh action to renew the luks key. You should always run this command, when receiving a new permission.

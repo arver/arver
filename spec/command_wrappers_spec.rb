@@ -19,8 +19,8 @@ describe "CommandWrapper" do
   it "should not leak input" do
     caller = Arver::CommandWrapper.create( "false", [] )
     caller.stub( :run ) do | command, input |
-      command.include?( "test" ).should be_false
-      input.include?( "test" ).should be_true
+      command.include?( "test" ).should be_falsey
+      input.include?( "test" ).should be_truthy
     end
     caller.execute( "test" )
   end

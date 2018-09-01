@@ -16,6 +16,7 @@ module TestConfigLoader
   def load_test_config
     Arver::LocalConfig.instance.config_dir= "spec/data"
     Arver::LocalConfig.instance.username= "test"
+    Arver::RuntimeConfig.instance.trust_all = true
     config = Arver::Config.instance
     config.load
   end

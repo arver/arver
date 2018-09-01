@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module Arver
   class KeySaver
     
@@ -37,6 +39,7 @@ module Arver
       #compress the key before applying padding, so the size after encryption+compression by gpg is more stable...
       key = deflate(key)
       unless GPGKeyManager.check_key_of( user )
+        Arver::Log.error( "Error no key for #{user}" )
         return
       end
       gpg_key = GPGKeyManager.key_of( user )
@@ -115,14 +118,14 @@ module Arver
     end
 
     def self.add_padding( key )
-      marker = "--"+ActiveSupport::SecureRandom.base64( 82 )
+      marker = "--"+SecureRandom.base64( 82 )
       size = 200000
       padding_size = size - key.size
       if padding_size <= 0
         padding_size = 0
         Arver::Log.warn( "Warning: Your arver keys exceed the maximal padding size, therefore i can no longer disguise how many keys you possess.")
       end
-      padding = ActiveSupport::SecureRandom.base64( padding_size )[0..padding_size]
+      padding = SecureRandom.base64( padding_size )[0..padding_size]
       marker +"\n"+ key + "\n" + marker + "\n" + padding
     end
     
