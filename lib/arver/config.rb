@@ -50,6 +50,13 @@ module Arver
     def slot user
       users[user]['slot'] if exists?(user)
     end
+
+    def user_at(slot)
+      users.each do |name, conf|
+        return name if slot == conf['slot']
+      end
+      'unknown'
+    end
     
     def == other
       return tree == other.tree && users == other.users if other.is_a?(Arver::Config)
