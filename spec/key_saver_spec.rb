@@ -14,6 +14,7 @@ describe "KeySaver" do
     Arver::KeySaver.purge_keys( "test" )
     Arver::KeySaver.save( "test", s )
     Arver::KeySaver.read( "test" ).should == [ s ]
+    Arver::KeySaver.purge_keys( "test" )
   end
   
   it "can save multiple times" do
@@ -23,6 +24,7 @@ describe "KeySaver" do
     Arver::KeySaver.save( "test", s )
     Arver::KeySaver.save( "test", s )
     Arver::KeySaver.save( "test", s )
+    Arver::KeySaver.purge_keys( "test" )
   end
 
   it "applies padding to the keys" do
@@ -35,5 +37,6 @@ describe "KeySaver" do
     path = Arver::KeySaver.save( "test", "ssssssssss"*10000 )
     File.size?( path ).should < 207000
     File.size?( path ).should > 206000
+    Arver::KeySaver.purge_keys( "test" )
   end
 end

@@ -15,23 +15,23 @@ module Arver
       end
     end
           
-    attr_accessor :username, :loaded
+    attr_reader :username, :loaded
         
     def initialize( name )
       @keys = {}
       @key_versions = {}
-      self.username= name
-      self.loaded = false
+      @username = name
+      @loaded = false
     end
     
     def load
       flush_keys
-      KeySaver.read( self.username ).each do | loaded |
+      KeySaver.read(username).each do | loaded |
         YAML.load( loaded ).each do | target, key |
           load_luks_key(target,key)
         end
       end
-      self.loaded = true
+      @loaded = true
     end
     
     def save

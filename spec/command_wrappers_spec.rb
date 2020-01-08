@@ -24,13 +24,13 @@ describe "CommandWrapper" do
     end
     caller.execute( "test" )
   end
-  
+
   it "can pipe content through" do
     caller = Arver::CommandWrapper.create( "cat" )
     caller.execute( "hello" ).should == true
     "hello\n".should == caller.output
   end
-  
+
   it "can get the right return value" do
     caller = Arver::CommandWrapper.create( "false" )
     caller.execute.should == false

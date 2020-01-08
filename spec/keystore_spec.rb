@@ -4,7 +4,7 @@ describe "Keystore" do
   before(:each) do
     self.extend( TestConfigLoader )
     self.load_test_config
-    @luks_key = "someStringASDdf"
+    @luks_key = (0...8).map {(65 + rand(26)).chr}.join
     @keystore = Arver::Keystore.for('test')
     @partition = Arver::TestPartition.new("sometest")
     @partition2 = Arver::TestPartition.new("sometest2")
@@ -22,11 +22,9 @@ describe "Keystore" do
   it "can save keystore" do
     @keystore.add_luks_key(@partition, @luks_key)
     @keystore.save
-    begin
-      @keystore.load
-    rescue Exception
-      puts "to run this test import spec/data/test_key into your gpg-keyring"
-    end
+    # to run this test import spec/data/fixtures/test_key into your gpg-keyring
+    @keystore.load
+    Arver::KeySaver.num_of_key_files("test").should == 1
     @luks_key.should == @keystore.luks_key(@partition)
   end
 
