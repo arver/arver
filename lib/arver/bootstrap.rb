@@ -7,7 +7,7 @@ class Arver::Bootstrap
       
       return true if options[:action] == :init
 
-      unless local.username.present?
+      unless local.username
         Arver::Log.error( "No user defined" )
         return false
       end

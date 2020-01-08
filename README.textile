@@ -46,7 +46,6 @@ contains an arver package we recommend installation by your package manager.
 The following ruby gems are required for arver:
 
 * gpgme 2
-* activesupport 2
 * escape
 * highline
 

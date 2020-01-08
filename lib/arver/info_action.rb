@@ -18,8 +18,8 @@ module Arver
       version = $1
       slots = []
 
-      head = " #{sprintf("%0-10s",partition.name.first(10))} :"+
-             " #{sprintf("%0-30s",partition.device_path.first(30))}"
+      head = " #{sprintf("%0-10s",partition.name[0...10])} :"+
+             " #{sprintf("%0-30s",partition.device_path[0...30])}"
 
       if version != '1' && version != '2'
         Arver::Log.info("#{head} : Unsupported luks version")

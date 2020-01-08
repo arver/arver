@@ -1,5 +1,3 @@
-require 'active_support/all'
-
 module Arver
   module PartitionHierarchyNode
         
@@ -72,7 +70,7 @@ module Arver
     def find( name )
       found = []
       self.each_node do | node |
-        found += [ node ] if ( node.name == name || node.path.ends_with?( name ) )
+        found += [ node ] if (node.name == name || node.path =~ /#{name}$/)
       end
       found
     end
