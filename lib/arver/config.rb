@@ -15,17 +15,22 @@ module Arver
     end
     
     def load
-      if( ! File.exists?( path ) )
-        Arver::Log.error( "config-dir "+path+" does not exist" )
-        exit
+      if !File.directory?(path)
+        Arver::Log.error("config "+path+" does not exist")
+        exit 1
       end
-      @users= ( load_file( File.join(path,'users') ) )
+      @users = load_file(File.join(path,'users')) || {}
+
       tree.clear
-      tree.from_hash( load_file( File.join(path,'disks') ) )
+      tree.from_hash(load_file(File.join(path,'disks')))
     end
     
     def load_file( filename )
-      YAML.load( File.read(filename) ) if File.exists?( filename )
+      if !File.exists?(filename)
+        Arver::Log.error("missing config #{filename}")
+        exit 1
+      end
+      YAML.load(File.read(filename))
     end
     
     def save
@@ -35,7 +40,7 @@ module Arver
     end
     
     def exists?( user )
-      ! users[user].nil?
+      !users[user].nil?
     end
 
     def gpg_key user
