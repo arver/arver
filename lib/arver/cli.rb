@@ -77,6 +77,8 @@ module Arver
                 "LUKS info about a target.") { |arg| options[:argument][:target] = arg; options[:action] = :info; }
         opts.on_tail( "-l", "--list-targets",
                 "List targets." ) { options[:action] = :list; }
+        opts.on_tail( "--dump-key TARGET", String,
+                "Dump raw luks passphrase." ) { |arg| options[:argument][:target] = arg; options[:action] = :dump; }
         opts.on_tail( "--init",
                 "Setup a sample configuration." ) { options[:action] = :init; }
         
@@ -123,6 +125,7 @@ module Arver
         :key_info => Arver::KeyInfoAction,
         :init => Arver::InitialConfigAction,
         :refresh => Arver::RefreshAction,
+        :dump => Arver::DumpKeyAction,
       }
 
       action = (actions[ action ]).new( target_list )
