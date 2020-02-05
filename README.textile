@@ -67,6 +67,10 @@ h1. Limitations
 
 h2. Known Issues
 
+It is strongly advised not to set any 'encrypt-to' option in your gnupgp.conf.
+Otherwise, when you issue a key to another person, you can still decrypt it
+yourself, since gpg always encrypts it to this additional recipient.
+
 h3. GPGME and gpg-agent
 
 If arver asks you multiple times for the password, you might consider to use
