@@ -1,5 +1,3 @@
 Important todos:
 
 * clean termination with proper (documented!) return codes. 
-* provide a refresh-key action to change the luks passphrases. when i get new permissions from another admin i should be able to change
-  my luks-key. because the other admin could modify arver to display the key he gave to me.
