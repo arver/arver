@@ -8,10 +8,9 @@ Gem::Specification.new do |s|
   s.version      = Arver::VERSION
   s.authors      = ["o","andreas","mh"]
   s.email        = "arver@lists.immerda.ch"
-  s.homepage     = "https://github.com/arver/arver"
-  s.summary      = "Open crypted devices automatically"
-  s.description  = "Arver helps you to manage a large amount of crypted devices easily and safe amongst a certain amount of members"
-
+  s.homepage     = "https://code.immerda.ch/immerda/apps/arver"
+  s.summary      = "LUKS for groups"
+  s.description  = "Arver helps you to share access to LUKS devices easily and safely in a team"
 
   s.files        = `git ls-files lib`.split("\n") + %w(README.textile CHANGELOG.textile man/arver.5)
   s.executables =  [ 'arver' ]
