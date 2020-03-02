@@ -6,19 +6,20 @@ describe "Keystore" do
     self.load_test_config
     @luks_key = (0...8).map {(65 + rand(26)).chr}.join
     @keystore = Arver::Keystore.for('test')
+    @keystore.purge_keys
     @partition = Arver::TestPartition.new("sometest")
     @partition2 = Arver::TestPartition.new("sometest2")
   end
-  
+
   after(:each) do
     Arver::Keystore.reset
   end
-  
+
   it "can add a key" do
     @keystore.add_luks_key( @partition, @luks_key ) 
     @luks_key.should == @keystore.luks_key(@partition)
   end
-  
+
   it "can save keystore" do
     @keystore.add_luks_key(@partition, @luks_key)
     @keystore.save
@@ -29,15 +30,13 @@ describe "Keystore" do
   end
 
   it "can save multiple keys to one keyfile" do
-    @keystore.purge_keys
     @keystore.add_luks_key(@partition, @luks_key)
     @keystore.add_luks_key(@partition2, @luks_key)
     @keystore.save
     Arver::KeySaver.num_of_key_files("test").should == 1
   end
-  
+
   it "can do garbage collection right" do
-    @keystore.purge_keys
     gen = Arver::KeyGenerator.new
     gen.generate_key( @partition )
     gen.dump( @keystore )
@@ -50,9 +49,8 @@ describe "Keystore" do
     @keystore.save
     Arver::KeySaver.num_of_key_files("test").should == 1
   end
- 
-   it "can load splitted and updated key" do
-    @keystore.purge_keys
+
+  it "can load splitted and updated key" do
     gen = Arver::KeyGenerator.new
     gen.generate_key( @partition )
     gen.dump( @keystore )
@@ -65,9 +63,7 @@ describe "Keystore" do
     key2.should == @keystore.luks_key(@partition2)
   end
 
-
   it "can load more than 10 keyfiles" do
-    @keystore.purge_keys
     gen = Arver::KeyGenerator.new
     10.times do
       gen.generate_key( @partition )
@@ -80,5 +76,4 @@ describe "Keystore" do
     @keystore.load
     key.should == @keystore.luks_key(@partition)
   end
-
 end
