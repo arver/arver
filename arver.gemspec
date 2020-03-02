@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.files        = `git ls-files lib`.split("\n") + %w(README.textile CHANGELOG.textile man/arver.5)
   s.executables =  [ 'arver' ]
   s.platform     = Gem::Platform::RUBY
+  s.required_ruby_version = '>= 2.2'
   s.require_path = 'lib'
   s.rubyforge_project = '[none]'
   s.required_rubygems_version = '>= 1.3.6'
