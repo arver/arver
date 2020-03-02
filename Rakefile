@@ -4,7 +4,7 @@ require "rake/clean"
 require 'rake'
 
 CLEAN << "pkg" << "doc"
-task :default => [:spec, :features ]
+task :default => [:spec, :cucumber]
 
 Dir['tasks/**/*.rake'].each { |t| load t }
 
@@ -12,5 +12,3 @@ Gem::PackageTask.new(eval(File.read("arver.gemspec"))) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
 end
-
-
